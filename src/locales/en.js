@@ -1,0 +1,286 @@
+export default {
+  brand: 'Pezeshk Afzar',
+  brandFull: 'Pezeshk Afzar Shafa Gostar Shargh',
+  nav: {
+    home: 'Home',
+    products: 'What we make',
+    about: 'Our story',
+    contact: 'Say hello',
+  },
+  hero: {
+    eyebrow: 'Made for living',
+    titleA: 'Care that keeps you',
+    titleB: 'living',
+    titleC: 'your life.',
+    subtitle:
+      'We build the quiet technology behind good care — software that gives hospitals calm, doctors time, and you more of the days you love.',
+    ctaPrimary: 'See what we build',
+    ctaSecondary: 'Say hello',
+    scroll: 'Take a look',
+    trust: { value: '12+', label: 'care partners who trust us' },
+    chips: {
+      a: { value: '99.7%', label: 'Accuracy, checked twice' },
+      b: { value: '24/7', label: 'By your side' },
+    },
+  },
+  mission: {
+    eyebrow: 'Why we wake up',
+    title: 'Health isn’t a chart. It’s a good day outside.',
+    body:
+      'Every product we make starts with a simple picture: someone getting back to their life — the morning walk, the kite on the hill, dinner with people they love. We build healthcare technology so that picture arrives sooner.',
+    points: {
+      p1: { title: 'Made with heart', body: 'Shaped around real people — the ones giving care and the ones getting better.' },
+      p2: { title: 'Trusted by clinicians', body: 'Checked by physicians and engineers long before it ever meets a patient.' },
+      p3: { title: 'Here for the long run', body: 'Dependable, secure, and supported — like any good friendship.' },
+    },
+  },
+  solutions: {
+    eyebrow: 'Our platforms',
+    title: 'Software that lets caregivers care.',
+    sub: 'Hospital, imaging, and monitoring platforms that clear the busywork away — so the people in scrubs can spend their attention where it belongs: on people.',
+    viewAll: 'Browse all platforms',
+  },
+  custom: {
+    eyebrow: 'Built just for you',
+    title: 'Dreaming of a tool that doesn’t exist yet? Let’s make it.',
+    sub: 'Tell us what slows your team down. We’ll listen carefully, sketch it with you, and build healthcare software that fits your world like it grew there.',
+    cta: 'Let’s build together',
+    steps: {
+      analyze: { title: 'We listen', body: 'We sit with your team and learn how your days actually work.' },
+      design: { title: 'We sketch', body: 'Together we shape a design that fits your people and your systems.' },
+      build: { title: 'We build & stay', body: 'We craft it, launch it, and stick around for the whole journey.' },
+    },
+  },
+  tech: {
+    eyebrow: 'Fresh ideas in care',
+    title: 'New technologies, more good days.',
+    sub: 'We bring life-giving innovations into everyday care — chosen for one reason: they help people feel like themselves again.',
+    viewAll: 'Explore all technologies',
+  },
+  why: {
+    eyebrow: 'Why people choose us',
+    title: 'A partner who cares about the caring.',
+    sub: 'We mix clinical wisdom with warm engineering, so the tools we hand over feel less like machines and more like teammates.',
+    items: {
+      accuracy: {
+        title: 'Clinicians at the table',
+        body: 'Doctors, engineers, and designers building side by side — every single day.',
+      },
+      reliability: {
+        title: 'Steady as sunrise',
+        body: 'Secure, dependable systems that show up every morning, just like you do.',
+      },
+      innovation: {
+        title: 'Always growing',
+        body: 'We keep planting new ideas so patient care keeps blooming.',
+      },
+    },
+  },
+  consult: {
+    eyebrow: 'Let’s talk',
+    title: 'Bring us your busiest day. We’ll make it lighter.',
+    body: 'Hospital, clinic, or health innovator — pour a coffee and tell us what you’re dreaming about. We’ll bring ideas.',
+    ctaPrimary: 'Start the conversation',
+    ctaSecondary: 'Get to know us',
+  },
+  trusted: {
+    eyebrow: 'Word travels',
+    title: 'Trusted by the people doing the caring.',
+    sub: 'Clinicians, ward teams, and the people they looked after — here is what they tell us when the workday goes quiet.',
+    badgeValue: '4.9 / 5',
+    badgeLabel: 'from the care teams we serve',
+  },
+  partner: {
+    eyebrow: 'For hospitals & clinics',
+    title: 'Technology that works around your wards, not the other way round.',
+    body: 'Every rollout is shaped to your shifts, your systems, and your people. We arrive quietly, integrate carefully, and stay for the whole journey.',
+    points: {
+      p1: { title: 'Fits your rhythm', body: 'Deployments planned around ward schedules — no paused clinics, no lost days.' },
+      p2: { title: 'Speaks your systems', body: 'HL7, FHIR, and DICOM out of the box, so your existing tools keep working.' },
+      p3: { title: 'Stays by your side', body: 'One team from first sketch to long after launch, on call when you need us.' },
+    },
+    cta: 'Plan it with us',
+  },
+  section: {
+    eyebrow: 'What we make',
+    featured: 'Tools for living well',
+    featuredSub:
+      'A warm portfolio of health software and technologies — each one built to give somebody a better day.',
+    count: '07 ways to help',
+    viewAll: 'See everything we make',
+  },
+  card: {
+    view: 'Take a closer look',
+    no: 'P/',
+    flagship: 'Our favourite',
+    type: {
+      software: 'Software Platform',
+      equipment: 'Medical Technology',
+    },
+  },
+  products: {
+    eyebrow: 'What we make',
+    titleA: 'Tools for',
+    titleB: 'living well.',
+    intro:
+      'Digital health platforms, fresh medical technologies, and things we build just for you. Wander around — see what could make your days lighter.',
+    navLabel: 'Browse categories',
+    explore: 'Explore',
+    featuresLabel: 'What it does for you',
+    demo: 'Start the conversation',
+    details: 'Take a closer look',
+    categories: {
+      platforms: {
+        title: 'Health Platforms',
+        desc: 'Software that gives care teams their time back.',
+        intro: 'Hospital systems, clinical platforms, and digital health software — built with clinicians, made for real, busy days.',
+      },
+      innovations: {
+        title: 'Fresh Technologies',
+        desc: 'Innovations that help people feel like themselves again.',
+        intro: 'Life-giving technologies brought into everyday care — chosen for the good days they create, not the spec sheets they fill.',
+      },
+      custom: {
+        title: 'Built Just for You',
+        desc: 'Custom healthcare software, shaped around your world.',
+        intro: 'Dreaming of a tool that doesn’t exist yet? Tell us what slows your team down — we’ll listen, sketch it with you, and build it together.',
+        cta: 'Let’s build together',
+      },
+    },
+  },
+  detail: {
+    overview: 'The story',
+    capabilities: 'What it does for you',
+    specs: 'The fine print',
+    certifications: 'Licenses & certifications',
+    requestInfo: 'Start the conversation',
+    backToProducts: 'Back to everything we make',
+    metaCategory: 'Category',
+    metaType: 'Kind',
+    metaRef: 'Reference',
+    ctaText: 'Curious how this could fit your world? Let’s have a friendly chat about it.',
+    notFound: 'Hmm — this page wandered off. Let’s get you home.',
+  },
+  about: {
+    eyebrow: 'Come in, the door’s open',
+    titleA: 'Less a company,',
+    titleB: 'more a family.',
+    lead:
+      'We’re engineers, physicians, and designers who somehow became a family — one that gathers around a long table, argues warmly about ideas, and builds healthcare technology so more people get back to the mornings, kites, and dinners that make a life. The door has been open since 2021.',
+    philosophyEyebrow: 'What we believe',
+    philosophyBody:
+      'Good technology should feel like being cared for by someone who knows you. We build our tools the way you’d cook for people you love — patiently, with the best ingredients, tasting as we go — and we measure success in good days, not features.',
+    missionTitle: 'Why our lights stay on',
+    missionBody:
+      'To give people more of the life they love, by making the technology behind their care effortless. What a nurse whispers at a bedside becomes software that quietly works — that’s the whole magic trick.',
+    storyTitle: 'How this family started',
+    storyBody:
+      'It began as a friendship between a Tehran teaching hospital and a computer-vision lab — late nights, shared meals, one piece of clinical software. The software grew, and so did the friendship. The stubborn belief stayed the same: technology exists so people can get back to living.',
+    valuesEyebrow: 'The house rules',
+    valuesTitle: 'Four things we remind each other at the table.',
+    values: {
+      mission: { title: 'Life comes first', body: 'Every project starts with a person, and the day we want to hand back to them.' },
+      innovation: { title: 'Stay curious', body: 'We keep planting fresh ideas and tending the ones already growing in the garden.' },
+      trust: { title: 'Be worth leaning on', body: 'Safe, dependable, looked after — the way family shows up, every single time.' },
+      impact: { title: 'Count the good days', body: 'One measure matters: more good days for patients and the people who love them.' },
+    },
+    teamEyebrow: 'The family album',
+    teamTitle: 'The people around our table.',
+    teamGroups: {
+      executive: 'Around the head of the table',
+      research: 'The curious ones',
+      engineering: 'The builders',
+    },
+    certEyebrow: 'The serious bits',
+    certTitle: 'A warm home with very solid foundations.',
+    certs: {
+      c1: 'ISO 13485 (in process)',
+      c2: 'IEC 62304 software lifecycle',
+      c3: 'GDPR & HIPAA aligned',
+      c4: 'On-prem & air-gapped deployment',
+    },
+  },
+  footer: {
+    manifesto: 'Technology in the service of living.',
+    tagline: 'More good days, powered by kind technology.',
+    description:
+      'Pezeshk Afzar builds warm, dependable healthcare software and technologies — so care flows easily and life gets the spotlight back.',
+    missionLabel: 'Our mission',
+    mission:
+      'To give people more of the life they love — by making the technology behind their care effortless.',
+    legalName: 'Pezeshk Afzar Shafa Gostar Shargh',
+    rights: 'All rights reserved.',
+    columns: {
+      navigate: 'Find your way',
+      contact: 'Say hello',
+      technologies: 'What we make',
+      company: 'Company',
+    },
+    links: {
+      platforms: 'Health Platforms',
+      innovations: 'Fresh Technologies',
+      custom: 'Built Just for You',
+      consultation: 'A friendly chat',
+      services: 'Services',
+    },
+    contact: {
+      emailLabel: 'Email',
+      phoneLabel: 'Phone',
+      addressLabel: 'Address',
+      address: 'Mashhad — Ferdowsi University, AI in Medicine Building',
+    },
+    social: {
+      linkedin: 'LinkedIn',
+      instagram: 'Instagram',
+      telegram: 'Telegram',
+    },
+  },
+  lang: {
+    label: 'Language',
+    names: {
+      en: 'English',
+      fa: 'فارسی',
+    },
+  },
+  contact: {
+    eyebrow: 'Say hello',
+    titleA: 'We’d love to',
+    titleB: 'hear from you.',
+    intro:
+      'A question, a dream, a busy day you’d like lighter — write to us about any of it. We usually reply within two working days.',
+    meta: {
+      studio: 'Office',
+      studioVal: 'Tehran · Iran',
+      hours: 'Hours',
+      hoursVal: 'Sat — Wed, 09:00 — 18:00',
+      email: 'Email',
+      emailVal: 'hello@pezeshk-afzar.com',
+    },
+    form: {
+      section: 'Write us a note',
+      name: 'Your name',
+      namePh: 'What should we call you?',
+      email: 'Your email',
+      emailPh: 'you@hospital.com',
+      phone: 'Phone number',
+      phonePh: 'Optional — +98 21 …',
+      subject: 'What’s it about?',
+      subjectPh: 'A chat, a project, a partnership…',
+      message: 'Your message',
+      messagePh: 'Tell us what’s on your mind.',
+      submit: 'Send it our way',
+      sending: 'On its way…',
+    },
+    success: {
+      title: 'Got it — thank you!',
+      body: 'A real person from our team will write back within two working days.',
+      again: 'Send another note',
+    },
+    errors: {
+      required: 'We’ll need this one.',
+      email: 'That email doesn’t look quite right.',
+      minMessage: 'A few more words would help — at least 20 characters.',
+      summary: 'Almost there — a couple of fields need a look.',
+    },
+  },
+}

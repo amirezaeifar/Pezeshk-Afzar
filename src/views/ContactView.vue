@@ -60,19 +60,18 @@ const reset = () => {
   <main class="view contact">
     <div class="contact-inner">
       <header class="head">
-        <div class="head-aside">
-          <span class="eyebrow rise stagger-1">{{ t('contact.eyebrow') }}</span>
-        </div>
-        <div class="head-main">
-          <h1 class="head-title">
-            <span class="head-line rise stagger-2">{{ t('contact.titleA') }}</span>
-            <span class="head-line rise stagger-3"><em>{{ t('contact.titleB') }}</em></span>
-          </h1>
-        </div>
+        <span class="eyebrow cine-focus" style="animation-delay: 0.1s">{{ t('contact.eyebrow') }}</span>
+        <h1 class="head-title">
+          <span class="cine-mask"><span class="cine-lift" style="animation-delay: 0.25s">{{ t('contact.titleA') }}</span></span>
+          <span class="cine-mask"><span class="cine-lift" style="animation-delay: 0.4s"><em class="text-fire">{{ t('contact.titleB') }}</em></span></span>
+        </h1>
       </header>
 
       <div class="layout">
-        <aside class="meta rise stagger-4">
+        <!-- The invitation — a deep green frame with a rising sun -->
+        <aside class="meta cine-focus" style="animation-delay: 0.55s">
+          <span class="meta-sun breathe" aria-hidden="true"></span>
+
           <p class="intro">{{ t('contact.intro') }}</p>
           <dl class="meta-list">
             <div class="meta-item">
@@ -86,7 +85,7 @@ const reset = () => {
             <div class="meta-item">
               <dt>{{ t('contact.meta.email') }}</dt>
               <dd>
-                <a :href="`mailto:${t('contact.meta.emailVal')}`" class="link-underline">
+                <a :href="`mailto:${t('contact.meta.emailVal')}`" class="meta-mail">
                   {{ t('contact.meta.emailVal') }}
                 </a>
               </dd>
@@ -94,7 +93,8 @@ const reset = () => {
           </dl>
         </aside>
 
-        <section class="panel rise stagger-5">
+        <!-- The note — warm paper, ember accents -->
+        <section class="panel cine-focus" style="animation-delay: 0.7s">
           <transition name="swap" mode="out-in">
             <div v-if="submitted" key="success" class="success">
               <span class="success-mark" aria-hidden="true">
@@ -113,7 +113,7 @@ const reset = () => {
 
             <form v-else key="form" class="form" novalidate @submit.prevent="handleSubmit">
               <div class="form-section-label">
-                <span class="hairline"></span>
+                <span class="label-bar" aria-hidden="true"></span>
                 <span>{{ t('contact.form.section') }}</span>
               </div>
 
@@ -179,7 +179,7 @@ const reset = () => {
               </div>
 
               <div class="actions">
-                <button type="submit" class="btn-ink" :disabled="submitting">
+                <button type="submit" class="btn-ink pulse-cta" :disabled="submitting">
                   <span>{{ submitting ? t('contact.form.sending') : t('contact.form.submit') }}</span>
                   <span class="arrow">→</span>
                 </button>
@@ -193,126 +193,137 @@ const reset = () => {
 </template>
 
 <style scoped>
-.contact { padding: 11rem 2.5rem 6rem; position: relative; }
+.contact { padding: 10.5rem 2.5rem 6rem; position: relative; }
 
-.contact::before {
-  content: ''; position: absolute; top: 10rem; left: 8%;
-  width: 320px; height: 320px;
-  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
-  opacity: 0.45; filter: blur(70px);
-  pointer-events: none; z-index: 0;
-}
-
-html[dir='rtl'] .contact::before { left: auto; right: 8%; }
-
-.contact-inner { max-width: 1440px; margin: 0 auto; position: relative; z-index: 1; }
+.contact-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
 
 .head {
-  display: grid; grid-template-columns: 1fr 6fr; gap: 2rem 3rem;
-  margin-bottom: 5rem; padding-bottom: 3rem;
-  border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 4.5rem;
 }
 
-.head-aside { padding-top: 1rem; }
-
 .head-title {
-  font-family: 'Manrope', sans-serif;
-  font-size: clamp(2.75rem, 7.5vw, 7rem);
-  line-height: 0.98; font-weight: 600;
-  letter-spacing: -0.035em; margin: 0; color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 7.5vw, 6.5rem);
+  line-height: 1; font-weight: 550;
+  letter-spacing: var(--track-display); margin: 0; color: var(--ink);
 }
 
 html[lang='fa'] .head-title {
-  font-family: 'FarsiFont', sans-serif;
   font-size: clamp(2.25rem, 6vw, 5rem);
-  line-height: 1.2; font-weight: 700;
+  line-height: 1.25; font-weight: 800;
 }
 
-.head-line { display: block; }
-.head-line em { font-style: normal; color: var(--accent); font-weight: 500; }
-html[lang='fa'] .head-line em { font-weight: 600; }
+.head-title em { font-style: italic; }
+html[lang='fa'] .head-title em { font-style: normal; }
 
+/* The two frames overlap slightly — invitation under, note above */
 .layout {
-  display: grid; grid-template-columns: 1fr 1.5fr;
-  gap: 5rem; align-items: start;
+  display: grid; grid-template-columns: 1fr 1.4fr;
+  gap: 0;
+  align-items: stretch;
 }
 
+/* ── The invitation — the page's one molten frame ────── */
 .meta {
-  display: flex; flex-direction: column; gap: 2.5rem; padding-top: 0.25rem;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 2.5rem;
+  padding: 3.25rem 3.5rem 3.25rem 3rem;
+  background: var(--grad-orange-deep);
+  background-size: 220% 100%;
+  animation: gradientShift 14s ease-in-out infinite;
+  border-radius: var(--radius-panel) 0 0 var(--radius-panel);
+  color: #001B00;
+  box-shadow: var(--glow-fire);
+}
+
+html[dir='rtl'] .meta { border-radius: 0 var(--radius-panel) var(--radius-panel) 0; }
+
+/* Heat shimmer pooling in the corner */
+.meta-sun {
+  position: absolute;
+  width: 380px; height: 380px;
+  bottom: -220px; inset-inline-start: -140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 245, 229, 0.5) 0%, rgba(245, 245, 229, 0) 70%);
+  pointer-events: none;
 }
 
 .intro {
-  font-size: 1.0625rem; line-height: 1.6;
-  color: var(--ink-soft); margin: 0; max-width: 38ch;
+  position: relative;
+  font-size: 1.0625rem; line-height: 1.75;
+  color: rgba(0, 27, 0, 0.82); margin: 0; max-width: 38ch;
+  font-weight: 500;
 }
 
-.meta-list { display: flex; flex-direction: column; gap: 1.5rem; margin: 0; }
+.meta-list {
+  position: relative;
+  display: flex; flex-direction: column; gap: 1.5rem; margin: 0;
+}
 
 .meta-item {
   display: flex; flex-direction: column; gap: 0.375rem;
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(0, 27, 0, 0.22);
 }
 
 .meta-item dt {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.6875rem; font-weight: 600;
-  letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--muted);
+  font-size: 0.8125rem; font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(0, 27, 0, 0.6);
 }
 
-html[lang='fa'] .meta-item dt {
-  font-family: 'FarsiFont', sans-serif;
-  letter-spacing: 0.03em; text-transform: none; font-size: 0.8125rem;
-}
+html[lang='fa'] .meta-item dt { letter-spacing: 0; }
 
 .meta-item dd {
-  font-size: 1rem; color: var(--ink); margin: 0; font-weight: 500;
+  font-size: 1.0313rem; color: #001B00; margin: 0; font-weight: 700;
 }
 
+.meta-mail {
+  color: #001B00; text-decoration: none;
+  border-bottom: 2px solid rgba(0, 27, 0, 0.4);
+  padding-bottom: 2px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.meta-mail:hover { color: #F5F5E5; border-color: #F5F5E5; }
+
+/* ── The note — clean white paper ────────────────────── */
 .panel {
-  background: var(--paper);
-  border: 1px solid var(--line); border-radius: 4px;
-  padding: 3rem;
   position: relative;
+  background: #FCFCF2;
+  border: 1px solid var(--line);
+  border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
+  padding: 3.25rem 3.5rem;
+  box-shadow: var(--shadow-lift);
 }
 
-.panel::before, .panel::after {
-  content: ''; position: absolute;
-  width: 12px; height: 12px;
-  background: var(--accent); border-radius: 50%;
-}
-.panel::before { top: -6px; left: -6px; }
-.panel::after { bottom: -6px; right: -6px; }
+html[dir='rtl'] .panel { border-radius: var(--radius-panel) 0 0 var(--radius-panel); }
 
-html[dir='rtl'] .panel::before { left: auto; right: -6px; }
-html[dir='rtl'] .panel::after { right: auto; left: -6px; }
-
-.form { display: flex; flex-direction: column; gap: 1.5rem; }
+.form { display: flex; flex-direction: column; gap: 1.625rem; }
 
 .form-section-label {
   display: flex; align-items: center; gap: 1rem;
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.6875rem; font-weight: 600;
-  letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 0.5rem;
+  font-size: 0.875rem; font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--coral-deep); margin-bottom: 0.5rem;
 }
 
-html[lang='fa'] .form-section-label {
-  font-family: 'FarsiFont', sans-serif;
-  letter-spacing: 0.03em; text-transform: none; font-size: 0.8125rem;
-}
+html[lang='fa'] .form-section-label { letter-spacing: 0; }
 
-.form-section-label .hairline {
-  flex: 0 0 32px; background: var(--accent); height: 1px;
+.label-bar {
+  flex: 0 0 36px; height: 4px; border-radius: 2px;
+  background: var(--grad-orange);
 }
 
 .alert {
-  padding: 0.875rem 1rem;
-  border: 1px solid var(--accent);
-  background: rgba(15, 118, 110, 0.06);
-  color: var(--accent);
-  font-size: 0.875rem; border-radius: 2px;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid var(--coral);
+  background: var(--warm-soft);
+  color: var(--coral-deep);
+  font-size: 0.875rem; font-weight: 600;
+  border-radius: 14px;
 }
 
 .field {
@@ -321,49 +332,47 @@ html[lang='fa'] .form-section-label {
 
 .field label {
   display: inline-flex; align-items: baseline; gap: 0.625rem;
-  font-size: 0.875rem; color: var(--ink); font-weight: 500;
+  font-size: 0.9063rem; color: var(--ink); font-weight: 600;
 }
 
 .lbl-num {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.6875rem; letter-spacing: 0.18em;
-  color: var(--muted); font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 0.8125rem; font-weight: 700;
+  color: var(--coral-deep);
 }
 
-html[lang='fa'] .lbl-num {
-  font-family: 'FarsiFont', sans-serif;
-  letter-spacing: 0; font-size: 0.75rem;
-}
-
-.req { color: var(--accent); font-weight: 600; }
+.req { color: var(--coral-deep); font-weight: 700; }
 
 .field input, .field textarea {
-  width: 100%; background: transparent;
-  border: none; border-bottom: 1px solid var(--line);
-  padding: 0.625rem 0;
+  width: 100%; background: rgba(245, 245, 229, 0.7);
+  border: none; border-bottom: 2px solid var(--coral-soft);
+  border-radius: 12px 12px 0 0;
+  padding: 0.875rem 1rem;
   font-family: inherit; font-size: 1rem;
   color: var(--ink); outline: none;
-  resize: vertical; border-radius: 0;
+  resize: vertical;
   -webkit-appearance: none; appearance: none;
-  transition: border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.3s ease;
+  transition: border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.4s ease;
 }
 
-.field textarea { min-height: 120px; }
+.field textarea { min-height: 130px; }
 
 .field input::placeholder, .field textarea::placeholder {
-  color: var(--muted); opacity: 0.6;
+  color: var(--muted); opacity: 0.7;
 }
 
 .field input:focus, .field textarea:focus {
-  border-bottom-color: var(--ink); padding-bottom: 0.875rem;
+  border-bottom-color: var(--coral);
+  background: rgba(245, 245, 229, 0.95);
 }
 
 .field.has-error input, .field.has-error textarea {
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--coral-deep);
 }
 
 .err {
-  font-size: 0.8125rem; color: var(--accent);
+  font-size: 0.8125rem; font-weight: 600; color: var(--coral-deep);
   animation: fadeUp 0.3s ease both;
 }
 
@@ -383,7 +392,9 @@ html[dir='rtl'] .actions { justify-content: flex-start; }
 }
 
 .success-mark {
-  display: inline-flex; color: var(--accent);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--grad-orange); color: #001B00;
   animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -393,20 +404,18 @@ html[dir='rtl'] .actions { justify-content: flex-start; }
 }
 
 .success-title {
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.625rem, 3vw, 2.125rem);
-  line-height: 1.2; font-weight: 600;
+  line-height: 1.15; font-weight: 550;
   color: var(--ink); margin: 0;
-  letter-spacing: -0.02em; max-width: 24ch;
+  letter-spacing: var(--track-display); max-width: 24ch;
 }
 
-html[lang='fa'] .success-title {
-  font-family: 'FarsiFont', sans-serif; font-weight: 700;
-}
+html[lang='fa'] .success-title { font-weight: 800; }
 
 .success-body {
   font-size: 1rem; color: var(--ink-soft);
-  line-height: 1.6; margin: 0; max-width: 40ch;
+  line-height: 1.7; margin: 0; max-width: 40ch;
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
@@ -418,14 +427,16 @@ html[lang='fa'] .success-title {
 
 @media (max-width: 1024px) {
   .contact { padding: 9rem 1.75rem 4rem; }
-  .layout { grid-template-columns: 1fr; gap: 3rem; }
-  .head { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 4rem; }
-  .panel { padding: 2rem; }
+  .layout { grid-template-columns: 1fr; }
+  .meta { border-radius: var(--radius-panel) var(--radius-panel) 0 0 !important; padding: 2.5rem 2.25rem; }
+  .panel { border-radius: 0 0 var(--radius-panel) var(--radius-panel) !important; padding: 2.5rem 2.25rem; }
+  .head { margin-bottom: 3.5rem; }
 }
 
 @media (max-width: 720px) {
   .contact { padding: 7.5rem 1.25rem 3rem; }
-  .panel { padding: 1.5rem; }
+  .meta { border-radius: var(--radius-card) var(--radius-card) 0 0 !important; padding: 2rem 1.5rem; }
+  .panel { border-radius: 0 0 var(--radius-card) var(--radius-card) !important; padding: 2rem 1.5rem; }
   .head { margin-bottom: 3rem; }
 }
 </style>

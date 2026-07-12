@@ -18,21 +18,45 @@ const socials = [
 <template>
   <footer class="foot">
     <div class="foot-inner">
+      <p class="foot-manifesto">{{ t('footer.manifesto') }}</p>
+
       <div class="cols">
         <div class="col col-brand">
           <RouterLink to="/" class="brand">
             <span class="brand-mark" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
-                <rect x="8.5" y="2" width="3" height="16" fill="currentColor"/>
-                <rect x="2" y="8.5" width="16" height="3" fill="currentColor"/>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2c.5 2 1.6 3.4 3 4.4l-1.2.6c1.4 1.2 3 1.9 4.9 2l-.9 1.4c1.2.6 2.6.9 4.2.8-1 1.7-2.5 2.9-4.5 3.5.2.7.6 1.3 1.1 1.8-1.7.5-3.4.4-5-.3l-.6 5.8h-2l-.6-5.8c-1.6.7-3.3.8-5 .3.5-.5.9-1.1 1.1-1.8-2-.6-3.5-1.8-4.5-3.5 1.6.1 3-.2 4.2-.8L5.3 9c1.9-.1 3.5-.8 4.9-2L9 6.4c1.4-1 2.5-2.4 3-4.4z"/>
               </svg>
             </span>
             <span class="brand-name">{{ t('brand') }}</span>
           </RouterLink>
-          <p class="brand-tagline">{{ t('footer.tagline') }}</p>
+          <p class="brand-desc">{{ t('footer.description') }}</p>
+
+          <div class="brand-mission">
+            <span class="brand-mission-label">{{ t('footer.missionLabel') }}</span>
+            <p class="brand-mission-text">{{ t('footer.mission') }}</p>
+          </div>
         </div>
 
-        <nav class="col col-links" aria-label="Footer navigation">
+        <nav class="col col-links" aria-label="What we make">
+          <h3 class="col-heading">{{ t('footer.columns.technologies') }}</h3>
+          <ul class="link-list">
+            <li><RouterLink to="/products#platforms" class="foot-link">{{ t('footer.links.platforms') }}</RouterLink></li>
+            <li><RouterLink to="/products#innovations" class="foot-link">{{ t('footer.links.innovations') }}</RouterLink></li>
+            <li><RouterLink to="/products#custom" class="foot-link">{{ t('footer.links.custom') }}</RouterLink></li>
+          </ul>
+        </nav>
+
+        <nav class="col col-links" aria-label="Company">
+          <h3 class="col-heading">{{ t('footer.columns.company') }}</h3>
+          <ul class="link-list">
+            <li><RouterLink to="/about" class="foot-link">{{ t('nav.about') }}</RouterLink></li>
+            <li><RouterLink to="/products" class="foot-link">{{ t('nav.products') }}</RouterLink></li>
+            <li><RouterLink to="/contact" class="foot-link">{{ t('footer.links.consultation') }}</RouterLink></li>
+          </ul>
+        </nav>
+
+        <nav class="col col-links" aria-label="Quick links">
           <h3 class="col-heading">{{ t('footer.columns.navigate') }}</h3>
           <ul class="link-list">
             <li><RouterLink to="/" class="foot-link">{{ t('nav.home') }}</RouterLink></li>
@@ -78,6 +102,8 @@ const socials = [
       <div class="bar">
         <p class="bar-rights">© {{ year }} {{ t('brand') }}. {{ t('footer.rights') }}</p>
 
+        <p class="bar-tagline">{{ t('footer.tagline') }}</p>
+
         <ul class="socials">
           <li v-for="s in socials" :key="s.key">
             <a :href="s.url" target="_blank" rel="noopener noreferrer" class="social"
@@ -102,69 +128,108 @@ const socials = [
 </template>
 
 <style scoped>
+/* The footer is one completely solid slab of deep green #002900.
+   Strict rule: no glows, no halos, no gradient bleed of any kind —
+   the ground the site stands on is plain, quiet earth. */
 .foot {
   margin-top: auto;
-  background: var(--ink);
-  color: var(--paper);
-  padding: 5rem 2.5rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+  z-index: 1;
+  background: #002900;
+  color: #F5F5E5;
+  padding: 4.5rem 2.5rem 1.75rem;
 }
 
-.foot-inner { max-width: 1440px; margin: 0 auto; }
+.foot-inner { max-width: 1280px; margin: 0 auto; position: relative; }
+
+/* One warm sentence before the columns — the footer opens like a chapter */
+.foot-manifesto {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+  font-weight: 550;
+  letter-spacing: var(--track-display);
+  line-height: 1.25;
+  color: #F5F5E5;
+  margin: 0 0 3rem;
+  max-width: 26ch;
+}
+
+html[lang='fa'] .foot-manifesto { font-weight: 700; line-height: 1.5; }
 
 .cols {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1.4fr;
-  gap: 4rem;
-  padding-bottom: 3.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  grid-template-columns: 1.9fr 1fr 1fr 1fr 1.3fr;
+  gap: 3.5rem;
+  padding-bottom: 2.75rem;
+  border-bottom: 1px solid rgba(245, 245, 229, 0.18);
 }
 
 .col { display: flex; flex-direction: column; gap: 1.25rem; }
+.col-brand { gap: 1.5rem; padding-inline-end: 1.5rem; }
 
 .brand {
   display: inline-flex; align-items: center; gap: 0.625rem;
-  text-decoration: none; color: var(--paper);
+  text-decoration: none; color: #F5F5E5;
 }
 
 .brand-mark {
   display: inline-flex; align-items: center; justify-content: center;
-  color: var(--accent); line-height: 1;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(245, 245, 229, 0.14);
+  color: var(--sand);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease;
+}
+
+.brand:hover .brand-mark {
+  transform: rotate(-10deg) scale(1.08);
+  background: rgba(245, 245, 229, 0.24);
 }
 
 .brand-name {
-  font-family: 'Manrope', sans-serif;
-  font-size: 1.125rem; font-weight: 600;
-  letter-spacing: -0.005em; color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 1.25rem; font-weight: 600;
+  letter-spacing: -0.005em; color: #F5F5E5;
 }
 
-html[lang='fa'] .brand-name {
-  font-family: 'FarsiFont', sans-serif; font-weight: 700; font-size: 1.1875rem;
+html[lang='fa'] .brand-name { font-weight: 700; }
+
+.brand-desc {
+  font-size: 0.9375rem; line-height: 1.75;
+  color: rgba(245, 245, 229, 0.72);
+  max-width: 40ch; margin: 0;
 }
 
-.brand-tagline {
-  font-size: 0.9375rem; line-height: 1.6;
-  color: rgba(246, 247, 248, 0.62);
-  max-width: 32ch; margin: 0.25rem 0 0;
+.brand-mission {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  padding: 1.25rem 1.375rem;
+  background: rgba(0, 27, 0, 0.6);
+  border-radius: 20px;
+  max-width: 42ch;
+}
+
+.brand-mission-label {
+  font-family: var(--font-body);
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--orange);
+}
+
+html[lang='fa'] .brand-mission-label { letter-spacing: 0; font-size: 0.8125rem; }
+
+.brand-mission-text {
+  font-size: 0.9375rem; line-height: 1.7;
+  color: rgba(245, 245, 229, 0.88); margin: 0;
 }
 
 .col-heading {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.6875rem; font-weight: 600;
-  letter-spacing: 0.22em; text-transform: uppercase;
-  color: rgba(246, 247, 248, 0.5);
-  margin: 0 0 0.5rem; position: relative; padding-bottom: 0.875rem;
+  font-family: var(--font-display);
+  font-size: 1.0625rem; font-weight: 600;
+  letter-spacing: 0;
+  color: #F5F5E5;
+  margin: 0 0 0.375rem;
 }
 
-.col-heading::after {
-  content: ''; position: absolute; bottom: 0; inset-inline-start: 0;
-  width: 28px; height: 1px; background: var(--accent);
-}
-
-html[lang='fa'] .col-heading {
-  font-family: 'FarsiFont', sans-serif;
-  letter-spacing: 0.05em; text-transform: none; font-size: 0.8125rem;
-}
+html[lang='fa'] .col-heading { font-weight: 700; }
 
 .link-list {
   list-style: none; padding: 0; margin: 0;
@@ -172,7 +237,7 @@ html[lang='fa'] .col-heading {
 }
 
 .foot-link {
-  color: rgba(246, 247, 248, 0.72);
+  color: rgba(245, 245, 229, 0.75);
   text-decoration: none;
   font-size: 0.9375rem; font-weight: 400;
   transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -180,12 +245,13 @@ html[lang='fa'] .col-heading {
 }
 
 .foot-link::before {
-  content: ''; display: inline-block; width: 0; height: 1px;
-  background: var(--accent);
+  content: ''; display: inline-block; width: 0; height: 2px;
+  border-radius: 2px;
+  background: var(--orange);
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.foot-link:hover { color: var(--paper); }
+.foot-link:hover { color: #FFC8A8; }
 .foot-link:hover::before { width: 14px; }
 
 .contact-list {
@@ -196,46 +262,52 @@ html[lang='fa'] .col-heading {
 .contact-item {
   display: flex; align-items: flex-start; gap: 0.75rem;
   font-size: 0.9375rem; line-height: 1.5;
-  color: rgba(246, 247, 248, 0.72);
+  color: rgba(245, 245, 229, 0.75);
 }
 
 .ci-icon {
   flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px; border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--accent);
-  transition: background 0.4s ease;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(245, 245, 229, 0.12);
+  color: var(--sand);
+  transition: background 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin-top: 1px;
 }
 
-.contact-item:hover .ci-icon { background: rgba(15, 118, 110, 0.18); }
+.contact-item:hover .ci-icon {
+  background: rgba(245, 245, 229, 0.24);
+  transform: scale(1.08);
+}
 
 .ci-link {
-  color: rgba(246, 247, 248, 0.85);
+  color: rgba(245, 245, 229, 0.88);
   text-decoration: none;
   transition: color 0.3s ease;
   font-variant-numeric: tabular-nums;
 }
 
-.ci-link:hover { color: var(--paper); }
-.ci-text { color: rgba(246, 247, 248, 0.72); }
+.ci-link:hover { color: #FFC8A8; }
+.ci-text { color: rgba(245, 245, 229, 0.75); }
 
 .bar {
   display: flex; justify-content: space-between; align-items: center;
-  padding-top: 2rem; gap: 1.5rem;
+  padding-top: 1.5rem; gap: 1.5rem; flex-wrap: wrap;
 }
 
 .bar-rights {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em;
-  color: rgba(246, 247, 248, 0.5); margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8125rem; font-weight: 500;
+  color: rgba(245, 245, 229, 0.6); margin: 0;
 }
 
-html[lang='fa'] .bar-rights {
-  font-family: 'FarsiFont', sans-serif;
-  letter-spacing: 0; font-size: 0.8125rem;
+.bar-tagline {
+  font-family: var(--font-display);
+  font-size: 0.9375rem; font-style: italic;
+  color: rgba(255, 200, 168, 0.9); margin: 0;
 }
+
+html[lang='fa'] .bar-tagline { font-style: normal; }
 
 .socials {
   list-style: none; padding: 0; margin: 0;
@@ -244,35 +316,40 @@ html[lang='fa'] .bar-rights {
 
 .social {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(246, 247, 248, 0.72);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(245, 245, 229, 0.1);
+  border: 1px solid rgba(245, 245, 229, 0.2);
+  color: rgba(245, 245, 229, 0.85);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
               background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 }
 
 .social:hover {
-  transform: scale(1.08) translateY(-1px);
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--paper);
+  transform: scale(1.1) translateY(-2px);
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #002900;
 }
 
 @media (max-width: 1024px) {
-  .foot { padding: 4rem 1.75rem 1.5rem; }
-  .cols { grid-template-columns: 1fr 1fr; gap: 3rem; padding-bottom: 2.5rem; }
-  .col-brand { grid-column: 1 / -1; }
+  .foot { padding: 3.5rem 1.75rem 1.5rem; }
+  .cols {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 3rem; padding-bottom: 2.25rem;
+  }
+  .col-brand { grid-column: 1 / -1; padding-inline-end: 0; }
+  .brand-desc, .brand-mission { max-width: 56ch; }
 }
 
 @media (max-width: 640px) {
-  .foot { padding: 3rem 1.25rem 1.25rem; }
+  .foot { padding: 2.75rem 1.25rem 1.25rem; }
+  .foot-manifesto { margin-bottom: 2.25rem; }
   .cols { grid-template-columns: 1fr; gap: 2.5rem; text-align: center; }
   .col { align-items: center; }
-  .col-heading::after { left: 50%; inset-inline-start: auto; transform: translateX(-50%); }
-  .brand-tagline { text-align: center; }
+  .brand-desc { text-align: center; }
+  .brand-mission { align-items: center; text-align: center; }
   .link-list, .contact-list { align-items: center; }
   .contact-item { justify-content: center; }
-  .bar { flex-direction: column; text-align: center; gap: 1.25rem; padding-top: 1.75rem; }
+  .bar { flex-direction: column; text-align: center; gap: 1rem; padding-top: 1.75rem; }
 }
 </style>

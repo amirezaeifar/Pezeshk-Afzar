@@ -5,8 +5,10 @@ const router = createRouter({
   routes: [
     { path: '/', name: 'Home', component: () => import('../views/HomeView.vue') },
     { path: '/products', name: 'Products', component: () => import('../views/ProductsView.vue') },
+    { path: '/products/:id', name: 'ProductDetail', component: () => import('../views/ProductDetailView.vue'), props: true },
     { path: '/about', name: 'About', component: () => import('../views/AboutView.vue') },
     { path: '/contact', name: 'Contact', component: () => import('../views/ContactView.vue') },
+    { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition

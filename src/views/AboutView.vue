@@ -1,80 +1,163 @@
 <script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
+import { team, teamGroups } from '../data/team.js'
+import { localize } from '../utils/localized.js'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
-const memberKeys = ['m1', 'm2', 'm3', 'm4']
 const certKeys = ['c1', 'c2', 'c3', 'c4']
-const statKeys = ['one', 'two', 'three', 'four']
+const valueKeys = ['mission', 'innovation', 'trust', 'impact']
+
+// The family, gathered in three circles around the same table.
+const groupedTeam = teamGroups.map((key) => ({
+  key,
+  members: team.filter((m) => m.group === key),
+}))
+
+/* Scroll reveals */
+const root = ref(null)
+const reducedMotion =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+let observer = null
+onMounted(() => {
+  if (reducedMotion) return
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+          observer.unobserve(entry.target)
+        }
+      })
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+  )
+  root.value?.querySelectorAll('.reveal, .reveal-side').forEach((el) => observer.observe(el))
+})
+onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <template>
-  <main class="view about">
+  <main ref="root" class="view about">
     <div class="about-inner">
+      <!-- The welcome — like stepping into a warm kitchen -->
       <header class="head">
-        <div class="head-aside">
-          <span class="eyebrow rise stagger-1">{{ t('about.eyebrow') }}</span>
-        </div>
-        <div class="head-main">
-          <h1 class="head-title">
-            <span class="head-line rise stagger-2">{{ t('about.titleA') }}</span>
-            <span class="head-line rise stagger-3"><em>{{ t('about.titleB') }}</em></span>
-          </h1>
-          <p class="head-lead rise stagger-4">{{ t('about.lead') }}</p>
-        </div>
+        <span class="eyebrow cine-focus" style="animation-delay: 0.1s">{{ t('about.eyebrow') }}</span>
+        <h1 class="head-title">
+          <span class="cine-mask"><span class="cine-lift" style="animation-delay: 0.25s">{{ t('about.titleA') }}</span></span>
+          <span class="cine-mask"><span class="cine-lift" style="animation-delay: 0.4s"><em class="text-fire">{{ t('about.titleB') }}</em></span></span>
+        </h1>
+        <p class="head-lead cine-focus" style="animation-delay: 0.65s">{{ t('about.lead') }}</p>
       </header>
 
-      <section class="prose">
-        <div class="prose-block rise stagger-5">
-          <span class="prose-no">01</span>
-          <h2 class="prose-title">{{ t('about.missionTitle') }}</h2>
-          <p class="prose-body">{{ t('about.missionBody') }}</p>
-        </div>
-        <div class="prose-block rise stagger-6">
-          <span class="prose-no">02</span>
-          <h2 class="prose-title">{{ t('about.storyTitle') }}</h2>
-          <p class="prose-body">{{ t('about.storyBody') }}</p>
-        </div>
-      </section>
-
-      <section class="stats">
-        <div v-for="(k, i) in statKeys" :key="k" class="stat rise"
-             :style="{ animationDelay: `${0.1 + i * 0.08}s` }">
-          <span class="stat-value">{{ t(`stats.${k}.value`) }}</span>
-          <span class="stat-label">{{ t(`stats.${k}.label`) }}</span>
+      <!-- What we believe — one warm sentence, spoken across the table -->
+      <section class="belief reveal">
+        <span class="belief-breeze" aria-hidden="true"></span>
+        <span class="belief-quote" aria-hidden="true">“</span>
+        <div class="belief-inner">
+          <span class="eyebrow">{{ t('about.philosophyEyebrow') }}</span>
+          <h2 class="belief-statement">{{ t('about.philosophyBody') }}</h2>
+          <span class="belief-heart" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21C7 17 3 13.6 3 9.5 3 6.4 5.4 4 8.5 4c1.7 0 3 .8 3.5 1.5C12.5 4.8 13.8 4 15.5 4 18.6 4 21 6.4 21 9.5c0 4.1-4 7.5-9 11.5z" />
+            </svg>
+          </span>
         </div>
       </section>
 
-      <section class="team">
-        <header class="team-head">
-          <span class="eyebrow fade-in">{{ t('about.teamEyebrow') }}</span>
-          <h2 class="team-title fade-in">{{ t('about.teamTitle') }}</h2>
+      <!-- Two notes pinned to the family fridge -->
+      <section class="notes">
+        <article class="note note-a reveal">
+          <span class="note-tape" aria-hidden="true"></span>
+          <h2 class="note-title">{{ t('about.missionTitle') }}</h2>
+          <p class="note-body">{{ t('about.missionBody') }}</p>
+        </article>
+        <article class="note note-b reveal" style="transition-delay: 0.12s">
+          <span class="note-tape" aria-hidden="true"></span>
+          <h2 class="note-title">{{ t('about.storyTitle') }}</h2>
+          <p class="note-body">{{ t('about.storyBody') }}</p>
+        </article>
+      </section>
+
+      <!-- The house rules -->
+      <section class="values">
+        <header class="values-head reveal">
+          <span class="eyebrow">{{ t('about.valuesEyebrow') }}</span>
+          <h2 class="values-title">{{ t('about.valuesTitle') }}</h2>
         </header>
 
-        <div class="team-grid">
-          <article v-for="(k, i) in memberKeys" :key="k" class="member rise"
-                   :style="{ animationDelay: `${0.15 + i * 0.08}s` }">
-            <div class="member-avatar">
-              <span class="member-initial">{{ t(`about.members.${k}.name`).slice(0, 1) }}</span>
-            </div>
-            <div class="member-info">
-              <h3 class="member-name">{{ t(`about.members.${k}.name`) }}</h3>
-              <p class="member-role">{{ t(`about.members.${k}.role`) }}</p>
-            </div>
+        <div class="values-grid">
+          <article v-for="(k, i) in valueKeys" :key="k" class="value reveal"
+                   :class="`value-${i}`"
+                   :style="{ transitionDelay: `${0.08 + i * 0.08}s` }">
+            <span class="value-icon" aria-hidden="true">
+              <svg v-if="k === 'mission'" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /><circle cx="12" cy="12" r="0.5" fill="currentColor" />
+              </svg>
+              <svg v-else-if="k === 'innovation'" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6M10 21h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0 0 12 2Z" />
+              </svg>
+              <svg v-else-if="k === 'trust'" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" /><path d="M9 12l2 2 4-4" />
+              </svg>
+              <svg v-else width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12h4l2 5 4-10 2 5h6" />
+              </svg>
+            </span>
+            <h3 class="value-title">{{ t(`about.values.${k}.title`) }}</h3>
+            <p class="value-body">{{ t(`about.values.${k}.body`) }}</p>
           </article>
         </div>
       </section>
 
-      <section class="certs">
+      <!-- The family album -->
+      <section class="team">
+        <header class="team-head reveal">
+          <span class="eyebrow">{{ t('about.teamEyebrow') }}</span>
+          <h2 class="team-title">{{ t('about.teamTitle') }}</h2>
+        </header>
+
+        <div class="team-groups">
+          <div v-for="grp in groupedTeam" :key="grp.key" class="team-group">
+            <h3 class="team-group-title reveal">
+              <span class="group-line" aria-hidden="true"></span>
+              <span class="group-label">{{ t(`about.teamGroups.${grp.key}`) }}</span>
+              <span class="group-line" aria-hidden="true"></span>
+            </h3>
+
+            <div class="team-grid">
+              <article v-for="(m, i) in grp.members" :key="m.id" class="member reveal"
+                       :style="{ transitionDelay: `${0.06 + i * 0.05}s` }">
+                <span class="member-avatar" aria-hidden="true">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6" />
+                  </svg>
+                </span>
+                <div class="member-info">
+                  <h4 class="member-name">{{ localize(m.name, locale) }}</h4>
+                  <p v-if="localize(m.position, locale)" class="member-role">{{ localize(m.position, locale) }}</p>
+                  <p v-if="localize(m.education, locale)" class="member-degree">{{ localize(m.education, locale) }}</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The serious bits — a solid home under the warmth -->
+      <section class="certs reveal">
         <header class="certs-head">
-          <span class="eyebrow fade-in">{{ t('about.certEyebrow') }}</span>
-          <h2 class="certs-title fade-in">{{ t('about.certTitle') }}</h2>
+          <span class="eyebrow">{{ t('about.certEyebrow') }}</span>
+          <h2 class="certs-title">{{ t('about.certTitle') }}</h2>
         </header>
 
         <ul class="certs-list">
-          <li v-for="(k, i) in certKeys" :key="k" class="cert rise"
-              :style="{ animationDelay: `${0.1 + i * 0.06}s` }">
+          <li v-for="k in certKeys" :key="k" class="cert">
             <span class="cert-tick" aria-hidden="true">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/>
@@ -85,8 +168,8 @@ const statKeys = ['one', 'two', 'three', 'four']
         </ul>
       </section>
 
-      <section class="cta-block">
-        <RouterLink to="/contact" class="btn-ink">
+      <section class="cta-block reveal">
+        <RouterLink to="/contact" class="btn-ink pulse-cta">
           {{ t('hero.ctaSecondary') }}
           <span class="arrow">→</span>
         </RouterLink>
@@ -96,247 +179,399 @@ const statKeys = ['one', 'two', 'three', 'four']
 </template>
 
 <style scoped>
-.about { padding: 11rem 2.5rem 6rem; position: relative; }
+.about { padding: 10.5rem 2.5rem 6rem; position: relative; }
 
-.about::before {
-  content: ''; position: absolute; top: 10rem; left: 8%;
-  width: 340px; height: 340px;
-  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
-  opacity: 0.4; filter: blur(80px);
-  pointer-events: none; z-index: 0;
-}
+.about-inner { max-width: 1080px; margin: 0 auto; position: relative; z-index: 1; }
 
-html[dir='rtl'] .about::before { left: auto; right: 8%; }
-
-.about-inner { max-width: 1440px; margin: 0 auto; position: relative; z-index: 1; }
-
+/* ── The welcome — centered, like a hand-written invitation ── */
 .head {
-  display: grid; grid-template-columns: 1fr 6fr; gap: 2rem 3rem;
-  margin-bottom: 6rem; padding-bottom: 3rem;
-  border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  margin-bottom: 5.5rem;
 }
-
-.head-aside { padding-top: 1rem; }
 
 .head-title {
-  font-family: 'Manrope', sans-serif;
-  font-size: clamp(3rem, 8vw, 7.5rem);
-  line-height: 0.98; font-weight: 600;
-  letter-spacing: -0.035em; margin: 0; color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 7vw, 5.75rem);
+  line-height: 1.02; font-weight: 550;
+  letter-spacing: var(--track-display); margin: 0; color: var(--ink);
 }
 
 html[lang='fa'] .head-title {
-  font-family: 'FarsiFont', sans-serif;
-  font-size: clamp(2.5rem, 6.5vw, 5.5rem);
-  line-height: 1.2; font-weight: 700;
+  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  line-height: 1.25; font-weight: 800;
 }
 
-.head-line { display: block; }
-.head-line em { font-style: normal; color: var(--accent); font-weight: 500; }
-html[lang='fa'] .head-line em { font-weight: 600; }
+.head-title em { font-style: italic; }
+html[lang='fa'] .head-title em { font-style: normal; }
 
 .head-lead {
-  font-size: 1.125rem; line-height: 1.6;
-  color: var(--ink-soft); max-width: 60ch; margin: 2rem 0 0;
+  font-size: 1.125rem; line-height: 1.85;
+  color: var(--ink-soft); max-width: 62ch; margin: 0;
 }
 
-.prose {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
-  margin-bottom: 6rem;
+/* ── What we believe — the sentence over dinner ──────── */
+.belief {
+  position: relative; overflow: hidden;
+  background: #FCFCF2;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  padding: 4rem 4.5rem;
+  margin-bottom: 5.5rem;
+  box-shadow: 0 30px 70px -52px rgba(229, 100, 42, 0.4);
 }
 
-.prose-block { display: flex; flex-direction: column; gap: 1rem; }
-
-.prose-no {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.75rem; font-weight: 600;
-  letter-spacing: 0.2em; color: var(--accent);
+/* The breeze pooling softly in the corner — #8FBF8F, quiet */
+.belief-breeze {
+  position: absolute;
+  width: 420px; height: 420px;
+  bottom: -220px; inset-inline-end: -140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(143, 191, 143, 0.3) 0%, rgba(143, 191, 143, 0) 70%);
+  pointer-events: none;
 }
 
-.prose-title {
-  font-family: 'Manrope', sans-serif;
-  font-size: 1.5rem; font-weight: 600;
-  letter-spacing: -0.015em; color: var(--ink); margin: 0;
+.belief-quote {
+  position: absolute;
+  top: 0.5rem; inset-inline-start: 2rem;
+  font-family: var(--font-display);
+  font-size: 9rem; line-height: 1;
+  background-image: var(--grad-text-fire);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
-html[lang='fa'] .prose-title {
-  font-family: 'FarsiFont', sans-serif; font-weight: 700;
+.belief-inner {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+  gap: 1.75rem;
 }
 
-.prose-body {
-  font-size: 1rem; line-height: 1.7;
+.belief-statement {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.9vw, 2.25rem);
+  line-height: 1.4; font-weight: 500;
+  letter-spacing: var(--track-display);
+  color: var(--ink); margin: 0; max-width: 30ch;
+}
+
+html[lang='fa'] .belief-statement { font-weight: 700; line-height: 1.7; }
+
+.belief-heart {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--grad-orange); color: #001B00;
+  animation: breathe 5s ease-in-out infinite;
+}
+
+/* ── Two notes on the fridge ─────────────────────────── */
+.notes {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 6.5rem;
+  align-items: start;
+}
+
+.note {
+  position: relative;
+  display: flex; flex-direction: column; gap: 1.125rem;
+  padding: 3rem 2.5rem 2.75rem;
+  background: #FCFCF2;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-card);
+  transition-property: opacity, transform, box-shadow;
+}
+
+.note-a { transform: rotate(-1.4deg); }
+.note-b { transform: rotate(1.2deg) translateY(1.75rem); }
+
+.note-a.is-visible { transform: rotate(-1.4deg); }
+.note-b.is-visible { transform: rotate(1.2deg) translateY(1.75rem); }
+
+.note:hover {
+  transform: rotate(0deg) translateY(-4px) !important;
+  box-shadow: var(--glow-warm);
+}
+
+/* The tape holding each note up */
+.note-tape {
+  position: absolute;
+  top: -14px; left: 50%;
+  width: 96px; height: 28px;
+  margin-left: -48px;
+  background: rgba(255, 146, 92, 0.4);
+  border-radius: 3px;
+  transform: rotate(-2deg);
+}
+
+.note-b .note-tape { transform: rotate(2deg); }
+
+.note-title {
+  font-family: var(--font-display);
+  font-size: 1.625rem; font-weight: 600;
+  letter-spacing: var(--track-display); color: var(--ink); margin: 0;
+}
+
+html[lang='fa'] .note-title { font-weight: 800; }
+
+.note-body {
+  font-size: 1rem; line-height: 1.85;
   color: var(--ink-soft); margin: 0;
 }
 
-.stats {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: 4px; overflow: hidden;
-  margin-bottom: 6rem;
+/* ── The house rules ─────────────────────────────────── */
+.values { margin-bottom: 6.5rem; }
+
+.values-head {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+  gap: 1.125rem; margin-bottom: 3rem;
 }
 
-.stat {
-  background: var(--paper); padding: 2rem 1.5rem;
-  display: flex; flex-direction: column; gap: 0.5rem;
+.values-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 3vw, 2.375rem);
+  line-height: 1.2; font-weight: 550;
+  letter-spacing: var(--track-display); color: var(--ink);
+  margin: 0; max-width: 26ch;
 }
 
-.stat-value {
-  font-family: 'Manrope', sans-serif;
-  font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 600;
-  letter-spacing: -0.02em; color: var(--ink);
+html[lang='fa'] .values-title { font-weight: 800; line-height: 1.45; }
+
+.values-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+  align-items: start;
 }
 
-html[lang='fa'] .stat-value {
-  font-family: 'FarsiFont', sans-serif; font-weight: 700;
+/* Small warm cards — white and the softest orange, leaning into
+   each other like people on a couch */
+.value {
+  display: flex; flex-direction: column; gap: 0.875rem;
+  padding: 2rem 1.75rem 2.25rem;
+  border-radius: var(--radius-card);
+  transition-property: opacity, transform, box-shadow;
 }
 
-.stat-label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.75rem; font-weight: 500;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--muted);
+.value-0 { background: var(--warm-soft); transform: rotate(-1deg); }
+.value-1 { background: #FCFCF2; border: 1px solid var(--line); transform: translateY(1.25rem); }
+.value-2 { background: var(--warm-soft); transform: rotate(0.8deg); }
+.value-3 { background: #FCFCF2; border: 1px solid var(--line); transform: translateY(1.25rem) rotate(-0.6deg); }
+
+.value-0.is-visible { transform: rotate(-1deg); }
+.value-1.is-visible { transform: translateY(1.25rem); }
+.value-2.is-visible { transform: rotate(0.8deg); }
+.value-3.is-visible { transform: translateY(1.25rem) rotate(-0.6deg); }
+
+.value:hover {
+  transform: rotate(0deg) translateY(-5px) !important;
+  box-shadow: var(--glow-warm);
 }
 
-html[lang='fa'] .stat-label {
-  font-family: 'FarsiFont', sans-serif;
-  letter-spacing: 0; text-transform: none; font-size: 0.875rem;
+.value-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--grad-orange); color: #001B00;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+.value:hover .value-icon { transform: scale(1.08) rotate(-5deg); }
+
+.value-title {
+  font-family: var(--font-display);
+  font-size: 1.1875rem; font-weight: 600;
+  color: var(--ink); margin: 0;
+}
+
+html[lang='fa'] .value-title { font-weight: 700; }
+
+.value-body {
+  font-size: 0.9063rem; line-height: 1.75;
+  color: var(--ink-soft); margin: 0;
+}
+
+/* ── The family album ────────────────────────────────── */
 .team { margin-bottom: 6rem; }
 
 .team-head {
-  display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+  gap: 1.125rem; margin-bottom: 3.25rem;
 }
 
 .team-title {
-  font-family: 'Manrope', sans-serif;
-  font-size: clamp(1.625rem, 3vw, 2.25rem);
-  line-height: 1.15; font-weight: 600;
-  letter-spacing: -0.02em; color: var(--ink);
-  margin: 0; max-width: 24ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  line-height: 1.2; font-weight: 550;
+  letter-spacing: var(--track-display); color: var(--ink);
+  margin: 0; max-width: 26ch;
 }
 
-html[lang='fa'] .team-title {
-  font-family: 'FarsiFont', sans-serif; font-weight: 700;
+html[lang='fa'] .team-title { font-weight: 800; line-height: 1.45; }
+
+.team-groups { display: flex; flex-direction: column; gap: 4rem; }
+
+/* Group label sits centered between two soft lines, like a
+   chapter divider in a photo album */
+.team-group-title {
+  display: flex; align-items: center; justify-content: center; gap: 1.25rem;
+  font-size: 1rem; font-weight: 700;
+  color: var(--coral-deep); margin: 0 0 2rem;
+}
+
+.group-line {
+  display: inline-block; flex: 0 1 90px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 146, 92, 0), var(--coral));
+}
+
+.group-line:last-child {
+  background: linear-gradient(90deg, var(--coral), rgba(255, 146, 92, 0));
 }
 
 .team-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem 1.5rem;
 }
 
-.member { display: flex; flex-direction: column; gap: 1rem; }
+/* Polaroids from the family album — each slightly askew,
+   straightening up when you pick it up */
+.member {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 1.125rem;
+  text-align: center;
+  padding: 2.25rem 1.75rem 2rem;
+  background: #FCFCF2;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-card);
+  transition-property: opacity, transform, box-shadow;
+}
+
+.member:nth-child(odd) { transform: rotate(-1.3deg); }
+.member:nth-child(even) { transform: rotate(1.1deg); }
+.member:nth-child(odd).is-visible { transform: rotate(-1.3deg); }
+.member:nth-child(even).is-visible { transform: rotate(1.1deg); }
+
+.member:hover {
+  transform: rotate(0deg) translateY(-6px) !important;
+  box-shadow: var(--glow-warm);
+}
 
 .member-avatar {
-  aspect-ratio: 1 / 1;
-  background: var(--cream-deep);
-  border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden;
-  transition: background 0.5s ease;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--warm-soft); color: var(--coral-deep);
+  border: 3px solid #FCFCF2;
+  outline: 2px solid var(--coral-soft);
+  flex-shrink: 0;
+  transition: background 0.5s ease, color 0.5s ease, outline-color 0.5s ease;
 }
 
-.member-avatar::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
-  height: 3px; background: var(--accent);
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+.member:hover .member-avatar {
+  background: var(--grad-orange); color: #001B00; outline-color: var(--coral);
 }
 
-html[dir='rtl'] .member-avatar::after { transform-origin: right; }
-
-.member:hover .member-avatar { background: var(--cream); }
-.member:hover .member-avatar::after { transform: scaleX(1); }
-
-.member-initial {
-  font-family: 'Manrope', sans-serif;
-  font-size: 3rem; font-weight: 500;
-  color: var(--ink); opacity: 0.25;
-}
-
-html[lang='fa'] .member-initial {
-  font-family: 'FarsiFont', sans-serif; font-weight: 700;
-}
-
-.member-info { display: flex; flex-direction: column; gap: 0.25rem; }
+.member-info { display: flex; flex-direction: column; gap: 0.375rem; align-items: center; }
 
 .member-name {
-  font-family: 'Manrope', sans-serif;
-  font-size: 1.0625rem; font-weight: 600;
-  color: var(--ink); margin: 0; letter-spacing: -0.005em;
+  font-family: var(--font-display);
+  font-size: 1.25rem; font-weight: 600;
+  color: var(--ink); margin: 0;
 }
 
-html[lang='fa'] .member-name {
-  font-family: 'FarsiFont', sans-serif; font-weight: 700;
-}
+html[lang='fa'] .member-name { font-weight: 800; }
 
 .member-role {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.8125rem; letter-spacing: 0.05em;
-  color: var(--muted); margin: 0;
+  font-size: 0.875rem; font-weight: 700;
+  color: var(--coral-deep); margin: 0;
 }
 
-html[lang='fa'] .member-role {
-  font-family: 'FarsiFont', sans-serif;
-  letter-spacing: 0; font-size: 0.875rem;
+.member-degree {
+  font-size: 0.875rem; line-height: 1.55;
+  color: var(--ink-soft); margin: 0.375rem 0 0;
+  padding-top: 0.625rem;
+  border-top: 2px solid var(--warm-soft);
 }
 
-.certs { margin-bottom: 5rem; }
+/* ── The serious bits ────────────────────────────────── */
+.certs {
+  margin-bottom: 4.5rem;
+  background: #FCFCF2;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  padding: 3.25rem 3rem;
+  box-shadow: 0 26px 60px -48px rgba(0, 41, 0, 0.35);
+}
 
 .certs-head {
-  display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;
+  display: flex; flex-direction: column; gap: 1.125rem; margin-bottom: 2.25rem;
+  align-items: center; text-align: center;
 }
 
 .certs-title {
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.5rem, 2.6vw, 2rem);
-  line-height: 1.2; font-weight: 600;
-  letter-spacing: -0.02em; color: var(--ink);
-  margin: 0; max-width: 28ch;
+  line-height: 1.25; font-weight: 550;
+  letter-spacing: var(--track-display); color: var(--ink);
+  margin: 0; max-width: 30ch;
 }
 
-html[lang='fa'] .certs-title {
-  font-family: 'FarsiFont', sans-serif; font-weight: 700;
-}
+html[lang='fa'] .certs-title { font-weight: 800; }
 
 .certs-list {
   list-style: none; margin: 0; padding: 0;
   display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem 2rem;
+  gap: 1rem 1.5rem;
 }
 
 .cert {
   display: flex; align-items: center; gap: 0.875rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.9375rem; color: var(--ink);
+  padding: 1rem 1.25rem;
+  background: var(--warm-soft);
+  border-radius: 16px;
+  font-size: 0.9375rem; font-weight: 600; color: var(--ink);
 }
 
 .cert-tick {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--accent); color: var(--paper);
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--grad-orange); color: #001B00;
   flex-shrink: 0;
 }
 
 .cta-block {
   display: flex; justify-content: center;
-  padding: 4rem 0 0;
-  border-top: 1px solid var(--line);
+  padding: 2rem 0 0;
 }
 
+/* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .about { padding: 9rem 1.75rem 4rem; }
-  .head { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 4rem; }
-  .prose { grid-template-columns: 1fr; gap: 3rem; margin-bottom: 4rem; }
-  .stats { grid-template-columns: repeat(2, 1fr); }
+  .about { padding: 9rem 1.75rem 4.5rem; }
+  .head { margin-bottom: 4rem; }
+  .belief { padding: 3rem 2rem; margin-bottom: 4.5rem; }
+  .belief-quote { font-size: 6rem; inset-inline-start: 1.25rem; }
+  .notes { grid-template-columns: 1fr; gap: 2.5rem; margin-bottom: 5rem; }
+  .note-b { transform: rotate(1.2deg); }
+  .note-b.is-visible { transform: rotate(1.2deg); }
+  .values { margin-bottom: 5rem; }
+  .values-grid { grid-template-columns: repeat(2, 1fr); }
+  .value-1, .value-3 { transform: none; }
+  .value-1.is-visible, .value-3.is-visible { transform: none; }
   .team-grid { grid-template-columns: repeat(2, 1fr); }
+  .certs { padding: 2.5rem 1.75rem; }
   .certs-list { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {
-  .about { padding: 7.5rem 1.25rem 3rem; }
-  .stats { grid-template-columns: 1fr; }
-  .team-grid { grid-template-columns: 1fr 1fr; }
+  .about { padding: 7.5rem 1.25rem 3.5rem; }
+  .belief { border-radius: var(--radius-card); }
+  .values-grid { grid-template-columns: 1fr; }
+  .value:nth-child(n) { transform: none; }
+  .team-grid { grid-template-columns: 1fr; }
+  .certs { border-radius: var(--radius-card); }
 }
 </style>
