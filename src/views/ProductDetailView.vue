@@ -1,7 +1,8 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
-import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import ProductIcon from '../components/ProductIcon.vue'
 import { getProductById } from '../data/products.js'
 import { localize } from '../utils/localized.js'
 
@@ -10,379 +11,1140 @@ const props = defineProps({
 })
 
 const { t, locale } = useI18n()
-
 const product = computed(() => getProductById(props.id))
 
-const features = computed(() => {
-  const p = product.value
-  if (!p) return []
-  return p.features[locale.value] ?? p.features.en ?? []
+const localizedList = (field) =>
+  computed(() => product.value?.[field]?.[locale.value] ?? product.value?.[field]?.en ?? [])
+
+const features = localizedList('features')
+const benefits = localizedList('benefits')
+const applications = localizedList('applications')
+const assurances = localizedList('certifications')
+const galleryAlt = localizedList('galleryAlt')
+
+const root = ref(null)
+const metricsEl = ref(null)
+const metricValues = ref([0, 0, 0])
+const metricTargets = computed(() => [
+  features.value.length,
+  applications.value.length,
+  assurances.value.length,
+])
+
+const userProfiles = {
+  'todays-mom': {
+    en: ['Expectant parents', 'Midwives & obstetric teams', 'Maternal-health programs'],
+    fa: ['والدین در انتظار فرزند', 'ماماها و تیم‌های زنان و زایمان', 'برنامه‌های سلامت مادر'],
+  },
+  skinapp: {
+    en: ['Dermatology teams', 'Primary-care clinicians', 'Teledermatology services'],
+    fa: ['تیم‌های پوست', 'پزشکان مراقبت اولیه', 'خدمات تله‌درماتولوژی'],
+  },
+  'ibd-care': {
+    en: ['People living with IBD', 'Gastroenterology teams', 'Coordinated-care programs'],
+    fa: ['افراد مبتلا به IBD', 'تیم‌های گوارش', 'برنامه‌های مراقبت هماهنگ'],
+  },
+  agingdrug: {
+    en: ['Clinical pharmacists', 'Geriatric-care teams', 'Medication-review services'],
+    fa: ['داروسازان بالینی', 'تیم‌های سالمندی', 'خدمات بازبینی دارو'],
+  },
+  'chemotherapy-care': {
+    en: ['Oncology nurses', 'Patients & families', 'Cancer-care centers'],
+    fa: ['پرستاران انکولوژی', 'بیماران و خانواده‌ها', 'مراکز درمان سرطان'],
+  },
+  gib: {
+    en: ['Digestive-care nurses', 'Remote-care coordinators', 'Gastroenterology clinics'],
+    fa: ['پرستاران گوارش', 'هماهنگ‌کنندگان مراقبت از راه دور', 'کلینیک‌های گوارش'],
+  },
+  'desktop-autoclaves': {
+    en: ['Dental practices', 'Outpatient clinics', 'Small procedure rooms'],
+    fa: ['مطب‌های دندان‌پزشکی', 'کلینیک‌های سرپایی', 'اتاق‌های عمل کوچک'],
+  },
+  'hospital-autoclaves': {
+    en: ['CSSD teams', 'Hospital engineering', 'High-throughput facilities'],
+    fa: ['تیم‌های CSSD', 'مهندسی بیمارستان', 'مراکز با ظرفیت بالا'],
+  },
+  'blood-glucose-meters': {
+    en: ['People monitoring glucose', 'Diabetes educators', 'Community-care teams'],
+    fa: ['افراد در حال پایش قند', 'مربیان دیابت', 'تیم‌های مراقبت جامعه'],
+  },
+  'blood-glucose-test-strips': {
+    en: ['Home monitoring routines', 'Pharmacies & clinics', 'Diabetes programs'],
+    fa: ['روال‌های پایش خانگی', 'داروخانه‌ها و کلینیک‌ها', 'برنامه‌های دیابت'],
+  },
+}
+
+const typicalUsers = computed(
+  () => userProfiles[product.value?.id]?.[locale.value] ?? userProfiles[product.value?.id]?.en ?? []
+)
+const workflowKeys = computed(() =>
+  product.value?.type === 'equipment'
+    ? ['prepare', 'run', 'verify', 'support']
+    : ['listen', 'capture', 'guide', 'connect']
+)
+const comparisonRows = computed(() =>
+  features.value.map((feature, index) => ({
+    feature,
+    outcome: benefits.value[index % Math.max(benefits.value.length, 1)] ?? applications.value[index] ?? '',
+  }))
+)
+
+const reducedMotion =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+let revealObserver = null
+let metricsObserver = null
+let scrollFrame = 0
+
+const runCounters = () => {
+  if (reducedMotion) {
+    metricValues.value = [...metricTargets.value]
+    return
+  }
+
+  const startedAt = performance.now()
+  const duration = 780
+  const tick = (time) => {
+    const progress = Math.min((time - startedAt) / duration, 1)
+    const eased = 1 - Math.pow(1 - progress, 3)
+    metricValues.value = metricTargets.value.map((target) => Math.round(target * eased))
+    if (progress < 1) requestAnimationFrame(tick)
+  }
+  requestAnimationFrame(tick)
+}
+
+const observePage = () => {
+  revealObserver?.disconnect()
+  metricsObserver?.disconnect()
+
+  if (reducedMotion) {
+    root.value?.querySelectorAll('.detail-reveal').forEach((element) => element.classList.add('is-visible'))
+    metricValues.value = [...metricTargets.value]
+    return
+  }
+
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return
+        entry.target.classList.add('is-visible')
+        revealObserver.unobserve(entry.target)
+      })
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -48px 0px' }
+  )
+  root.value?.querySelectorAll('.detail-reveal').forEach((element) => revealObserver.observe(element))
+
+  metricsObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry?.isIntersecting) return
+      runCounters()
+      metricsObserver.disconnect()
+    },
+    { threshold: 0.45 }
+  )
+  if (metricsEl.value) metricsObserver.observe(metricsEl.value)
+}
+
+const onScroll = () => {
+  if (reducedMotion || scrollFrame) return
+  scrollFrame = requestAnimationFrame(() => {
+    root.value?.style.setProperty('--detail-scroll', `${Math.min(window.scrollY, 1800)}px`)
+    scrollFrame = 0
+  })
+}
+
+onMounted(() => {
+  observePage()
+  window.addEventListener('scroll', onScroll, { passive: true })
 })
 
-const certifications = computed(() => {
-  const p = product.value
-  if (!p) return []
-  return p.certifications[locale.value] ?? p.certifications.en ?? []
+watch(
+  () => props.id,
+  async () => {
+    metricValues.value = [0, 0, 0]
+    await nextTick()
+    observePage()
+  }
+)
+
+onBeforeUnmount(() => {
+  revealObserver?.disconnect()
+  metricsObserver?.disconnect()
+  window.removeEventListener('scroll', onScroll)
+  cancelAnimationFrame(scrollFrame)
 })
 </script>
 
 <template>
-  <main class="view detail">
+  <main ref="root" class="view detail" style="--detail-scroll: 0px">
+    <span class="detail-orb detail-orb-a" aria-hidden="true"></span>
+    <span class="detail-orb detail-orb-b" aria-hidden="true"></span>
     <div v-if="product" class="detail-inner">
-      <!-- Breadcrumb -->
-      <nav class="crumb rise stagger-1" aria-label="Breadcrumb">
+      <nav class="crumb rise stagger-1" :aria-label="t('detail.breadcrumb')">
         <RouterLink to="/products" class="crumb-link">{{ t('nav.products') }}</RouterLink>
         <span class="crumb-sep" aria-hidden="true">/</span>
-        <span class="crumb-current">{{ localize(product.name, locale) }}</span>
+        <span aria-current="page">{{ localize(product.name, locale) }}</span>
       </nav>
 
-      <!-- Header -->
-      <header class="head">
-        <div class="head-text">
-          <div class="tags rise stagger-2">
-            <span class="tag tag-type">{{ t(`card.type.${product.type}`) }}</span>
-            <span class="tag tag-cat">{{ localize(product.category, locale) }}</span>
-            <span v-if="product.flagship" class="tag tag-flag">{{ t('card.flagship') }}</span>
+      <header class="product-hero">
+        <div class="hero-copy">
+          <div class="hero-kicker rise stagger-2">
+            <span class="hero-icon" aria-hidden="true">
+              <ProductIcon :name="product.icon" :size="22" />
+            </span>
+            <span>{{ t(`card.type.${product.type}`) }}</span>
+            <span class="kicker-dot" aria-hidden="true"></span>
+            <span>{{ localize(product.category, locale) }}</span>
           </div>
-          <h1 class="title rise stagger-3">{{ localize(product.name, locale) }}</h1>
-          <p class="tagline rise stagger-4">{{ localize(product.tagline, locale) }}</p>
-          <div class="head-actions rise stagger-5">
+
+          <h1 class="hero-title rise stagger-3">{{ localize(product.name, locale) }}</h1>
+          <p class="hero-tagline rise stagger-4">{{ localize(product.tagline, locale) }}</p>
+          <p class="hero-description rise stagger-5">{{ localize(product.description, locale) }}</p>
+
+          <div class="hero-actions rise stagger-5">
             <RouterLink to="/contact" class="btn-ink">
-              {{ t('detail.requestInfo') }}
-              <span class="arrow">→</span>
+              {{ t('detail.contactSales') }}
+              <span class="arrow" aria-hidden="true">→</span>
             </RouterLink>
-            <RouterLink to="/products" class="btn-ghost-ink">{{ t('detail.backToProducts') }}</RouterLink>
+            <a :href="product.catalog" class="btn-ghost-ink" download>
+              {{ t('detail.downloadCatalog') }}
+            </a>
           </div>
         </div>
-        <div class="head-media rise stagger-3">
-          <span class="media-no">{{ t('card.no') }}{{ product.number }}</span>
-          <img :src="product.image" :alt="localize(product.name, locale)" loading="lazy" />
-        </div>
+
+        <figure class="hero-media rise stagger-3">
+          <img
+            :src="product.image"
+            :alt="galleryAlt[0] || localize(product.name, locale)"
+            width="760"
+            height="860"
+            fetchpriority="high"
+          />
+          <figcaption class="media-label">
+            <span>{{ t('card.no') }}{{ product.number }}</span>
+            <span>{{ localize(product.category, locale) }}</span>
+          </figcaption>
+        </figure>
       </header>
 
-      <!-- Body: general description + sidebar -->
-      <div class="body">
-        <div class="body-main">
-          <section class="block">
-            <span class="block-no">01</span>
-            <h2 class="block-title">{{ t('detail.overview') }}</h2>
-            <p class="block-lead">{{ localize(product.description, locale) }}</p>
-          </section>
+      <section ref="metricsEl" class="highlight-strip detail-reveal" :aria-label="t('detail.highlightsLabel')">
+        <article v-for="(value, index) in metricValues" :key="index" class="highlight-stat">
+          <strong>{{ String(value).padStart(2, '0') }}</strong>
+          <span>{{ t(`detail.highlights.${['features', 'applications', 'assurances'][index]}`) }}</span>
+        </article>
+        <div class="highlight-note">
+          <span class="highlight-pulse" aria-hidden="true"></span>
+          <p>{{ t('detail.highlights.note') }}</p>
+        </div>
+      </section>
 
-          <section class="block">
-            <span class="block-no">02</span>
-            <h2 class="block-title">{{ t('detail.capabilities') }}</h2>
-            <ul class="feat-list">
-              <li v-for="(f, i) in features" :key="i" class="feat">
-                <span class="feat-bullet" aria-hidden="true">—</span>
-                <span>{{ f }}</span>
-              </li>
-            </ul>
-          </section>
+      <section class="story section-rule detail-reveal" :aria-labelledby="`overview-${product.id}`">
+        <div class="section-heading">
+          <span class="section-no" aria-hidden="true">01</span>
+          <div>
+            <p class="eyebrow">{{ t('detail.clinicalEyebrow') }}</p>
+            <h2 :id="`overview-${product.id}`">{{ t('detail.overview') }}</h2>
+          </div>
+        </div>
+        <div class="story-content">
+          <p class="story-lead">{{ localize(product.description, locale) }}</p>
+          <aside class="users-panel">
+            <span class="users-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <circle cx="9" cy="8" r="3" />
+                <path d="M3.5 20v-2.2A4.8 4.8 0 0 1 8.3 13h1.4a4.8 4.8 0 0 1 4.8 4.8V20" />
+                <path d="M16 5.5a3 3 0 0 1 0 5.8M17 13.2a4.8 4.8 0 0 1 3.5 4.6V20" />
+              </svg>
+            </span>
+            <div>
+              <p class="eyebrow">{{ t('detail.typicalUsersEyebrow') }}</p>
+              <h3>{{ t('detail.typicalUsers') }}</h3>
+              <ul>
+                <li v-for="user in typicalUsers" :key="user">{{ user }}</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
 
-          <section class="block">
-            <span class="block-no">03</span>
-            <h2 class="block-title">{{ t('detail.specs') }}</h2>
-            <dl class="spec-table">
-              <div v-for="(s, i) in product.specs" :key="i" class="spec-row">
-                <dt class="spec-label">{{ localize(s.label, locale) }}</dt>
-                <dd class="spec-value">{{ localize(s.value, locale) }}</dd>
-              </div>
-            </dl>
-          </section>
+      <section class="capabilities section-rule detail-reveal" :aria-labelledby="`features-${product.id}`">
+        <div class="section-heading">
+          <span class="section-no" aria-hidden="true">02</span>
+          <div>
+            <p class="eyebrow">{{ t('detail.capabilitiesEyebrow') }}</p>
+            <h2 :id="`features-${product.id}`">{{ t('detail.capabilities') }}</h2>
+          </div>
+        </div>
+        <ol class="feature-grid">
+          <li
+            v-for="(feature, index) in features"
+            :key="feature"
+            class="feature-card"
+            :style="{ '--card-delay': `${index * 80}ms` }"
+          >
+            <span class="feature-graphic" aria-hidden="true"></span>
+            <div class="feature-top">
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                  <g v-if="index === 0">
+                    <circle cx="12" cy="12" r="8" />
+                    <path d="M12 7v5l3 2" />
+                  </g>
+                  <g v-else-if="index === 1">
+                    <path d="M5 5h5v5H5zM14 14h5v5h-5zM14 5h5v5h-5z" />
+                    <path d="M10 7.5h4M16.5 10v4M10 9.5l4.5 5" />
+                  </g>
+                  <g v-else-if="index === 2">
+                    <path d="M3 12h4l2.2-5 4 10 2.1-5H21" />
+                    <path d="M12 3a9 9 0 1 1-8.5 6" />
+                  </g>
+                  <g v-else>
+                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5z" />
+                    <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5z" />
+                  </g>
+                </svg>
+              </span>
+              <span class="feature-no" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+            </div>
+            <p>{{ feature }}</p>
+            <span class="feature-more" aria-hidden="true">↗</span>
+          </li>
+        </ol>
+      </section>
+
+      <section class="workflow section-rule detail-reveal" :aria-labelledby="`workflow-${product.id}`">
+        <div class="section-heading">
+          <span class="section-no" aria-hidden="true">03</span>
+          <div>
+            <p class="eyebrow">{{ t('detail.workflowEyebrow') }}</p>
+            <h2 :id="`workflow-${product.id}`">{{ t('detail.workflowTitle') }}</h2>
+          </div>
+        </div>
+        <ol class="workflow-track">
+          <li
+            v-for="(key, index) in workflowKeys"
+            :key="key"
+            class="workflow-step"
+            :style="{ '--step-delay': `${index * 100}ms` }"
+          >
+            <span class="workflow-dot" aria-hidden="true">{{ index + 1 }}</span>
+            <div>
+              <p class="workflow-label">{{ t('detail.stepLabel', { number: index + 1 }) }}</p>
+              <h3>{{ t(`detail.workflow.${product.type}.${key}.title`) }}</h3>
+              <p>{{ t(`detail.workflow.${product.type}.${key}.body`) }}</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="value-grid section-rule detail-reveal">
+        <article class="value-panel value-benefits">
+          <p class="eyebrow">{{ t('detail.outcomesEyebrow') }}</p>
+          <h2>{{ t('detail.whyChoose') }}</h2>
+          <ul>
+            <li v-for="benefit in benefits" :key="benefit">
+              <span class="list-mark" aria-hidden="true">✓</span>
+              <span>{{ benefit }}</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="value-panel value-applications">
+          <p class="eyebrow">{{ t('detail.applicationsEyebrow') }}</p>
+          <h2>{{ t('detail.applications') }}</h2>
+          <ul>
+            <li v-for="application in applications" :key="application">
+              <span class="list-mark" aria-hidden="true">→</span>
+              <span>{{ application }}</span>
+            </li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="facts section-rule detail-reveal" :aria-labelledby="`specs-${product.id}`">
+        <div class="section-heading">
+          <span class="section-no" aria-hidden="true">04</span>
+          <div>
+            <p class="eyebrow">{{ t('detail.technologiesEyebrow') }}</p>
+            <h2 :id="`specs-${product.id}`">{{ t('detail.technologies') }}</h2>
+          </div>
         </div>
 
-        <aside class="body-aside">
-          <div class="aside-card">
-            <h3 class="aside-title">{{ t('detail.certifications') }}</h3>
-            <ul class="cert-list">
-              <li v-for="(c, i) in certifications" :key="i" class="cert">
-                <span class="cert-tick" aria-hidden="true">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <span>{{ c }}</span>
+        <div class="facts-grid">
+          <dl class="spec-table">
+            <div v-for="spec in product.specs" :key="localize(spec.label, locale)" class="spec-row">
+              <dt>{{ localize(spec.label, locale) }}</dt>
+              <dd>{{ localize(spec.value, locale) }}</dd>
+            </div>
+          </dl>
+
+          <aside class="assurance-card">
+            <span class="assurance-icon" aria-hidden="true">
+              <ProductIcon :name="product.icon" :size="30" />
+            </span>
+            <h3>{{ t('detail.assurances') }}</h3>
+            <ul>
+              <li v-for="assurance in assurances" :key="assurance">
+                <span aria-hidden="true">✓</span>
+                <span>{{ assurance }}</span>
               </li>
             </ul>
-          </div>
+          </aside>
+        </div>
+      </section>
 
-          <div class="aside-card aside-meta">
-            <div class="meta-row">
-              <span class="meta-key">{{ t('detail.metaCategory') }}</span>
-              <span class="meta-val">{{ localize(product.category, locale) }}</span>
-            </div>
-            <div class="meta-row">
-              <span class="meta-key">{{ t('detail.metaType') }}</span>
-              <span class="meta-val">{{ t(`card.type.${product.type}`) }}</span>
-            </div>
-            <div class="meta-row">
-              <span class="meta-key">{{ t('detail.metaRef') }}</span>
-              <span class="meta-val">{{ t('card.no') }}{{ product.number }}</span>
-            </div>
+      <section class="comparison section-rule detail-reveal" :aria-labelledby="`comparison-${product.id}`">
+        <div class="section-heading">
+          <span class="section-no" aria-hidden="true">05</span>
+          <div>
+            <p class="eyebrow">{{ t('detail.comparisonEyebrow') }}</p>
+            <h2 :id="`comparison-${product.id}`">{{ t('detail.comparison') }}</h2>
           </div>
-        </aside>
-      </div>
+        </div>
+        <div class="comparison-table" role="table" :aria-label="t('detail.comparison')">
+          <div class="comparison-head" role="row">
+            <span role="columnheader">{{ t('detail.comparisonFeature') }}</span>
+            <span role="columnheader">{{ t('detail.comparisonOutcome') }}</span>
+          </div>
+          <div v-for="(row, index) in comparisonRows" :key="row.feature" class="comparison-row" role="row">
+            <span class="comparison-index" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+            <strong role="cell">{{ row.feature }}</strong>
+            <span role="cell">{{ row.outcome }}</span>
+          </div>
+        </div>
+      </section>
 
-      <!-- Closing CTA -->
-      <section class="cta-block">
-        <p class="cta-text">{{ t('detail.ctaText') }}</p>
-        <RouterLink to="/contact" class="btn-ink">
-          {{ t('detail.requestInfo') }}
-          <span class="arrow">→</span>
-        </RouterLink>
+      <section id="product-gallery" class="gallery section-rule detail-reveal" :aria-labelledby="`gallery-${product.id}`">
+        <div class="section-heading">
+          <span class="section-no" aria-hidden="true">06</span>
+          <div>
+            <p class="eyebrow">{{ t('detail.galleryEyebrow') }}</p>
+            <h2 :id="`gallery-${product.id}`">{{ t('detail.gallery') }}</h2>
+          </div>
+        </div>
+        <div class="gallery-grid">
+          <figure v-for="(image, index) in product.gallery" :key="image" class="gallery-item">
+            <img
+              :src="image"
+              :alt="galleryAlt[index] || localize(product.name, locale)"
+              width="720"
+              height="540"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section class="resources section-rule detail-reveal" :aria-labelledby="`resources-${product.id}`">
+        <div class="section-heading">
+          <span class="section-no" aria-hidden="true">07</span>
+          <div>
+            <p class="eyebrow">{{ t('detail.resourcesEyebrow') }}</p>
+            <h2 :id="`resources-${product.id}`">{{ t('detail.resources') }}</h2>
+          </div>
+        </div>
+        <div class="resource-grid">
+          <a :href="product.catalog" class="resource-card resource-download" download>
+            <span class="resource-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M12 3v12M7 10l5 5 5-5M4 21h16" />
+              </svg>
+            </span>
+            <span>
+              <strong>{{ t('detail.resourceCatalog') }}</strong>
+              <small>{{ t('detail.resourceCatalogBody') }}</small>
+            </span>
+            <span class="resource-arrow" aria-hidden="true">↓</span>
+          </a>
+          <RouterLink to="/contact" class="resource-card">
+            <span class="resource-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M4 5h16v11H8l-4 4z" />
+                <path d="M8 9h8M8 12h5" />
+              </svg>
+            </span>
+            <span>
+              <strong>{{ t('detail.resourceConsultation') }}</strong>
+              <small>{{ t('detail.resourceConsultationBody') }}</small>
+            </span>
+            <span class="resource-arrow" aria-hidden="true">↗</span>
+          </RouterLink>
+          <RouterLink to="/contact" class="resource-card">
+            <span class="resource-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M5 20V10M12 20V4M19 20v-7" />
+                <path d="M3 20h18" />
+              </svg>
+            </span>
+            <span>
+              <strong>{{ t('detail.resourceSupport') }}</strong>
+              <small>{{ t(`detail.resourceSupportBody.${product.type}`) }}</small>
+            </span>
+            <span class="resource-arrow" aria-hidden="true">↗</span>
+          </RouterLink>
+        </div>
+        <div class="support-band">
+          <div>
+            <p class="eyebrow">{{ t('detail.supportEyebrow') }}</p>
+            <h3>{{ t('detail.supportTitle') }}</h3>
+          </div>
+          <ul>
+            <li v-for="key in ['planning', 'training', 'continuity']" :key="key">
+              <span aria-hidden="true">✓</span>
+              <span>
+                <strong>{{ t(`detail.support.${key}.title`) }}</strong>
+                <small>{{ t(`detail.support.${key}.body`) }}</small>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="faq section-rule detail-reveal" :aria-labelledby="`faq-${product.id}`">
+        <div class="section-heading">
+          <span class="section-no" aria-hidden="true">08</span>
+          <div>
+            <p class="eyebrow">{{ t('detail.faqEyebrow') }}</p>
+            <h2 :id="`faq-${product.id}`">{{ t('detail.faq') }}</h2>
+          </div>
+        </div>
+        <div class="faq-list">
+          <details v-for="(item, index) in product.faq" :key="index" class="faq-item">
+            <summary>
+              <span>{{ localize(item.question, locale) }}</span>
+              <span class="faq-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>{{ localize(item.answer, locale) }}</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="closing detail-reveal">
+        <div>
+          <p class="eyebrow closing-eyebrow">{{ t('detail.ctaEyebrow') }}</p>
+          <h2>{{ t('detail.ctaText') }}</h2>
+        </div>
+        <div class="closing-actions">
+          <RouterLink to="/contact" class="btn-ink">
+            {{ t('detail.contactSales') }}
+            <span class="arrow" aria-hidden="true">→</span>
+          </RouterLink>
+          <a :href="product.catalog" class="btn-ghost-light" download>
+            {{ t('detail.downloadCatalog') }}
+          </a>
+        </div>
       </section>
     </div>
 
-    <!-- Not found -->
-    <div v-else class="detail-inner missing">
-      <h1 class="missing-title">{{ t('detail.notFound') }}</h1>
+    <section v-else class="detail-inner missing">
+      <h1>{{ t('detail.notFound') }}</h1>
       <RouterLink to="/products" class="btn-ink">
         {{ t('detail.backToProducts') }}
-        <span class="arrow">→</span>
+        <span class="arrow" aria-hidden="true">→</span>
       </RouterLink>
-    </div>
+    </section>
   </main>
 </template>
 
 <style scoped>
-.detail { padding: 11rem 2.5rem 6rem; position: relative; }
-.detail-inner { max-width: 1280px; margin: 0 auto; }
+.detail {
+  position: relative;
+  overflow: clip;
+  min-height: 100vh;
+  padding: 9.5rem 2.5rem 6rem;
+  color: var(--ink);
+  background:
+    radial-gradient(42rem 34rem at 96% 8%, rgba(255, 146, 92, 0.16), transparent 68%),
+    var(--sand);
+}
 
-/* Breadcrumb */
+.detail-inner { position: relative; z-index: 1; width: min(1280px, 100%); margin: 0 auto; }
+
+.detail-orb {
+  position: absolute; z-index: 0; pointer-events: none;
+  width: clamp(18rem, 34vw, 36rem); aspect-ratio: 1;
+  border-radius: 50%; filter: blur(2px);
+  opacity: 0.42; will-change: transform;
+}
+
+.detail-orb-a {
+  top: 46rem; inset-inline-end: -18rem;
+  background: radial-gradient(circle at 34% 34%, rgba(255, 146, 92, 0.28), rgba(255, 146, 92, 0) 68%);
+  transform: translate3d(0, calc(var(--detail-scroll) * 0.045), 0);
+}
+
+.detail-orb-b {
+  top: 142rem; inset-inline-start: -16rem;
+  background: radial-gradient(circle at 60% 40%, rgba(63, 126, 78, 0.22), rgba(63, 126, 78, 0) 70%);
+  transform: translate3d(0, calc(var(--detail-scroll) * -0.035), 0);
+}
+
 .crumb {
   display: flex; align-items: center; gap: 0.625rem;
-  font-family: var(--font-body);
-  font-size: 0.8125rem; font-weight: 600;
-  color: var(--muted); margin-bottom: 2.5rem;
+  margin-bottom: 2.5rem;
+  color: var(--muted); font-size: 0.8125rem;
 }
 
-.crumb-link { color: var(--muted); text-decoration: none; transition: color 0.3s ease; }
-.crumb-link:hover { color: var(--accent); }
-.crumb-sep { opacity: 0.5; }
-.crumb-current { color: var(--ink); }
+.crumb-link { color: var(--ink); text-decoration: none; font-weight: 700; }
+.crumb-link:hover { color: var(--coral-deep); }
+.crumb-sep { color: var(--orange); }
 
-/* Header */
-.head {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
-  padding-bottom: 4rem; margin-bottom: 4rem;
-  border-bottom: 1px solid var(--line);
+.product-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(340px, 0.86fr);
+  align-items: center;
+  gap: clamp(3rem, 7vw, 7rem);
+  min-height: 680px;
 }
 
-.tags { display: flex; flex-wrap: wrap; gap: 0.625rem; margin-bottom: 1.5rem; }
-
-.tag {
-  font-family: var(--font-body);
-  font-size: 0.75rem; font-weight: 600;
-  padding: 0.375rem 0.875rem; border: 1px solid var(--line);
-  border-radius: 999px;
+.highlight-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 0.55fr)) minmax(260px, 1.35fr);
+  gap: 1px;
+  margin-top: 1.75rem;
+  overflow: hidden;
+  color: var(--sand);
+  background: rgba(245, 245, 229, 0.18);
+  border: 1px solid rgba(0, 41, 0, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px -38px rgba(0, 41, 0, 0.8);
 }
 
-.tag-type { color: var(--accent); border-color: var(--accent); }
-.tag-cat { color: var(--ink-soft); }
-.tag-flag { color: #001B00; background: var(--warm); border-color: var(--warm); }
+.highlight-stat,
+.highlight-note {
+  min-height: 126px;
+  padding: 1.35rem 1.5rem;
+  background: rgba(0, 41, 0, 0.94);
+}
 
-.title {
+.highlight-stat {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 0.75rem;
+}
+
+.highlight-stat strong {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  line-height: 1.05; font-weight: 550;
-  letter-spacing: var(--track-display); color: var(--ink); margin: 0;
+  color: var(--orange);
+  font-size: 2.35rem; line-height: 1; font-weight: 650;
 }
 
-html[lang='fa'] .title { font-weight: 800; line-height: 1.25; }
-
-.tagline {
-  font-size: 1.125rem; line-height: 1.5;
-  color: var(--ink-soft); margin: 1.25rem 0 0; max-width: 46ch;
+.highlight-stat span,
+.highlight-note p {
+  margin: 0; color: rgba(245, 245, 229, 0.72);
+  font-size: 0.78rem; line-height: 1.45; font-weight: 650;
 }
 
-.head-actions {
-  margin-top: 2.5rem;
-  display: flex; flex-wrap: wrap; gap: 0.875rem; align-items: center;
+.highlight-note {
+  display: flex; align-items: center; gap: 1rem;
+  background:
+    linear-gradient(120deg, rgba(0, 59, 30, 0.96), rgba(0, 41, 0, 0.92)),
+    var(--ink);
 }
 
-.head-media {
+.highlight-pulse {
+  position: relative; flex: 0 0 auto;
+  width: 12px; height: 12px; border-radius: 50%; background: var(--orange);
+  box-shadow: 0 0 0 7px rgba(255, 146, 92, 0.12);
+}
+
+.highlight-pulse::after {
+  content: ''; position: absolute; inset: -7px;
+  border: 1px solid rgba(255, 146, 92, 0.45); border-radius: 50%;
+  animation: highlight-breathe 2.4s ease-out infinite;
+}
+
+.hero-copy { display: flex; flex-direction: column; align-items: flex-start; }
+
+.hero-kicker {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0.625rem;
+  color: var(--coral-deep); font-size: 0.75rem; font-weight: 750;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+html[lang='fa'] .hero-kicker { letter-spacing: 0; text-transform: none; }
+
+.hero-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 15px;
+  background: var(--grad-orange); color: var(--ink);
+  box-shadow: 0 12px 28px -15px rgba(229, 100, 42, 0.8);
+}
+
+.kicker-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--orange); }
+
+.hero-title {
+  max-width: 11ch; margin: 1.5rem 0 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 7vw, 6.8rem);
+  font-weight: 550; line-height: 0.94; letter-spacing: var(--track-display);
+}
+
+html[lang='fa'] .hero-title { line-height: 1.18; font-weight: 800; }
+
+.hero-tagline {
+  max-width: 42ch; margin: 1.75rem 0 0;
+  font-family: var(--font-display);
+  color: var(--ink); font-size: clamp(1.25rem, 2vw, 1.65rem); line-height: 1.38;
+}
+
+.hero-description {
+  max-width: 62ch; margin: 1.25rem 0 0;
+  color: var(--ink-soft); font-size: 1rem; line-height: 1.8;
+}
+
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.875rem; margin-top: 2.25rem; }
+
+.hero-media {
+  position: relative; overflow: hidden; margin: 0;
+  min-height: 620px; height: min(70vw, 720px);
+  border-radius: 999px 999px 36px 36px;
+  background: var(--cream-deep); box-shadow: var(--shadow-lift);
+}
+
+.hero-media::after {
+  content: ''; position: absolute; inset: 0;
+  box-shadow: inset 0 0 0 6px rgba(245, 245, 229, 0.7);
+  border-radius: inherit; pointer-events: none;
+}
+
+.hero-media img { width: 100%; height: 100%; object-fit: cover; }
+
+.media-label {
+  position: absolute; inset-inline: 1.25rem; bottom: 1.25rem; z-index: 2;
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding: 0.875rem 1rem; border-radius: 16px;
+  color: var(--sand); background: rgba(0, 41, 0, 0.78);
+  backdrop-filter: blur(12px); font-size: 0.75rem; font-weight: 700;
+}
+
+.section-rule {
+  padding: clamp(4.5rem, 7vw, 6.5rem) 0;
+  border-top: 1px solid rgba(0, 41, 0, 0.18);
+}
+
+.section-heading {
+  display: grid; grid-template-columns: auto minmax(0, 1fr);
+  align-items: start; gap: 1.5rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.section-no {
+  font-family: var(--font-display); font-size: clamp(3.5rem, 7vw, 6rem);
+  line-height: 0.82; color: rgba(0, 41, 0, 0.13); font-weight: 700;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--coral-deep); font-size: 0.75rem; font-weight: 750;
+  letter-spacing: 0.11em; text-transform: uppercase;
+}
+
+html[lang='fa'] .eyebrow { letter-spacing: 0; text-transform: none; }
+
+.section-heading h2,
+.value-panel h2,
+.closing h2 {
+  margin: 0; font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 550; line-height: 1.08;
+}
+
+html[lang='fa'] .section-heading h2,
+html[lang='fa'] .value-panel h2,
+html[lang='fa'] .closing h2 { line-height: 1.35; font-weight: 800; }
+
+.story { display: grid; grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr); gap: 4rem; }
+.story-content { display: grid; gap: 2rem; }
+.story-lead { margin: 0; max-width: 68ch; font-size: clamp(1.25rem, 2.3vw, 1.8rem); line-height: 1.58; }
+
+.users-panel {
   position: relative; overflow: hidden;
-  aspect-ratio: 4 / 3; background: var(--cream-deep);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-card);
+  display: grid; grid-template-columns: auto 1fr; gap: 1.25rem;
+  padding: 1.65rem; border: 1px solid rgba(0, 41, 0, 0.15); border-radius: 24px;
+  background:
+    linear-gradient(130deg, rgba(255, 255, 255, 0.5), rgba(245, 245, 229, 0.58)),
+    rgba(250, 250, 240, 0.66);
+  box-shadow: 0 22px 50px -44px rgba(0, 41, 0, 0.75);
+  backdrop-filter: blur(16px);
 }
 
-/* The photo carries its own color — no CSS grading */
-.head-media img {
-  width: 100%; height: 100%; object-fit: cover;
+.users-panel::after {
+  content: ''; position: absolute; width: 13rem; aspect-ratio: 1; border-radius: 50%;
+  inset-inline-end: -7rem; bottom: -8rem;
+  background: radial-gradient(circle, rgba(255, 146, 92, 0.2), transparent 70%);
 }
 
-.media-no {
-  position: absolute; top: 1.25rem; left: 1.25rem; z-index: 2;
-  font-family: var(--font-body);
-  font-size: 0.6875rem; font-weight: 600;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--paper); mix-blend-mode: difference;
+.users-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; border-radius: 15px;
+  color: var(--ink); background: var(--grad-orange);
+  box-shadow: 0 14px 28px -19px rgba(229, 100, 42, 0.9);
 }
 
-html[lang='fa'] .media-no { letter-spacing: 0.05em; text-transform: none; font-size: 0.75rem; }
-
-html[dir='rtl'] .media-no { left: auto; right: 1.25rem; }
-
-/* Body */
-.body {
-  display: grid; grid-template-columns: 7fr 4fr; gap: 4rem;
-  margin-bottom: 5rem;
+.users-icon svg { width: 24px; height: 24px; }
+.users-panel h3 { margin: 0; font-family: var(--font-display); font-size: 1.4rem; }
+.users-panel ul {
+  display: flex; flex-wrap: wrap; gap: 0.55rem;
+  list-style: none; margin: 1rem 0 0; padding: 0;
+}
+.users-panel li {
+  padding: 0.55rem 0.8rem; border-radius: 999px;
+  color: var(--ink-soft); background: rgba(0, 41, 0, 0.065);
+  font-size: 0.78rem; font-weight: 700;
 }
 
-.body-main { display: flex; flex-direction: column; gap: 3.5rem; }
-
-.block { display: flex; flex-direction: column; gap: 1rem; }
-
-.block-no {
-  font-family: var(--font-body);
-  font-size: 0.8125rem; font-weight: 700;
-  letter-spacing: 0.1em; color: var(--coral-deep);
-}
-
-html[lang='fa'] .block-no { letter-spacing: 0; }
-
-.block-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.375rem, 2.4vw, 1.75rem);
-  font-weight: 600; letter-spacing: var(--track-display);
-  color: var(--ink); margin: 0;
-}
-
-html[lang='fa'] .block-title { font-weight: 700; }
-
-.block-lead {
-  font-size: 1.0625rem; line-height: 1.75;
-  color: var(--ink-soft); margin: 0; max-width: 64ch;
-}
-
-.feat-list {
+.feature-grid {
   list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 0.875rem;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem;
 }
 
-.feat {
-  display: flex; gap: 0.875rem;
-  font-size: 1rem; line-height: 1.55; color: var(--ink-soft);
-  padding-bottom: 0.875rem; border-bottom: 1px solid var(--line);
+.feature-card {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: 250px; padding: 1.45rem;
+  display: flex; flex-direction: column; justify-content: space-between;
+  opacity: 0; transform: translateY(16px);
+  border: 1px solid rgba(0, 41, 0, 0.18); border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(245, 245, 229, 0.48)),
+    rgba(250, 250, 240, 0.68);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  transition: opacity 520ms ease var(--card-delay),
+              transform 520ms cubic-bezier(0.16, 1, 0.3, 1) var(--card-delay),
+              border-color 320ms ease, box-shadow 320ms ease;
 }
 
-.feat-bullet { color: var(--accent); flex-shrink: 0; font-weight: 700; }
-
-/* Spec table */
-.spec-table {
-  margin: 0; border: 1px solid var(--line);
-  border-radius: 16px; overflow: hidden;
-  background: #FCFCF2;
+.capabilities.detail-reveal.is-visible .feature-card { opacity: 1; transform: translateY(0); }
+.feature-card:hover {
+  transition-delay: 0s;
+  transform: translateY(-8px);
+  border-color: rgba(255, 146, 92, 0.72);
+  box-shadow: 0 28px 50px -34px rgba(0, 41, 0, 0.78);
 }
 
-.spec-row {
-  display: grid; grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid var(--line);
+.feature-graphic {
+  position: absolute; z-index: -1;
+  width: 12rem; aspect-ratio: 1; border-radius: 50%;
+  inset-inline-end: -5.5rem; bottom: -6.5rem;
+  border: 1px solid rgba(255, 146, 92, 0.22);
+  box-shadow:
+    0 0 0 2rem rgba(255, 146, 92, 0.035),
+    0 0 0 4rem rgba(0, 41, 0, 0.025);
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.spec-row:last-child { border-bottom: none; }
+.feature-card:hover .feature-graphic { transform: scale(1.12) rotate(8deg); }
+.feature-top { display: flex; align-items: center; justify-content: space-between; }
+.feature-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; border-radius: 15px;
+  color: var(--ink); background: rgba(255, 146, 92, 0.88);
+  box-shadow: 0 14px 26px -18px rgba(229, 100, 42, 0.95);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.feature-icon svg { width: 24px; height: 24px; }
+.feature-card:hover .feature-icon { transform: rotate(-4deg) scale(1.06); }
+.feature-no { color: var(--coral-deep); font-family: var(--font-display); font-weight: 700; }
+.feature-card p { max-width: 16ch; margin: 2.25rem 0 0; font-size: 1.02rem; font-weight: 680; line-height: 1.5; }
+.feature-more {
+  position: absolute; inset-inline-end: 1.25rem; bottom: 1.1rem;
+  color: var(--coral-deep); font-size: 1.1rem;
+  opacity: 0; transform: translate(-4px, 4px);
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+.feature-card:hover .feature-more { opacity: 1; transform: translate(0, 0); }
 
-.spec-label, .spec-value {
-  padding: 1rem 1.25rem; margin: 0; font-size: 0.9375rem;
+.workflow-track {
+  position: relative;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem;
+  list-style: none; margin: 0; padding: 2.25rem 0 0;
 }
 
-.spec-label {
-  font-family: var(--font-body);
-  font-weight: 600;
-  color: var(--ink); background: var(--warm-soft);
-  border-inline-end: 1px solid var(--line);
+.workflow-track::before {
+  content: ''; position: absolute; z-index: 0;
+  top: 1.12rem; inset-inline: calc(12.5% - 0.5rem);
+  height: 2px;
+  background: linear-gradient(90deg, var(--orange), rgba(0, 41, 0, 0.17));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 1s 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html[lang='fa'] .spec-label { font-weight: 700; }
+html[dir='rtl'] .workflow-track::before { transform-origin: right; }
+.workflow.detail-reveal.is-visible .workflow-track::before { transform: scaleX(1); }
 
-.spec-value { color: var(--ink-soft); }
-
-/* Aside */
-.body-aside { display: flex; flex-direction: column; gap: 1.5rem; }
-
-/* Clean white cards on the cream canvas */
-.aside-card {
-  border: 1px solid var(--line);
-  background: #FCFCF2;
-  border-radius: var(--radius-card);
-  padding: 1.75rem;
-  box-shadow: var(--shadow-card);
+.workflow-step {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 0.9rem;
+  padding: 1.35rem; border-radius: 20px;
+  background: rgba(250, 250, 240, 0.72);
+  border: 1px solid rgba(0, 41, 0, 0.13);
+  opacity: 0; transform: translateY(16px);
+  transition: opacity 550ms ease var(--step-delay),
+              transform 550ms cubic-bezier(0.16, 1, 0.3, 1) var(--step-delay),
+              border-color 250ms ease, box-shadow 250ms ease;
 }
 
-.aside-title {
-  font-family: var(--font-body);
-  font-size: 0.8125rem; font-weight: 700;
-  color: var(--coral-deep); margin: 0 0 1.25rem;
+.workflow.detail-reveal.is-visible .workflow-step { opacity: 1; transform: translateY(0); }
+.workflow-step:hover { border-color: rgba(255, 146, 92, 0.75); box-shadow: var(--shadow-card); }
+.workflow-dot {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; border-radius: 50%;
+  color: var(--ink); background: var(--orange);
+  font-size: 0.75rem; font-weight: 800;
 }
+.workflow-label { margin: 0 0 0.45rem; color: var(--coral-deep); font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+html[lang='fa'] .workflow-label { letter-spacing: 0; }
+.workflow-step h3 { margin: 0; font-family: var(--font-display); font-size: 1.2rem; line-height: 1.25; }
+.workflow-step p:last-child { margin: 0.7rem 0 0; color: var(--ink-soft); font-size: 0.85rem; line-height: 1.65; }
 
-.cert-list {
-  list-style: none; margin: 0; padding: 0;
+.value-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+
+.value-panel { padding: clamp(2rem, 4vw, 3.5rem); border-radius: var(--radius-card); }
+.value-benefits { background: var(--cream); border: 1px solid rgba(0, 41, 0, 0.2); }
+.value-applications { background: var(--grad-green); color: var(--sand); }
+.value-applications .eyebrow { color: var(--orange); }
+
+.value-panel ul,
+.assurance-card ul {
+  list-style: none; padding: 0; margin: 2rem 0 0;
   display: flex; flex-direction: column; gap: 1rem;
 }
 
-.cert {
-  display: flex; align-items: flex-start; gap: 0.75rem;
-  font-size: 0.9375rem; line-height: 1.45; color: var(--ink);
+.value-panel li,
+.assurance-card li { display: flex; gap: 0.875rem; align-items: flex-start; line-height: 1.55; }
+
+.list-mark { color: var(--coral-deep); font-weight: 800; }
+.value-applications .list-mark { color: var(--orange); }
+html[dir='rtl'] .value-applications .list-mark { transform: rotate(180deg); }
+
+.facts-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(290px, 0.6fr); gap: 2rem; }
+.spec-table { margin: 0; border-top: 2px solid var(--ink); }
+.spec-row { display: grid; grid-template-columns: minmax(120px, 0.45fr) 1fr; gap: 2rem; padding: 1.3rem 0; border-bottom: 1px solid rgba(0, 41, 0, 0.17); }
+.spec-row dt { color: var(--muted); font-size: 0.8125rem; font-weight: 700; }
+.spec-row dd { margin: 0; color: var(--ink); font-weight: 650; }
+
+.assurance-card {
+  align-self: start; padding: 2rem;
+  color: var(--sand); background: var(--ink); border-radius: 26px;
 }
 
-.cert-tick {
+.assurance-icon {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px;
-  border-radius: 50%;
-  background: var(--grad-orange); color: #001B00;
+  width: 58px; height: 58px; margin-bottom: 1.5rem;
+  color: var(--ink); background: var(--orange); border-radius: 18px;
 }
 
-.aside-meta { display: flex; flex-direction: column; gap: 0; padding: 0.5rem 1.75rem; }
+.assurance-card h3 { margin: 0; font-family: var(--font-display); font-size: 1.5rem; }
+.assurance-card li > span:first-child { color: var(--orange); font-weight: 800; }
 
-.meta-row {
-  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-  padding: 0.875rem 0; border-bottom: 1px solid var(--line);
+.gallery-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1rem; }
+.gallery-item { overflow: hidden; margin: 0; min-height: 280px; border-radius: 26px; background: var(--cream-deep); }
+.gallery-item:first-child { grid-row: span 2; min-height: 570px; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1); }
+.gallery-item:hover img { transform: scale(1.035); }
+
+.comparison-table {
+  overflow: hidden;
+  border: 1px solid rgba(0, 41, 0, 0.17);
+  border-radius: 24px;
+  background: rgba(250, 250, 240, 0.64);
+  box-shadow: 0 24px 55px -48px rgba(0, 41, 0, 0.85);
 }
 
-.meta-row:last-child { border-bottom: none; }
-
-.meta-key {
-  font-family: var(--font-body);
-  font-size: 0.8125rem; font-weight: 600;
-  color: var(--muted);
+.comparison-head,
+.comparison-row {
+  display: grid; grid-template-columns: 3.25rem minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center; gap: 1.25rem;
 }
 
-.meta-val { font-size: 0.9375rem; color: var(--ink); font-weight: 500; text-align: end; }
-
-/* CTA */
-.cta-block {
-  display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
-  text-align: center; padding: 4rem 0 0;
-  border-top: 1px solid var(--line);
+.comparison-head {
+  padding: 0.9rem 1.5rem;
+  color: rgba(245, 245, 229, 0.68); background: var(--ink);
+  font-size: 0.72rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase;
 }
 
-.cta-text {
-  font-size: 1.125rem; line-height: 1.5;
-  color: var(--ink-soft); margin: 0; max-width: 44ch;
+.comparison-head span:first-child { grid-column: 2; }
+.comparison-row {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid rgba(0, 41, 0, 0.11);
+  transition: background 240ms ease, transform 240ms ease;
+}
+.comparison-row:hover { background: rgba(255, 146, 92, 0.08); transform: translateX(4px); }
+html[dir='rtl'] .comparison-row:hover { transform: translateX(-4px); }
+.comparison-index { color: var(--coral-deep); font-family: var(--font-display); font-weight: 700; }
+.comparison-row strong { font-size: 0.94rem; line-height: 1.5; }
+.comparison-row > span:last-child { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.6; }
+
+.resource-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.resource-card {
+  position: relative;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem;
+  min-height: 150px; padding: 1.4rem;
+  color: var(--ink); text-decoration: none;
+  border: 1px solid rgba(0, 41, 0, 0.15); border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.64), rgba(245, 245, 229, 0.52)),
+    rgba(250, 250, 240, 0.68);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 300ms ease, box-shadow 300ms ease;
+}
+.resource-card:hover { transform: translateY(-6px); border-color: var(--orange); box-shadow: var(--shadow-lift); }
+.resource-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px; border-radius: 14px;
+  color: var(--ink); background: rgba(255, 146, 92, 0.86);
+}
+.resource-icon svg { width: 22px; height: 22px; }
+.resource-card strong { display: block; font-family: var(--font-display); font-size: 1.05rem; }
+.resource-card small { display: block; margin-top: 0.5rem; color: var(--ink-soft); font-size: 0.76rem; line-height: 1.55; }
+.resource-arrow { color: var(--coral-deep); font-size: 1.2rem; transition: transform 250ms ease; }
+.resource-card:hover .resource-arrow { transform: translate(3px, -3px); }
+html[dir='rtl'] .resource-card:hover .resource-arrow { transform: translate(-3px, -3px); }
+.resource-download { color: var(--sand); background: var(--grad-green); }
+.resource-download small { color: rgba(245, 245, 229, 0.72); }
+.resource-download .resource-arrow { color: var(--orange); }
+
+.support-band {
+  display: grid; grid-template-columns: minmax(230px, 0.7fr) minmax(0, 1.3fr);
+  gap: 3rem; margin-top: 1.25rem; padding: clamp(2rem, 4vw, 3.25rem);
+  color: var(--sand);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255, 146, 92, 0.18), transparent 28%),
+    var(--ink);
+}
+.support-band .eyebrow { color: var(--orange); }
+.support-band h3 { max-width: 13ch; margin: 0; font-family: var(--font-display); font-size: clamp(1.65rem, 3vw, 2.4rem); line-height: 1.12; }
+.support-band ul {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem;
+  list-style: none; margin: 0; padding: 0;
+}
+.support-band li {
+  display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 0.7rem;
+  padding: 1rem; border: 1px solid rgba(245, 245, 229, 0.12); border-radius: 17px;
+  background: rgba(245, 245, 229, 0.055);
+}
+.support-band li > span:first-child { color: var(--orange); font-weight: 850; }
+.support-band strong { display: block; font-size: 0.84rem; }
+.support-band small { display: block; margin-top: 0.45rem; color: rgba(245, 245, 229, 0.62); font-size: 0.73rem; line-height: 1.55; }
+
+.faq-list { max-width: 920px; margin-inline-start: auto; border-top: 1px solid rgba(0, 41, 0, 0.2); }
+.faq-item { border-bottom: 1px solid rgba(0, 41, 0, 0.2); }
+.faq-item summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+  padding: 1.5rem 0; color: var(--ink); font-weight: 700; font-size: 1.0625rem;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-answer {
+  display: grid; grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 420ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease;
+}
+.faq-answer > p { overflow: hidden; }
+.faq-item[open] .faq-answer { grid-template-rows: 1fr; opacity: 1; }
+.faq-item p { max-width: 70ch; margin: 0; padding: 0 3rem 1.5rem 0; color: var(--ink-soft); line-height: 1.75; }
+html[dir='rtl'] .faq-item p { padding: 0 0 1.5rem 3rem; }
+.faq-plus { position: relative; flex: 0 0 22px; width: 22px; height: 22px; }
+.faq-plus::before, .faq-plus::after { content: ''; position: absolute; inset: 50% 0 auto; height: 2px; background: var(--orange); transition: transform 250ms ease; }
+.faq-plus::after { transform: rotate(90deg); }
+.faq-item[open] .faq-plus::after { transform: rotate(0); }
+
+.detail-reveal {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition: opacity 650ms ease, transform 720ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.detail-reveal.is-visible { opacity: 1; transform: translate3d(0, 0, 0); }
+
+.closing {
+  position: relative; overflow: hidden;
+  display: flex; align-items: end; justify-content: space-between; gap: 3rem;
+  margin-top: 2rem; padding: clamp(3rem, 6vw, 5rem);
+  color: var(--sand); background: var(--grad-green); border-radius: var(--radius-panel);
+  box-shadow: var(--glow-green);
 }
 
-/* Missing */
-.missing { display: flex; flex-direction: column; align-items: flex-start; gap: 2rem; }
-.missing-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 600;
-  letter-spacing: var(--track-display); color: var(--ink); margin: 0;
+.closing::after {
+  content: ''; position: absolute; width: 22rem; aspect-ratio: 1; border-radius: 50%;
+  inset-inline-end: -10rem; top: -13rem;
+  border: 1px solid rgba(255, 146, 92, 0.24);
+  box-shadow: 0 0 0 3rem rgba(255, 146, 92, 0.04), 0 0 0 6rem rgba(255, 146, 92, 0.025);
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-html[lang='fa'] .missing-title { font-weight: 800; }
+.closing:hover::after { transform: scale(1.12) rotate(8deg); }
+.closing > * { position: relative; z-index: 1; }
 
-@media (max-width: 1024px) {
-  .detail { padding: 9rem 1.75rem 4rem; }
-  .head { grid-template-columns: 1fr; gap: 2.5rem; }
-  .head-media { order: -1; }
-  .body { grid-template-columns: 1fr; gap: 2.5rem; }
+@keyframes highlight-breathe {
+  0% { transform: scale(0.72); opacity: 0.75; }
+  70%, 100% { transform: scale(1.5); opacity: 0; }
 }
 
-@media (max-width: 720px) {
-  .detail { padding: 7.5rem 1.25rem 3rem; }
-  .spec-row { grid-template-columns: 1fr; }
-  .spec-label { border-inline-end: none; border-bottom: 1px solid var(--line); }
+.closing h2 { max-width: 18ch; }
+.closing-eyebrow { color: var(--orange); }
+.closing-actions { display: flex; flex-wrap: wrap; gap: 0.875rem; flex-shrink: 0; }
+
+.btn-ghost-light {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0.875rem 1.5rem; border: 1px solid rgba(245, 245, 229, 0.55);
+  border-radius: var(--radius-btn); color: var(--sand); text-decoration: none; font-weight: 700;
+  transition: color 250ms ease, border-color 250ms ease, background 250ms ease;
+}
+.btn-ghost-light:hover { color: var(--ink); background: var(--sand); border-color: var(--sand); }
+
+.missing { min-height: 60vh; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2rem; }
+.missing h1 { max-width: 18ch; margin: 0; font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1.05; }
+
+@media (max-width: 980px) {
+  .product-hero { grid-template-columns: 1fr; min-height: 0; }
+  .hero-media { min-height: 520px; height: 68vw; }
+  .highlight-strip { grid-template-columns: repeat(3, 1fr); }
+  .highlight-note { grid-column: 1 / -1; min-height: 88px; }
+  .story { grid-template-columns: 1fr; gap: 0; }
+  .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workflow-track { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workflow-track::before { display: none; }
+  .facts-grid { grid-template-columns: 1fr; }
+  .resource-grid { grid-template-columns: 1fr; }
+  .resource-card { min-height: 120px; }
+  .support-band { grid-template-columns: 1fr; gap: 2rem; }
+  .closing { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 700px) {
+  .detail { padding: 7.5rem 1.25rem 4rem; }
+  .product-hero { gap: 2.5rem; }
+  .hero-title { font-size: clamp(2.75rem, 14vw, 4.4rem); }
+  .hero-media { min-height: 430px; height: 120vw; border-radius: 999px 999px 28px 28px; }
+  .highlight-strip { grid-template-columns: repeat(3, 1fr); border-radius: 18px; }
+  .highlight-stat { min-height: 110px; padding: 1rem 0.8rem; }
+  .highlight-stat strong { font-size: 1.85rem; }
+  .highlight-stat span { font-size: 0.67rem; }
+  .highlight-note { padding: 1.1rem; }
+  .section-heading { grid-template-columns: 1fr; gap: 1.25rem; }
+  .feature-grid, .value-grid, .gallery-grid { grid-template-columns: 1fr; }
+  .feature-card { min-height: 220px; }
+  .workflow-track { grid-template-columns: 1fr; }
+  .gallery-item, .gallery-item:first-child { grid-row: auto; min-height: 330px; }
+  .spec-row { grid-template-columns: 1fr; gap: 0.4rem; }
+  .comparison-head { display: none; }
+  .comparison-row { grid-template-columns: 2.5rem 1fr; gap: 0.7rem 1rem; }
+  .comparison-row > span:last-child { grid-column: 2; }
+  .support-band ul { grid-template-columns: 1fr; }
+  .closing { border-radius: var(--radius-card); }
+  .closing-actions, .closing-actions > * { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-orb-a, .detail-orb-b { transform: none; }
+  .highlight-pulse::after { animation: none; }
+  .detail-reveal, .feature-card, .workflow-step { opacity: 1; transform: none; }
+  .workflow-track::before { transform: scaleX(1); }
+  .feature-card, .feature-graphic, .feature-icon, .gallery-item img,
+  .faq-answer, .faq-plus::after, .closing::after { transition: none; }
 }
 </style>

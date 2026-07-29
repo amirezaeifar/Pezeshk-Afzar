@@ -1,57 +1,54 @@
-// ── Testimonials (static) ───────────────────────────────────────────
-// Voices from both sides of care — clinicians who work with our tools
-// and people who got their days back. Photo sourcing follows the same
-// rule as the rest of the site: authentic, warm-light portraits of
-// people radiating health and joy. No stock-smile corporate poses.
+// Local, candid lifestyle photography only. The selected source files
+// feature genuine family and care moments in naturally warm light.
 export const testimonials = [
   {
     id: 'leila',
     name: { en: 'Dr. Leila Ahmadi', fa: 'دکتر لیلا احمدی' },
-    role: { en: 'Radiologist · Mashhad', fa: 'رادیولوژیست · مشهد' },
+    role: { en: 'Dermatologist · Mashhad', fa: 'متخصص پوست · مشهد' },
     quote: {
-      en: 'RadiantImage reads with me, not for me. I finish my worklist while the tea is still warm.',
-      fa: 'رادیانت‌ایمیج همراهِ من گزارش می‌خواند، نه به‌جای من. فهرست کارم تمام می‌شود در حالی که چای هنوز گرم است.',
+      en: 'SkinApp gives our team a much clearer starting point. Consistent images and a structured history make follow-up conversations more focused.',
+      fa: 'اسکین‌اَپ نقطهٔ شروع روشن‌تری به تیم ما می‌دهد. تصاویر یکدست و سابقهٔ ساختاریافته، گفت‌وگوهای پیگیری را متمرکزتر می‌کند.',
     },
-    photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80',
+    photo: '/images/testimonials/nurse-patient.jpg',
   },
   {
     id: 'reza',
     name: { en: 'Reza Karimi', fa: 'رضا کریمی' },
-    role: { en: 'Back to his morning walks', fa: 'بازگشته به پیاده‌روی‌های صبح' },
+    role: { en: 'Living well with long-term care', fa: 'در مسیر زندگی بهتر با مراقبت بلندمدت' },
     quote: {
-      en: 'After my surgery, the remote monitoring meant my daughter finally slept through the night. So did I.',
-      fa: 'بعد از عمل، پایش از راه دور یعنی دخترم بالاخره شب‌ها راحت خوابید. من هم همین‌طور.',
+      en: 'IBD Care keeps the small details of my week in one place, so appointments begin with what actually changed instead of what I can remember.',
+      fa: 'آی‌بی‌دی کِر جزئیات کوچک هفته‌ام را یک‌جا نگه می‌دارد؛ بنابراین ویزیت با تغییرات واقعی شروع می‌شود، نه فقط چیزهایی که یادم مانده.',
     },
-    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80',
+    photo: '/images/testimonials/diverse-friends.jpg',
   },
   {
     id: 'sara',
     name: { en: 'Sara Mohammadi', fa: 'سارا محمدی' },
-    role: { en: 'Head nurse, cardiology ward', fa: 'سرپرستار بخش قلب' },
+    role: { en: 'Mother of two', fa: 'مادر دو کودک' },
     quote: {
-      en: 'ClinicOS gave my ward its quiet back. Less typing, fewer phone calls, more time at the bedside.',
-      fa: 'کلینیک‌اواس آرامش بخش را به ما برگرداند. تایپ کمتر، تلفن کمتر، و وقت بیشتر بر بالین بیمار.',
+      en: "Today's Mom turns a flood of questions into a calm next step. I know what to notice today and when it is time to call my care team.",
+      fa: 'مامان امروز سیل پرسش‌ها را به یک قدم بعدی آرام تبدیل می‌کند. می‌دانم امروز به چه چیزهایی توجه کنم و چه زمانی با تیم درمان تماس بگیرم.',
     },
-    photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80',
+    photo: '/images/testimonials/mother-baby.jpg',
   },
   {
     id: 'amir',
     name: { en: 'Amir Hosseini', fa: 'امیر حسینی' },
-    role: { en: 'Clinic director', fa: 'مدیر کلینیک' },
+    role: { en: 'Community clinic director', fa: 'مدیر کلینیک جامعه‌محور' },
     quote: {
-      en: 'They stayed long after launch. Two years on, they still answer before the kettle boils.',
-      fa: 'خیلی بعد از راه‌اندازی هم ماندند. دو سال گذشته و هنوز پیش از آنکه کتری جوش بیاید جواب می‌دهند.',
+      en: 'The tabletop autoclave fits the rhythm of a small, busy clinic: a clear cycle, a practical footprint, and support when our team needs it.',
+      fa: 'اتوکلاو رومیزی با ریتم یک کلینیک کوچک و شلوغ هماهنگ است: چرخهٔ روشن، ابعاد کاربردی و پشتیبانی در زمانی که تیم ما نیاز دارد.',
     },
-    photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80',
+    photo: '/images/testimonials/family-sunset.jpg',
   },
   {
     id: 'maryam',
     name: { en: 'Maryam Sadeghi', fa: 'مریم صادقی' },
-    role: { en: 'Kite-flyer, grandmother of three', fa: 'بادبادک‌باز، مادربزرگ سه نوه' },
+    role: { en: 'Grandmother and morning walker', fa: 'مادربزرگ و همراه پیاده‌روی‌های صبح' },
     quote: {
-      en: 'The machines beeped less and the nurses smiled more. I was home a week earlier than promised.',
-      fa: 'دستگاه‌ها کمتر بوق زدند و پرستارها بیشتر لبخند. یک هفته زودتر از قولشان خانه بودم.',
+      en: 'The glucose meter is straightforward enough to become part of my morning, not the center of it. I check, record, and get on with my day.',
+      fa: 'دستگاه سنجش قند آن‌قدر ساده است که بخشی از صبحم باشد، نه مرکز آن. اندازه می‌گیرم، ثبت می‌کنم و روزم را ادامه می‌دهم.',
     },
-    photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80',
+    photo: '/images/testimonials/friends-sunset.jpg',
   },
 ]

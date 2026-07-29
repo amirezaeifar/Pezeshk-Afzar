@@ -1,302 +1,623 @@
-// ── Product catalogue (static) ─────────────────────────────────────
-// Pezeshk Afzar delivers an integrated portfolio of medical SOFTWARE and
-// medical EQUIPMENT. Each record is self-contained: there is no backend
-// and no runtime store — the views import this array directly and render
-// it as a static, multi-page showcase.
-//
-// Schema
-//   id            unique slug, used as the /products/:id route param
-//   number        display index (e.g. "01")
-//   type          'software' | 'equipment'
-//   flagship      optional highlight flag
-//   name          { en, fa }
-//   category      { en, fa }   — e.g. "Innovative Equipment" / "تجهیزات خلاقانه"
-//   tagline       { en, fa }
-//   description    { en, fa }   — general description for the detail page
-//   features      { en: [], fa: [] }
-//   specs         [ { label: { en, fa }, value: { en, fa } } ]  — technical specifications
-//   certifications{ en: [], fa: [] }  — licenses / certifications
-//   image         hero image URL
-//   span          'normal' | 'wide'  — homepage grid sizing
+const l = (en, fa) => ({ en, fa })
+
+const product = ({
+  id,
+  number,
+  type,
+  icon,
+  name,
+  category,
+  tagline,
+  description,
+  features,
+  benefits,
+  applications,
+  specs,
+  assurances,
+  gallery,
+  galleryAlt,
+  faq,
+  flagship = false,
+}) => ({
+  id,
+  number,
+  type,
+  icon,
+  name,
+  category,
+  tagline,
+  description,
+  features,
+  benefits,
+  applications,
+  specs,
+  certifications: assurances,
+  gallery,
+  galleryAlt,
+  image: gallery[0],
+  faq,
+  flagship,
+  span: 'normal',
+  catalog: '/catalogs/pezeshk-afzar-product-catalog.pdf',
+})
 
 export const products = [
-  {
-    id: 'clinicos',
+  product({
+    id: 'todays-mom',
     number: '01',
     type: 'software',
+    icon: 'mother',
     flagship: true,
-    name: { en: 'ClinicOS', fa: 'کلینیک‌اواس' },
-    category: { en: 'Hospital Information System', fa: 'سامانهٔ اطلاعات بیمارستانی' },
-    tagline: {
-      en: 'Unified hospital management & patient records.',
-      fa: 'مدیریت یکپارچهٔ بیمارستان و پروندهٔ بیماران.',
-    },
-    description: {
-      en: 'A modern Hospital Information System that replaces fragmented spreadsheets and legacy software. ClinicOS unifies patient records, admissions, billing, and inter-department clinical pathways inside a single, role-aware interface — and connects directly to the medical equipment Pezeshk Afzar deploys on the ward.',
-      fa: 'یک سامانهٔ اطلاعات بیمارستانی مدرن که جایگزین صفحه‌گسترده‌های پراکنده و نرم‌افزارهای قدیمی می‌شود. کلینیک‌اواس پروندهٔ بیمار، پذیرش، صورت‌حساب و مسیرهای بالینی بین‌بخشی را در یک واسط واحد و مبتنی بر نقش متحد می‌کند و مستقیماً به تجهیزات پزشکی مستقرشده توسط پزشک‌افزار متصل می‌شود.',
-    },
+    name: l("Today's Mom", 'مامان امروز'),
+    category: l('Maternal & child health', 'سلامت مادر و کودک'),
+    tagline: l(
+      'AI-guided support from pregnancy through early childhood.',
+      'همراه هوشمند مادر از بارداری تا سال‌های نخست کودکی.',
+    ),
+    description: l(
+      "Today's Mom brings trusted education, daily check-ins, growth tracking, and timely care guidance into one calm experience. It helps mothers understand what matters today while giving care teams a clearer view of the questions and signals that need attention.",
+      '«مامان امروز» آموزش معتبر، پیگیری روزانه، ثبت رشد و راهنمایی به‌موقع را در تجربه‌ای آرام کنار هم می‌آورد. مادر می‌داند امروز چه چیزی مهم است و تیم درمان هم نشانه‌ها و پرسش‌هایی را که نیاز به توجه دارند روشن‌تر می‌بیند.',
+    ),
     features: {
-      en: [
-        'Unified patient records with full audit history',
-        'Role-based access for clinical, administrative & billing staff',
-        'HL7 / FHIR interfaces for laboratory and imaging integration',
-      ],
-      fa: [
-        'پروندهٔ یکپارچهٔ بیمار با تاریخچهٔ کامل ممیزی',
-        'دسترسی مبتنی بر نقش برای کادر بالینی، اداری و صورت‌حساب',
-        'واسط‌های HL7 / FHIR برای اتصال آزمایشگاه و تصویربرداری',
-      ],
+      en: ['Pregnancy and child-development timeline', 'AI-assisted question routing', 'Daily wellbeing and symptom check-ins', 'Care-team education library'],
+      fa: ['خط زمانی بارداری و رشد کودک', 'هدایت هوشمند پرسش‌ها', 'ثبت روزانه حال عمومی و علائم', 'کتابخانه آموزشی تیم درمان'],
+    },
+    benefits: {
+      en: ['Clear next steps for mothers', 'Earlier visibility of concerning changes', 'More consistent education between visits'],
+      fa: ['قدم بعدی روشن برای مادر', 'دید زودتر نسبت به تغییرات نگران‌کننده', 'آموزش یکدست‌تر میان ویزیت‌ها'],
+    },
+    applications: {
+      en: ['Maternity clinics', 'Obstetrics practices', 'Pediatric follow-up programs', 'Community health networks'],
+      fa: ['کلینیک‌های مادران', 'مطب‌های زنان و زایمان', 'برنامه‌های پیگیری کودکان', 'شبکه‌های بهداشت جامعه'],
     },
     specs: [
-      { label: { en: 'Deployment', fa: 'استقرار' }, value: { en: 'On-premise or private cloud', fa: 'درون‌سازمانی یا ابر خصوصی' } },
-      { label: { en: 'Interoperability', fa: 'هم‌کنش‌پذیری' }, value: { en: 'HL7 v2, FHIR R4, DICOM', fa: 'HL7 v2، FHIR R4، DICOM' } },
-      { label: { en: 'Concurrent users', fa: 'کاربران هم‌زمان' }, value: { en: 'Up to 5,000', fa: 'تا ۵۰۰۰' } },
-      { label: { en: 'Data residency', fa: 'محل نگه‌داری داده' }, value: { en: 'In-country, air-gap capable', fa: 'داخل کشور، قابل ایزوله‌سازی' } },
+      { label: l('Experience', 'تجربه'), value: l('Responsive web platform', 'پلتفرم وب واکنش‌گرا') },
+      { label: l('Access', 'دسترسی'), value: l('Mother and care-team roles', 'نقش‌های مادر و تیم درمان') },
+      { label: l('Content', 'محتوا'), value: l('Stage-aware care pathways', 'مسیرهای مراقبتی متناسب با مرحله') },
+      { label: l('Delivery', 'ارائه'), value: l('Cloud or private deployment', 'استقرار ابری یا خصوصی') },
     ],
-    certifications: {
-      en: ['IEC 62304 software lifecycle', 'ISO 13485 aligned processes', 'ISO/IEC 27001 information security'],
-      fa: ['چرخهٔ عمر نرم‌افزار IEC 62304', 'فرآیندهای منطبق با ISO 13485', 'امنیت اطلاعات ISO/IEC 27001'],
+    assurances: {
+      en: ['Clinician-reviewed care content', 'Role-aware access controls', 'Privacy-first data handling'],
+      fa: ['محتوای بازبینی‌شده توسط درمانگران', 'کنترل دسترسی مبتنی بر نقش', 'مدیریت داده با اولویت حریم خصوصی'],
     },
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80',
-    span: 'wide',
-  },
-  {
-    id: 'radiantimage',
+    gallery: [
+      '/images/software/todays-mom-hero.jpg',
+      '/images/software/todays-mom-family.jpg',
+      '/images/software/todays-mom-care.jpg',
+    ],
+    galleryAlt: {
+      en: ['A still lake resting beneath soft morning mist', 'Mount Fuji beneath a soft orange sunset', 'A natural limestone arch above clear blue water'],
+      fa: ['دریاچه‌ای آرام در مه نرم صبحگاهی', 'کوه فوجی زیر غروب نرم و نارنجی', 'طاق طبیعی سنگی بر فراز آب‌های شفاف آبی'],
+    },
+    faq: [
+      {
+        question: l('Does the platform replace medical advice?', 'آیا این پلتفرم جایگزین توصیه پزشکی است؟'),
+        answer: l('No. It supports education, check-ins, and care coordination; diagnosis and treatment decisions remain with qualified clinicians.', 'خیر. پلتفرم برای آموزش، پیگیری و هماهنگی مراقبت است و تشخیص و درمان همچنان بر عهده درمانگر واجد صلاحیت می‌ماند.'),
+      },
+      {
+        question: l('Can a clinic tailor its care pathways?', 'آیا کلینیک می‌تواند مسیرهای مراقبتی را شخصی‌سازی کند؟'),
+        answer: l('Yes. Content, check-ins, and escalation routes can be configured around the clinic’s approved workflow.', 'بله. محتوا، پیگیری‌ها و مسیر ارجاع می‌توانند مطابق گردش‌کار تأییدشده کلینیک تنظیم شوند.'),
+      },
+    ],
+  }),
+  product({
+    id: 'skinapp',
     number: '02',
     type: 'software',
-    name: { en: 'RadiantImage', fa: 'رادیانت‌ایمیج' },
-    category: { en: 'Medical Imaging', fa: 'تصویربرداری پزشکی' },
-    tagline: {
-      en: 'Diagnostic imaging & reading assistance.',
-      fa: 'تصویربرداری تشخیصی و کمک به گزارش‌دهی.',
-    },
-    description: {
-      en: 'A DICOM-native viewer with diagnostic-assist models for chest radiography, CT, and MRI. Designed for radiologists who want a validated pre-read, not a replacement — every model output is auditable and can be dismissed by the reporting physician.',
-      fa: 'یک نمایشگر بومی DICOM با مدل‌های کمک‌تشخیصی برای رادیوگرافی قفسهٔ سینه، CT و MRI. طراحی‌شده برای رادیولوژیست‌هایی که پیش‌خوانیِ معتبر می‌خواهند، نه جایگزینی — خروجی هر مدل قابل ممیزی است و پزشک گزارش‌دهنده می‌تواند آن را رد کند.',
-    },
+    icon: 'skin',
+    name: l('SkinApp', 'اسکین‌اَپ'),
+    category: l('AI dermatology support', 'پشتیبان هوشمند پوست'),
+    tagline: l(
+      'Structured skin screening and follow-up, with clinicians in control.',
+      'غربالگری ساختاریافته پوست و پیگیری منظم، با کنترل کامل درمانگر.',
+    ),
+    description: l(
+      'SkinApp helps people capture consistent skin images, answer guided questions, and reach the right clinical pathway sooner. For dermatology teams, it organizes longitudinal images and symptom context so review starts with a clearer picture.',
+      'اسکین‌اَپ به افراد کمک می‌کند تصاویر پوستی یکدست ثبت کنند، به پرسش‌های هدایت‌شده پاسخ دهند و زودتر به مسیر درمانی درست برسند. برای تیم پوست، تصاویر طولی و زمینه علائم منظم می‌شود تا بررسی با تصویر روشن‌تری آغاز شود.',
+    ),
     features: {
-      en: [
-        'DICOM-native viewer with multiplanar reconstruction',
-        'Pre-read models for chest radiography, CT chest, and brain MRI',
-        'PACS integration with on-premise or cloud deployment',
-      ],
-      fa: [
-        'نمایشگر بومی DICOM با بازسازی چندصفحه‌ای',
-        'مدل‌های پیش‌خوانی برای رادیوگرافی سینه، CT سینه و MRI مغز',
-        'یکپارچگی با PACS، استقرار درون‌سازمانی یا ابری',
-      ],
+      en: ['Guided image capture', 'AI-assisted visual triage', 'Longitudinal skin-image timeline', 'Clinician review workspace'],
+      fa: ['ثبت هدایت‌شده تصویر', 'تریاژ تصویری با کمک هوش مصنوعی', 'خط زمانی تصاویر پوست', 'فضای بررسی درمانگر'],
+    },
+    benefits: {
+      en: ['More consistent intake images', 'Faster routing to appropriate care', 'Easier visual follow-up over time'],
+      fa: ['تصاویر ورودی یکدست‌تر', 'هدایت سریع‌تر به مراقبت مناسب', 'پیگیری تصویری ساده‌تر در طول زمان'],
+    },
+    applications: {
+      en: ['Dermatology clinics', 'Teledermatology services', 'Primary-care networks', 'Skin-health screening programs'],
+      fa: ['کلینیک‌های پوست', 'خدمات پوست از راه دور', 'شبکه‌های مراقبت اولیه', 'برنامه‌های غربالگری سلامت پوست'],
     },
     specs: [
-      { label: { en: 'Modalities', fa: 'مدالیته‌ها' }, value: { en: 'CR, DR, CT, MRI, US', fa: 'CR، DR، CT، MRI، سونوگرافی' } },
-      { label: { en: 'Standard', fa: 'استاندارد' }, value: { en: 'DICOM 3.0, IHE profiles', fa: 'DICOM 3.0، پروفایل‌های IHE' } },
-      { label: { en: 'Reconstruction', fa: 'بازسازی' }, value: { en: 'MPR, MIP, 2D fusion', fa: 'MPR، MIP، ادغام دوبعدی' } },
-      { label: { en: 'Reporting latency', fa: 'تأخیر گزارش' }, value: { en: '< 3 s per study', fa: 'کمتر از ۳ ثانیه برای هر مطالعه' } },
+      { label: l('Input', 'ورودی'), value: l('Guided mobile photography', 'تصویربرداری هدایت‌شده با موبایل') },
+      { label: l('Review', 'بررسی'), value: l('Clinician-in-the-loop workflow', 'گردش‌کار با نظارت درمانگر') },
+      { label: l('History', 'سابقه'), value: l('Time-based image comparison', 'مقایسه تصویری در طول زمان') },
+      { label: l('Delivery', 'ارائه'), value: l('Responsive web platform', 'پلتفرم وب واکنش‌گرا') },
     ],
-    certifications: {
-      en: ['IEC 62304 software lifecycle', 'DICOM conformance statement', 'ISO 13485 aligned processes'],
-      fa: ['چرخهٔ عمر نرم‌افزار IEC 62304', 'بیانیهٔ انطباق DICOM', 'فرآیندهای منطبق با ISO 13485'],
+    assurances: {
+      en: ['Decision support, not autonomous diagnosis', 'Auditable review trail', 'Controlled clinical access'],
+      fa: ['پشتیبان تصمیم، نه تشخیص خودکار', 'ردپای قابل ممیزی بررسی', 'دسترسی کنترل‌شده درمانی'],
     },
-    image: 'https://images.unsplash.com/photo-1476900543704-4312b78632f8?w=1200&q=80',
-    span: 'normal',
-  },
-  {
-    id: 'vitalstream',
+    gallery: [
+      '/images/software/skinapp-hero.jpg',
+      '/images/software/skinapp-scan.jpg',
+      '/images/software/skinapp-review.jpg',
+    ],
+    galleryAlt: {
+      en: ['Minimal still water beneath soft natural light', 'Still blue water at Lake Tahoe in morning light', 'A sweeping glacier beneath a clean alpine sky'],
+      fa: ['آب آرام و مینیمال زیر نور نرم طبیعی', 'آب آرام و آبی دریاچه تاهو در نور صبح', 'چشم‌انداز گسترده یخچال طبیعی زیر آسمان پاک آلپ'],
+    },
+    faq: [
+      {
+        question: l('Does SkinApp provide a final diagnosis?', 'آیا اسکین‌اَپ تشخیص نهایی ارائه می‌دهد؟'),
+        answer: l('No. It organizes information and supports triage so a qualified clinician can review and decide the appropriate next step.', 'خیر. اطلاعات را منظم و تریاژ را پشتیبانی می‌کند تا درمانگر واجد صلاحیت قدم بعدی را تعیین کند.'),
+      },
+      {
+        question: l('Can previous images be compared?', 'آیا تصاویر قبلی قابل مقایسه‌اند؟'),
+        answer: l('Yes. Authorized users can review a time-based visual history to support follow-up conversations.', 'بله. کاربران مجاز می‌توانند سابقه تصویری زمان‌محور را برای پیگیری بهتر مرور کنند.'),
+      },
+    ],
+  }),
+  product({
+    id: 'ibd-care',
     number: '03',
     type: 'software',
-    name: { en: 'VitalStream', fa: 'وایتال‌استریم' },
-    category: { en: 'Patient Monitoring', fa: 'پایش بیمار' },
-    tagline: {
-      en: 'Real-time patient monitoring dashboards.',
-      fa: 'داشبوردهای پایش بلادرنگ بیمار.',
-    },
-    description: {
-      en: 'Continuous vital signs from bedside monitors aggregated into a single dashboard for intensive-care, post-operative, and ward teams. Early-warning scoring runs locally — no patient data leaves the hospital network.',
-      fa: 'علائم حیاتی پیوسته از مانیتورهای بالینی، در یک داشبورد واحد برای تیم‌های مراقبت ویژه، پس از عمل و بخش جمع می‌شود. امتیازدهی هشدار زودهنگام به‌صورت محلی اجرا می‌شود — هیچ دادهٔ بیمار از شبکهٔ بیمارستان خارج نمی‌شود.',
-    },
+    icon: 'digestive',
+    name: l('IBD Care', 'مراقبت IBD'),
+    category: l('Digestive health', 'سلامت گوارش'),
+    tagline: l(
+      'Everyday self-care and symptom tracking for people living with IBD.',
+      'خودمراقبتی روزانه و پیگیری علائم برای افراد مبتلا به IBD.',
+    ),
+    description: l(
+      'IBD Care turns the space between appointments into a useful part of care. People can track symptoms, treatment routines, nutrition notes, and quality-of-life signals, while clinical teams receive a more coherent picture for follow-up.',
+      'مراقبت IBD فاصله میان ویزیت‌ها را به بخش مفیدی از درمان تبدیل می‌کند. فرد می‌تواند علائم، برنامه درمان، یادداشت‌های تغذیه و نشانه‌های کیفیت زندگی را ثبت کند و تیم درمان تصویر منسجم‌تری برای پیگیری داشته باشد.',
+    ),
     features: {
-      en: [
-        'Aggregates feeds from 30+ monitor manufacturers',
-        'MEWS / NEWS2 early-warning scoring on-device',
-        'Configurable alert routing to phones and pagers',
-      ],
-      fa: [
-        'تجمیع داده از بیش از ۳۰ سازندهٔ مانیتور',
-        'امتیازدهی هشدار زودهنگام MEWS / NEWS2 روی دستگاه',
-        'مسیریابی هشدار قابل‌پیکربندی به موبایل و پیجر',
-      ],
+      en: ['Symptom and wellbeing diary', 'Medication routine support', 'Food and trigger notes', 'Visit-ready progress summaries'],
+      fa: ['دفترچه علائم و حال عمومی', 'پشتیبانی از برنامه دارویی', 'یادداشت غذا و محرک‌ها', 'خلاصه آماده برای ویزیت'],
+    },
+    benefits: {
+      en: ['Better prepared consultations', 'Greater confidence in daily self-care', 'Shared visibility of trends and triggers'],
+      fa: ['آمادگی بهتر برای ویزیت', 'اطمینان بیشتر در خودمراقبتی روزانه', 'دید مشترک نسبت به روندها و محرک‌ها'],
+    },
+    applications: {
+      en: ['Gastroenterology clinics', 'IBD centers', 'Patient-support programs', 'Long-term follow-up services'],
+      fa: ['کلینیک‌های گوارش', 'مراکز IBD', 'برنامه‌های حمایت از بیمار', 'خدمات پیگیری بلندمدت'],
     },
     specs: [
-      { label: { en: 'Acquisition rate', fa: 'نرخ نمونه‌برداری' }, value: { en: 'Up to 500 Hz waveform', fa: 'تا ۵۰۰ هرتز موج' } },
-      { label: { en: 'Scoring', fa: 'امتیازدهی' }, value: { en: 'MEWS, NEWS2, custom', fa: 'MEWS، NEWS2، سفارشی' } },
-      { label: { en: 'Bed capacity', fa: 'ظرفیت تخت' }, value: { en: 'Up to 1,200 beds', fa: 'تا ۱۲۰۰ تخت' } },
-      { label: { en: 'Connectivity', fa: 'اتصال' }, value: { en: 'HL7, MQTT, serial', fa: 'HL7، MQTT، سریال' } },
+      { label: l('Tracking', 'پیگیری'), value: l('Symptoms, routines, wellbeing', 'علائم، برنامه‌ها و حال عمومی') },
+      { label: l('Reports', 'گزارش‌ها'), value: l('Visit-ready summaries', 'خلاصه‌های آماده ویزیت') },
+      { label: l('Access', 'دسترسی'), value: l('Patient and care-team views', 'نمای بیمار و تیم درمان') },
+      { label: l('Delivery', 'ارائه'), value: l('Mobile-first web experience', 'تجربه وب موبایل‌محور') },
     ],
-    certifications: {
-      en: ['IEC 62304 software lifecycle', 'IEC 60601-1-8 alarm alignment', 'ISO 13485 aligned processes'],
-      fa: ['چرخهٔ عمر نرم‌افزار IEC 62304', 'انطباق هشدار IEC 60601-1-8', 'فرآیندهای منطبق با ISO 13485'],
+    assurances: {
+      en: ['Clinician-configurable questionnaires', 'Consent-aware sharing', 'Secure longitudinal records'],
+      fa: ['پرسش‌نامه‌های قابل تنظیم توسط درمانگر', 'اشتراک‌گذاری مبتنی بر رضایت', 'سوابق طولی امن'],
     },
-    image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1200&q=80',
-    span: 'normal',
-  },
-  {
-    id: 'medbridge',
+    gallery: [
+      '/images/software/ibd-care-hero.jpg',
+      '/images/software/ibd-care-lifestyle.jpg',
+      '/images/software/ibd-care-clinic.jpg',
+    ],
+    galleryAlt: {
+      en: ['A quiet woodland softened by mist and filtered light', 'An alpine lake surrounded by green summer meadows', 'A clear mountain lake framed by green slopes'],
+      fa: ['جنگلی آرام در مه و نور نرم', 'دریاچه‌ای آلپی میان چمنزارهای سبز تابستانی', 'دریاچه‌ای زلال در قاب دامنه‌های سبز کوهستان'],
+    },
+    faq: [
+      {
+        question: l('Can questionnaires match our clinic workflow?', 'آیا پرسش‌نامه‌ها با روند کلینیک ما هماهنگ می‌شوند؟'),
+        answer: l('Yes. Approved questionnaires and follow-up cadence can be configured for each service pathway.', 'بله. پرسش‌نامه‌های تأییدشده و زمان‌بندی پیگیری برای هر مسیر خدمت قابل تنظیم است.'),
+      },
+      {
+        question: l('Is it intended for urgent symptoms?', 'آیا برای علائم اورژانسی طراحی شده است؟'),
+        answer: l('No. The product clearly directs urgent concerns to the appropriate emergency or clinical channel.', 'خیر. محصول نگرانی‌های فوری را به‌روشنی به مسیر اورژانسی یا درمانی مناسب هدایت می‌کند.'),
+      },
+    ],
+  }),
+  product({
+    id: 'agingdrug',
     number: '04',
     type: 'software',
-    name: { en: 'MedBridge', fa: 'مدبریج' },
-    category: { en: 'Device Integration', fa: 'یکپارچه‌سازی تجهیزات' },
-    tagline: {
-      en: 'Connected medical device interfaces.',
-      fa: 'واسط‌های تجهیزات پزشکی متصل.',
-    },
-    description: {
-      en: 'A device-integration layer that brings infusion pumps, ventilators, anaesthesia machines, and laboratory analysers into your hospital information system. Vendor-neutral connectors deliver a single, schema-validated event stream.',
-      fa: 'یک لایهٔ یکپارچه‌سازی تجهیزات که پمپ‌های انفوزیون، ونتیلاتورها، دستگاه‌های بیهوشی و آنالایزرهای آزمایشگاهی را به سامانهٔ اطلاعات بیمارستانی شما متصل می‌کند. کانکتورهای مستقل از سازنده، یک جریان رویدادِ یکپارچه و اعتبارسنجی‌شده ارائه می‌دهند.',
-    },
+    icon: 'medication',
+    name: l('AgingDrug', 'اِیجینگ‌دراگ'),
+    category: l('Clinical drug reference', 'مرجع بالینی دارو'),
+    tagline: l(
+      'Medication knowledge shaped for safer decisions in older-adult care.',
+      'دانش دارویی برای تصمیم‌های ایمن‌تر در مراقبت سالمندان.',
+    ),
+    description: l(
+      'AgingDrug gives clinicians a focused reference for medication review in older adults. It brings age-related precautions, interaction context, dose considerations, and monitoring prompts into a fast, searchable clinical workspace.',
+      'ایجینگ‌دراگ مرجعی متمرکز برای بازبینی دارو در سالمندان در اختیار درمانگر می‌گذارد. احتیاط‌های مرتبط با سن، زمینه تداخل‌ها، ملاحظات دوز و یادآورهای پایش در فضای بالینی سریع و قابل جست‌وجو کنار هم قرار می‌گیرند.',
+    ),
     features: {
-      en: [
-        'Vendor-neutral drivers for 120+ device models',
-        'Unified event schema (HL7 v2 / FHIR / MQTT)',
-        'Offline buffering with guaranteed delivery',
-      ],
-      fa: [
-        'درایورهای مستقل از سازنده برای بیش از ۱۲۰ مدل دستگاه',
-        'اسکیمای رویدادِ یکپارچه (HL7 v2 / FHIR / MQTT)',
-        'بافرینگ آفلاین با تضمین تحویل',
-      ],
+      en: ['Older-adult medication reference', 'Interaction and duplication review', 'Monitoring prompts', 'Fast clinical search'],
+      fa: ['مرجع دارویی سالمندان', 'بررسی تداخل و مصرف تکراری', 'یادآورهای پایش', 'جست‌وجوی سریع بالینی'],
+    },
+    benefits: {
+      en: ['More structured medication reviews', 'Important cautions surfaced sooner', 'A shared reference for multidisciplinary teams'],
+      fa: ['بازبینی دارویی ساختاریافته‌تر', 'نمایش زودتر احتیاط‌های مهم', 'مرجع مشترک برای تیم چندتخصصی'],
+    },
+    applications: {
+      en: ['Geriatric clinics', 'Hospital pharmacy', 'Primary care', 'Medication review services'],
+      fa: ['کلینیک‌های سالمندی', 'داروخانه بیمارستانی', 'مراقبت اولیه', 'خدمات بازبینی دارو'],
     },
     specs: [
-      { label: { en: 'Supported devices', fa: 'دستگاه‌های پشتیبانی‌شده' }, value: { en: '120+ models', fa: 'بیش از ۱۲۰ مدل' } },
-      { label: { en: 'Protocols', fa: 'پروتکل‌ها' }, value: { en: 'HL7, FHIR, MQTT, serial', fa: 'HL7، FHIR، MQTT، سریال' } },
-      { label: { en: 'Throughput', fa: 'توان عملیاتی' }, value: { en: '10,000 events / s', fa: '۱۰٬۰۰۰ رویداد بر ثانیه' } },
-      { label: { en: 'Buffering', fa: 'بافرینگ' }, value: { en: 'Local store-and-forward', fa: 'ذخیره و ارسال محلی' } },
+      { label: l('Reference', 'مرجع'), value: l('Age-aware medication profiles', 'پروفایل دارویی حساس به سن') },
+      { label: l('Review', 'بازبینی'), value: l('Interactions and monitoring', 'تداخل‌ها و پایش') },
+      { label: l('Users', 'کاربران'), value: l('Clinical and pharmacy teams', 'تیم‌های بالینی و داروسازی') },
+      { label: l('Access', 'دسترسی'), value: l('Searchable responsive web app', 'وب‌اپ واکنش‌گرا و قابل جست‌وجو') },
     ],
-    certifications: {
-      en: ['IEC 62304 software lifecycle', 'IEC 60601-1 interface alignment', 'ISO/IEC 27001 information security'],
-      fa: ['چرخهٔ عمر نرم‌افزار IEC 62304', 'انطباق واسط IEC 60601-1', 'امنیت اطلاعات ISO/IEC 27001'],
+    assurances: {
+      en: ['Evidence-referenced content workflow', 'Versioned clinical entries', 'Clear decision-support boundaries'],
+      fa: ['گردش‌کار محتوای مبتنی بر منابع', 'مدخل‌های بالینی نسخه‌بندی‌شده', 'مرز روشن پشتیبانی تصمیم'],
     },
-    image: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1200&q=80',
-    span: 'normal',
-  },
-  {
-    id: 'neuropulse',
+    gallery: [
+      '/images/software/agingdrug-hero.jpg',
+      '/images/software/agingdrug-pharmacy.jpg',
+      '/images/software/agingdrug-review.jpg',
+    ],
+    galleryAlt: {
+      en: ['Cloud-softened forest ridges in gentle morning light', 'Vibrant green mountains above a deep blue lake', 'Sunlit Dolomite peaks above an open plateau'],
+      fa: ['خط‌الرأس‌های جنگلی در میان ابرهای نرم', 'کوهستان سبز و درخشان بر فراز دریاچه آبی عمیق', 'قله‌های آفتابی دولومیت بر فراز دشتی باز'],
+    },
+    faq: [
+      {
+        question: l('Is AgingDrug a prescribing system?', 'آیا ایجینگ‌دراگ سامانه تجویز است؟'),
+        answer: l('No. It is a focused reference and review aid; prescribing authority and clinical judgment remain with the treating professional.', 'خیر. این محصول مرجع و ابزار کمک‌بررسی است و اختیار تجویز و قضاوت بالینی با درمانگر باقی می‌ماند.'),
+      },
+      {
+        question: l('Can content updates be tracked?', 'آیا تغییرات محتوا قابل پیگیری است؟'),
+        answer: l('Yes. Clinical entries can be versioned so authorized teams can see when reviewed content changed.', 'بله. مدخل‌های بالینی نسخه‌بندی می‌شوند تا تیم مجاز زمان تغییر محتوای بازبینی‌شده را ببیند.'),
+      },
+    ],
+  }),
+  product({
+    id: 'chemotherapy-care',
     number: '05',
-    type: 'equipment',
-    flagship: true,
-    name: { en: 'NeuroPulse', fa: 'نوروپالس' },
-    category: { en: 'Innovative Technology', fa: 'فناوری نوآورانه' },
-    tagline: {
-      en: 'Non-invasive neuromodulation system.',
-      fa: 'سامانهٔ نورومدولاسیون غیرتهاجمی.',
-    },
-    description: {
-      en: 'A novel non-invasive neuromodulation platform, developed and supported by Pezeshk Afzar. NeuroPulse delivers precisely targeted transcranial stimulation for neurology and rehabilitation departments, with closed-loop EEG guidance and a fully documented clinical protocol library.',
-      fa: 'یک سکوی نورومدولاسیون غیرتهاجمی نوآورانه که توسط پزشک‌افزار توسعه و پشتیبانی می‌شود. نوروپالس تحریک ترانس‌کرانیال هدفمند را برای بخش‌های نورولوژی و توان‌بخشی فراهم می‌کند، همراه با هدایت حلقه‌بستهٔ EEG و کتابخانهٔ کامل پروتکل‌های بالینی مستند.',
-    },
-    features: {
-      en: [
-        'Closed-loop EEG-guided transcranial stimulation',
-        'Validated clinical protocol library for neuro-rehabilitation',
-        'Full calibration, training, and clinical service support',
-      ],
-      fa: [
-        'تحریک ترانس‌کرانیال با هدایت حلقه‌بستهٔ EEG',
-        'کتابخانهٔ پروتکل بالینی معتبر برای توان‌بخشی عصبی',
-        'کالیبراسیون کامل، آموزش و خدمات بالینی',
-      ],
-    },
-    specs: [
-      { label: { en: 'Modality', fa: 'روش' }, value: { en: 'Non-invasive tES / tDCS', fa: 'tES / tDCS غیرتهاجمی' } },
-      { label: { en: 'Channels', fa: 'کانال‌ها' }, value: { en: '32-channel EEG closed loop', fa: 'حلقهٔ بستهٔ EEG با ۳۲ کانال' } },
-      { label: { en: 'Output range', fa: 'محدودهٔ خروجی' }, value: { en: '0.5 – 4 mA, regulated', fa: '۰٫۵ تا ۴ میلی‌آمپر، تنظیم‌شده' } },
-      { label: { en: 'Power', fa: 'تغذیه' }, value: { en: 'Medical-grade isolated supply', fa: 'منبع ایزولهٔ پزشکی' } },
-    ],
-    certifications: {
-      en: ['CE Medical Device (MDR)', 'IEC 60601-1 / 60601-2 electrical safety', 'Medical device registration (IMED)'],
-      fa: ['تجهیز پزشکی CE (MDR)', 'ایمنی الکتریکی IEC 60601-1 / 60601-2', 'ثبت تجهیز پزشکی (اداره کل تجهیزات پزشکی)'],
-    },
-    image: 'https://images.unsplash.com/photo-1489710437720-ebb67ec84dd2?w=1200&q=80',
-    span: 'normal',
-  },
-  {
-    id: 'oxicore',
-    number: '06',
-    type: 'equipment',
-    name: { en: 'OxiCore', fa: 'اکسی‌کور' },
-    category: { en: 'Innovative Technology', fa: 'فناوری نوآورانه' },
-    tagline: {
-      en: 'High-flow respiratory support unit.',
-      fa: 'دستگاه پشتیبانی تنفسی پرجریان.',
-    },
-    description: {
-      en: 'A compact high-flow oxygen therapy unit for intensive-care and emergency departments. OxiCore combines integrated humidification, adaptive flow control, and direct telemetry into the VitalStream monitoring platform.',
-      fa: 'یک دستگاه فشردهٔ اکسیژن‌درمانی پرجریان برای بخش‌های مراقبت ویژه و اورژانس. اکسی‌کور مرطوب‌سازی یکپارچه، کنترل تطبیقی جریان و ارسال مستقیم داده به سکوی پایش وایتال‌استریم را یک‌جا فراهم می‌کند.',
-    },
-    features: {
-      en: [
-        'Adaptive high-flow delivery up to 60 L/min',
-        'Integrated active humidification',
-        'Direct telemetry into VitalStream dashboards',
-      ],
-      fa: [
-        'تحویل تطبیقی پرجریان تا ۶۰ لیتر در دقیقه',
-        'مرطوب‌سازی فعال یکپارچه',
-        'ارسال مستقیم داده به داشبوردهای وایتال‌استریم',
-      ],
-    },
-    specs: [
-      { label: { en: 'Flow range', fa: 'محدودهٔ جریان' }, value: { en: '2 – 60 L/min', fa: '۲ تا ۶۰ لیتر در دقیقه' } },
-      { label: { en: 'FiO₂', fa: 'کسر اکسیژن دمی' }, value: { en: '21 – 100 %', fa: '۲۱ تا ۱۰۰ درصد' } },
-      { label: { en: 'Humidification', fa: 'مرطوب‌سازی' }, value: { en: '31 – 37 °C, integrated', fa: '۳۱ تا ۳۷ درجه، یکپارچه' } },
-      { label: { en: 'Telemetry', fa: 'ارسال داده' }, value: { en: 'HL7 to VitalStream', fa: 'HL7 به وایتال‌استریم' } },
-    ],
-    certifications: {
-      en: ['CE Medical Device (MDR)', 'IEC 60601-1 electrical safety', 'Medical device registration (IMED)'],
-      fa: ['تجهیز پزشکی CE (MDR)', 'ایمنی الکتریکی IEC 60601-1', 'ثبت تجهیز پزشکی (اداره کل تجهیزات پزشکی)'],
-    },
-    image: 'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=1200&q=80',
-    span: 'normal',
-  },
-  {
-    id: 'flowmd',
-    number: '07',
     type: 'software',
-    name: { en: 'FlowMD', fa: 'فلو‌ام‌دی' },
-    category: { en: 'Workflow Automation', fa: 'اتوماسیون فرآیند بالینی' },
-    tagline: {
-      en: 'Clinical workflow automation.',
-      fa: 'اتوماسیون فرآیندهای بالینی.',
-    },
-    description: {
-      en: 'A workflow engine that automates the repetitive coordination between departments — referrals, operating-room scheduling, and discharge readiness — so clinical staff spend their time on patients rather than paperwork.',
-      fa: 'یک موتور گردش‌کار که هماهنگی‌های تکراری بین بخش‌ها را خودکار می‌کند — ارجاع‌ها، زمان‌بندی اتاق عمل و آمادگی ترخیص — تا کادر بالینی وقت خود را صرف بیمار کنند، نه کاغذبازی.',
-    },
+    icon: 'oncology',
+    name: l('Chemotherapy Care', 'مراقبت شیمی‌درمانی'),
+    category: l('Oncology education', 'آموزش انکولوژی'),
+    tagline: l(
+      'Clear treatment education and between-visit support for chemotherapy patients.',
+      'آموزش روشن درمان و همراهی بیمار شیمی‌درمانی میان جلسات.',
+    ),
+    description: l(
+      'Chemotherapy Care helps patients and families understand the treatment journey in manageable steps. Personalized education, appointment preparation, symptom check-ins, and care-team guidance reduce uncertainty without overwhelming people with information.',
+      'مراقبت شیمی‌درمانی به بیمار و خانواده کمک می‌کند مسیر درمان را در قدم‌های قابل‌فهم بشناسند. آموزش شخصی‌سازی‌شده، آمادگی جلسه، ثبت علائم و راهنمایی تیم درمان، ابهام را بدون انباشت اطلاعات کم می‌کند.',
+    ),
     features: {
-      en: [
-        'Visual workflow builder for non-developers',
-        'Real-time operating-room scheduling with conflict detection',
-        'Discharge-readiness checklists with full audit log',
-      ],
-      fa: [
-        'سازندهٔ بصری گردش‌کار برای افراد غیرفنی',
-        'زمان‌بندی بلادرنگ اتاق عمل با تشخیص تعارض',
-        'چک‌لیست آمادگی ترخیص با لاگ کامل ممیزی',
-      ],
+      en: ['Treatment-stage education', 'Appointment preparation', 'Between-visit symptom check-ins', 'Care-team guidance and escalation'],
+      fa: ['آموزش متناسب با مرحله درمان', 'آمادگی برای جلسه درمان', 'ثبت علائم میان جلسات', 'راهنمایی و ارجاع تیم درمان'],
+    },
+    benefits: {
+      en: ['More confident treatment preparation', 'Clearer communication with care teams', 'Consistent support for patients and families'],
+      fa: ['آمادگی مطمئن‌تر برای درمان', 'ارتباط روشن‌تر با تیم درمان', 'حمایت یکدست از بیمار و خانواده'],
+    },
+    applications: {
+      en: ['Oncology centers', 'Day chemotherapy units', 'Patient education teams', 'Cancer-support programs'],
+      fa: ['مراکز انکولوژی', 'بخش‌های شیمی‌درمانی روزانه', 'تیم‌های آموزش بیمار', 'برنامه‌های حمایت از سرطان'],
     },
     specs: [
-      { label: { en: 'Workflow model', fa: 'مدل گردش‌کار' }, value: { en: 'BPMN 2.0', fa: 'BPMN 2.0' } },
-      { label: { en: 'Triggers', fa: 'محرک‌ها' }, value: { en: 'HL7, FHIR, manual', fa: 'HL7، FHIR، دستی' } },
-      { label: { en: 'Audit', fa: 'ممیزی' }, value: { en: 'Immutable event log', fa: 'لاگ رویداد تغییرناپذیر' } },
-      { label: { en: 'Deployment', fa: 'استقرار' }, value: { en: 'On-premise or private cloud', fa: 'درون‌سازمانی یا ابر خصوصی' } },
+      { label: l('Journey', 'مسیر'), value: l('Stage-based education', 'آموزش مرحله‌محور') },
+      { label: l('Check-ins', 'پیگیری'), value: l('Configurable symptom prompts', 'پرسش‌های قابل تنظیم علائم') },
+      { label: l('Audience', 'مخاطب'), value: l('Patients, families, care teams', 'بیمار، خانواده و تیم درمان') },
+      { label: l('Delivery', 'ارائه'), value: l('Mobile-first web platform', 'پلتفرم وب موبایل‌محور') },
     ],
-    certifications: {
-      en: ['IEC 62304 software lifecycle', 'ISO 13485 aligned processes', 'ISO/IEC 27001 information security'],
-      fa: ['چرخهٔ عمر نرم‌افزار IEC 62304', 'فرآیندهای منطبق با ISO 13485', 'امنیت اطلاعات ISO/IEC 27001'],
+    assurances: {
+      en: ['Clinician-approved education pathways', 'Clear urgent-care directions', 'Privacy-aware family access'],
+      fa: ['مسیر آموزشی تأییدشده توسط درمانگر', 'راهنمای روشن مراقبت فوری', 'دسترسی خانواده با رعایت حریم خصوصی'],
     },
-    image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&q=80',
-    span: 'normal',
-  },
+    gallery: [
+      '/images/software/chemotherapy-care-hero.jpg',
+      '/images/software/chemotherapy-care-oncology.jpg',
+      '/images/software/chemotherapy-care-planning.jpg',
+    ],
+    galleryAlt: {
+      en: ['A quiet alpine lake beneath a pastel sunrise', 'A bright waterfall flowing through green woodland', 'Layered forest mountains beneath soft natural light'],
+      fa: ['دریاچه‌ای کوهستانی زیر آسمان صورتی طلوع', 'آبشاری روشن در میان جنگلی سرسبز', 'لایه‌های کوهستان جنگلی زیر نور نرم طبیعی'],
+    },
+    faq: [
+      {
+        question: l('Can each oncology unit use its own education plan?', 'آیا هر بخش انکولوژی می‌تواند برنامه آموزشی خودش را داشته باشد؟'),
+        answer: l('Yes. Approved content and check-ins can be aligned with the unit’s protocols and patient pathways.', 'بله. محتوا و پیگیری‌های تأییدشده با پروتکل‌ها و مسیرهای بیمار هر بخش هماهنگ می‌شوند.'),
+      },
+      {
+        question: l('How are urgent concerns handled?', 'نگرانی‌های فوری چگونه مدیریت می‌شوند؟'),
+        answer: l('The experience presents clear, service-approved escalation instructions and never positions automated guidance as emergency care.', 'تجربه کاربری مسیر ارجاع تأییدشده خدمت را روشن نشان می‌دهد و راهنمای خودکار را جایگزین مراقبت فوری معرفی نمی‌کند.'),
+      },
+    ],
+  }),
+  product({
+    id: 'gib',
+    number: '06',
+    type: 'software',
+    icon: 'telecare',
+    name: l('GIB', 'GIB'),
+    category: l('Gastrointestinal telecare', 'مراقبت از راه دور گوارش'),
+    tagline: l(
+      'Structured remote follow-up for upper gastrointestinal bleeding pathways.',
+      'پیگیری ساختاریافته از راه دور در مسیرهای خونریزی گوارشی فوقانی.',
+    ),
+    description: l(
+      'GIB supports planned follow-up after assessment or discharge with guided check-ins, education, and care-team review. It gives patients a clear way to report changes and helps clinical services organize non-emergency follow-up around agreed pathways.',
+      'GIB پیگیری برنامه‌ریزی‌شده پس از ارزیابی یا ترخیص را با ثبت هدایت‌شده، آموزش و بازبینی تیم درمان پشتیبانی می‌کند. بیمار راهی روشن برای گزارش تغییرات دارد و خدمت درمانی می‌تواند پیگیری غیراورژانسی را مطابق مسیر توافق‌شده منظم کند.',
+    ),
+    features: {
+      en: ['Guided post-discharge check-ins', 'Care-pathway education', 'Clinical review queue', 'Escalation instructions'],
+      fa: ['پیگیری هدایت‌شده پس از ترخیص', 'آموزش مسیر مراقبت', 'صف بررسی بالینی', 'دستورالعمل ارجاع'],
+    },
+    benefits: {
+      en: ['Clearer follow-up after discharge', 'More organized non-emergency review', 'Better visibility of reported changes'],
+      fa: ['پیگیری روشن‌تر پس از ترخیص', 'بازبینی غیراورژانسی منظم‌تر', 'دید بهتر نسبت به تغییرات گزارش‌شده'],
+    },
+    applications: {
+      en: ['Gastroenterology units', 'Emergency follow-up services', 'Discharge teams', 'Telehealth programs'],
+      fa: ['بخش‌های گوارش', 'خدمات پیگیری اورژانس', 'تیم‌های ترخیص', 'برنامه‌های سلامت از راه دور'],
+    },
+    specs: [
+      { label: l('Workflow', 'گردش‌کار'), value: l('Pathway-based follow-up', 'پیگیری مبتنی بر مسیر') },
+      { label: l('Review', 'بررسی'), value: l('Care-team queue', 'صف تیم درمان') },
+      { label: l('Access', 'دسترسی'), value: l('Patient and clinician roles', 'نقش بیمار و درمانگر') },
+      { label: l('Delivery', 'ارائه'), value: l('Secure responsive web app', 'وب‌اپ امن و واکنش‌گرا') },
+    ],
+    assurances: {
+      en: ['Explicit emergency-care boundaries', 'Auditable check-in history', 'Configurable service pathways'],
+      fa: ['مرز روشن مراقبت اورژانسی', 'سابقه قابل ممیزی پیگیری', 'مسیرهای خدمت قابل تنظیم'],
+    },
+    gallery: [
+      '/images/software/gib-hero.jpg',
+      '/images/software/gib-telecare.jpg',
+      '/images/software/gib-nursing.jpg',
+    ],
+    galleryAlt: {
+      en: ['Rolling green hills in warm, quiet sunlight', 'A forest waterfall surrounded by vivid green leaves', 'A wide volcanic landscape beneath a clear blue sky'],
+      fa: ['تپه‌های سبز و آرام در نور گرم عصرگاهی', 'آبشاری جنگلی میان برگ‌های سبز و زنده', 'چشم‌انداز وسیع آتشفشانی زیر آسمان زلال آبی'],
+    },
+    faq: [
+      {
+        question: l('Is GIB an emergency-response service?', 'آیا GIB یک خدمت پاسخ اورژانسی است؟'),
+        answer: l('No. It supports planned follow-up and clearly directs urgent symptoms to emergency services.', 'خیر. برای پیگیری برنامه‌ریزی‌شده است و علائم فوری را به‌روشنی به خدمات اورژانسی هدایت می‌کند.'),
+      },
+      {
+        question: l('Can discharge teams configure follow-up timing?', 'آیا تیم ترخیص می‌تواند زمان پیگیری را تنظیم کند؟'),
+        answer: l('Yes. Check-in timing and review routes can be configured around the approved discharge pathway.', 'بله. زمان پیگیری و مسیر بازبینی بر اساس روند تأییدشده ترخیص قابل تنظیم است.'),
+      },
+    ],
+  }),
+  product({
+    id: 'desktop-autoclaves',
+    number: '07',
+    type: 'equipment',
+    icon: 'autoclave',
+    name: l('Desktop Autoclaves', 'اتوکلاوهای رومیزی'),
+    category: l('Compact steam sterilization', 'استریلیزاسیون بخار فشرده'),
+    tagline: l(
+      'Professional tabletop sterilization for clinics and compact care settings.',
+      'استریلیزاسیون حرفه‌ای رومیزی برای کلینیک‌ها و فضاهای درمانی کوچک.',
+    ),
+    description: l(
+      'A compact sterilization range for practices that need dependable steam cycles without a large equipment footprint. Configurations are selected around load type, daily throughput, available utilities, and local service requirements.',
+      'مجموعه‌ای فشرده برای مراکزی که به چرخه‌های بخار قابل‌اعتماد در فضای محدود نیاز دارند. پیکربندی بر اساس نوع بار، ظرفیت روزانه، زیرساخت موجود و نیاز خدمات محلی انتخاب می‌شود.',
+    ),
+    features: {
+      en: ['Compact tabletop footprint', 'Programmed steam cycles', 'Cycle records and status display', 'Service-oriented installation'],
+      fa: ['ابعاد فشرده رومیزی', 'چرخه‌های برنامه‌ریزی‌شده بخار', 'ثبت چرخه و نمایش وضعیت', 'نصب با رویکرد خدمات‌پذیر'],
+    },
+    benefits: {
+      en: ['Efficient use of clinical space', 'Repeatable day-to-day workflows', 'Configuration matched to actual loads'],
+      fa: ['استفاده بهینه از فضای کلینیک', 'گردش‌کار روزانه تکرارپذیر', 'پیکربندی متناسب با بار واقعی'],
+    },
+    applications: {
+      en: ['Dental clinics', 'Outpatient practices', 'Laboratories', 'Minor-procedure rooms'],
+      fa: ['کلینیک‌های دندان‌پزشکی', 'مراکز سرپایی', 'آزمایشگاه‌ها', 'اتاق‌های اقدامات کوچک'],
+    },
+    specs: [
+      { label: l('Chamber', 'محفظه'), value: l('18–24 L configurations', 'پیکربندی‌های ۱۸ تا ۲۴ لیتر') },
+      { label: l('Cycles', 'چرخه‌ها'), value: l('121–134 °C steam programs', 'برنامه‌های بخار ۱۲۱ تا ۱۳۴ درجه') },
+      { label: l('Loads', 'بار'), value: l('Wrapped and unwrapped options', 'گزینه‌های بسته‌بندی‌شده و بدون بسته‌بندی') },
+      { label: l('Records', 'سوابق'), value: l('Model-dependent cycle logging', 'ثبت چرخه وابسته به مدل') },
+    ],
+    assurances: {
+      en: ['Site and utility assessment', 'Installation and user orientation', 'Planned service support'],
+      fa: ['ارزیابی محل و زیرساخت', 'نصب و آموزش کاربر', 'پشتیبانی خدمات برنامه‌ریزی‌شده'],
+    },
+    gallery: [
+      '/images/equipment/desktop-autoclave-hero.jpg',
+      '/images/equipment/desktop-autoclave-chamber.jpg',
+      '/images/equipment/desktop-autoclave-clinic.jpg',
+    ],
+    galleryAlt: {
+      en: ['Professional tabletop autoclave in a bright sterilization setting', 'Open autoclave chamber and trays', 'Compact sterilization area in a clinic'],
+      fa: ['اتوکلاو حرفه‌ای رومیزی', 'محفظه و سینی‌های باز اتوکلاو', 'فضای استریلیزاسیون فشرده در کلینیک'],
+    },
+    faq: [
+      {
+        question: l('Which chamber size is right for our clinic?', 'چه اندازه محفظه‌ای برای کلینیک ما مناسب است؟'),
+        answer: l('Selection follows load dimensions, daily cycle volume, available space, and utility requirements. Our team reviews these before recommending a configuration.', 'انتخاب بر اساس ابعاد بار، تعداد چرخه روزانه، فضای موجود و زیرساخت انجام می‌شود و تیم ما پیش از پیشنهاد پیکربندی آن‌ها را بررسی می‌کند.'),
+      },
+      {
+        question: l('Are installation and training included?', 'آیا نصب و آموزش ارائه می‌شود؟'),
+        answer: l('Installation, commissioning scope, and user orientation are agreed for the selected model and site.', 'دامنه نصب، راه‌اندازی و آموزش کاربر بر اساس مدل و محل انتخاب‌شده توافق می‌شود.'),
+      },
+    ],
+  }),
+  product({
+    id: 'hospital-autoclaves',
+    number: '08',
+    type: 'equipment',
+    icon: 'sterilization',
+    name: l('Industrial / Hospital Autoclaves', 'اتوکلاوهای صنعتی و بیمارستانی'),
+    category: l('Central sterile processing', 'پردازش مرکزی استریل'),
+    tagline: l(
+      'High-capacity sterilization planned around hospital flow and throughput.',
+      'استریلیزاسیون پرظرفیت، طراحی‌شده پیرامون جریان کار و توان عملیاتی بیمارستان.',
+    ),
+    description: l(
+      'Hospital autoclave projects begin with workflow: loading patterns, clean and dirty zoning, utilities, traceability, and service access. The selected system is then matched to expected throughput and the facility’s central sterile processing plan.',
+      'پروژه اتوکلاو بیمارستانی از گردش‌کار آغاز می‌شود: الگوی بارگذاری، تفکیک تمیز و آلوده، زیرساخت، رهگیری و دسترسی خدمات. سپس سامانه با ظرفیت مورد انتظار و برنامه واحد استریل مرکزی مرکز درمانی هماهنگ می‌شود.',
+    ),
+    features: {
+      en: ['High-capacity chamber options', 'Single- or pass-through workflows', 'Cycle traceability options', 'Project-based installation planning'],
+      fa: ['گزینه‌های محفظه پرظرفیت', 'گردش‌کار یک‌درب یا عبوری', 'گزینه‌های رهگیری چرخه', 'برنامه‌ریزی نصب پروژه‌محور'],
+    },
+    benefits: {
+      en: ['Capacity aligned with hospital demand', 'Cleaner loading and unloading flow', 'Service access considered from day one'],
+      fa: ['ظرفیت هماهنگ با نیاز بیمارستان', 'جریان تمیزتر بارگیری و تخلیه', 'توجه به دسترسی خدمات از روز نخست'],
+    },
+    applications: {
+      en: ['Central sterile departments', 'Operating-theatre supply', 'Hospital laboratories', 'Medical manufacturing'],
+      fa: ['واحدهای استریل مرکزی', 'تأمین اتاق عمل', 'آزمایشگاه‌های بیمارستانی', 'تولید تجهیزات پزشکی'],
+    },
+    specs: [
+      { label: l('Capacity', 'ظرفیت'), value: l('Project-sized chambers', 'محفظه متناسب با پروژه') },
+      { label: l('Workflow', 'گردش‌کار'), value: l('Single or pass-through', 'یک‌درب یا عبوری') },
+      { label: l('Utilities', 'زیرساخت'), value: l('Site-specific steam and power', 'بخار و برق متناسب با محل') },
+      { label: l('Traceability', 'رهگیری'), value: l('Configuration-dependent records', 'ثبت سوابق وابسته به پیکربندی') },
+    ],
+    assurances: {
+      en: ['Workflow and utility survey', 'Commissioning plan', 'Service and maintenance planning'],
+      fa: ['بررسی گردش‌کار و زیرساخت', 'برنامه راه‌اندازی', 'برنامه‌ریزی سرویس و نگهداری'],
+    },
+    gallery: [
+      '/images/equipment/hospital-autoclave-hero.jpg',
+      '/images/equipment/hospital-autoclave-room.jpg',
+      '/images/equipment/hospital-autoclave-loading.jpg',
+    ],
+    galleryAlt: {
+      en: ['Hospital-scale autoclave in a bright clinical environment', 'Central sterile processing room', 'Loading a high-capacity sterilizer'],
+      fa: ['اتوکلاو در مقیاس بیمارستان', 'اتاق پردازش مرکزی استریل', 'بارگذاری استریلایزر پرظرفیت'],
+    },
+    faq: [
+      {
+        question: l('How is capacity selected?', 'ظرفیت چگونه انتخاب می‌شود؟'),
+        answer: l('Capacity planning considers load mix, peak demand, cycle assumptions, redundancy, zoning, and available utilities.', 'برنامه‌ریزی ظرفیت بر اساس ترکیب بار، اوج تقاضا، فرض چرخه، افزونگی، زون‌بندی و زیرساخت موجود انجام می‌شود.'),
+      },
+      {
+        question: l('Can pass-through workflows be supported?', 'آیا گردش‌کار عبوری پشتیبانی می‌شود؟'),
+        answer: l('Yes, where the selected system and facility layout support separation between loading and clean unloading zones.', 'بله، هرجا سامانه انتخابی و چیدمان مرکز امکان جداسازی زون بارگیری و تخلیه تمیز را فراهم کند.'),
+      },
+    ],
+  }),
+  product({
+    id: 'blood-glucose-meters',
+    number: '09',
+    type: 'equipment',
+    icon: 'glucose',
+    name: l('Blood Glucose Meters', 'دستگاه‌های سنجش قند خون'),
+    category: l('Personal glucose monitoring', 'پایش شخصی قند خون'),
+    tagline: l(
+      'Straightforward daily glucose checks with clear handling and support.',
+      'اندازه‌گیری روزانه قند خون با کاربری روشن و پشتیبانی قابل‌اتکا.',
+    ),
+    description: l(
+      'A selected range of portable glucose meters for personal monitoring and care programs. Product selection considers sample handling, display clarity, memory needs, strip availability, and the support model required by the care setting.',
+      'مجموعه‌ای منتخب از دستگاه‌های قابل‌حمل سنجش قند برای پایش شخصی و برنامه‌های مراقبتی. انتخاب محصول با توجه به نمونه‌گیری، خوانایی نمایشگر، نیاز حافظه، دسترسی نوار و مدل پشتیبانی مرکز انجام می‌شود.',
+    ),
+    features: {
+      en: ['Portable everyday format', 'Clear result display', 'Memory options by model', 'Matched strip and lancet ecosystem'],
+      fa: ['فرم قابل‌حمل روزانه', 'نمایش روشن نتیجه', 'گزینه‌های حافظه بسته به مدل', 'اکوسیستم هماهنگ نوار و لانست'],
+    },
+    benefits: {
+      en: ['Simple routine monitoring', 'Product and consumables selected together', 'Support suited to care programs'],
+      fa: ['پایش ساده و روزمره', 'انتخاب هماهنگ دستگاه و اقلام مصرفی', 'پشتیبانی متناسب با برنامه مراقبت'],
+    },
+    applications: {
+      en: ['Home monitoring', 'Diabetes education', 'Clinic screening', 'Community health programs'],
+      fa: ['پایش خانگی', 'آموزش دیابت', 'غربالگری کلینیکی', 'برنامه‌های سلامت جامعه'],
+    },
+    specs: [
+      { label: l('Sample', 'نمونه'), value: l('Small capillary blood sample', 'نمونه کوچک خون مویرگی') },
+      { label: l('Display', 'نمایشگر'), value: l('Large result readout options', 'گزینه‌های نمایش بزرگ نتیجه') },
+      { label: l('Memory', 'حافظه'), value: l('Model-dependent history', 'سابقه وابسته به مدل') },
+      { label: l('Consumables', 'مصرفی'), value: l('Matched test strips', 'نوار تست سازگار') },
+    ],
+    assurances: {
+      en: ['Product and strip matching', 'User handling guidance', 'Supply planning for care programs'],
+      fa: ['تطبیق دستگاه و نوار', 'راهنمای کاربری', 'برنامه تأمین برای برنامه‌های مراقبتی'],
+    },
+    gallery: [
+      '/images/equipment/glucose-meter-hero.jpg',
+      '/images/equipment/glucose-meter-use.jpg',
+      '/images/equipment/glucose-meter-kit.jpg',
+    ],
+    galleryAlt: {
+      en: ['Portable blood glucose meter and testing kit', 'Close-up glucose meter reading', 'Portable glucose monitoring kit'],
+      fa: ['فرد در حال اندازه‌گیری قند خون', 'نمای نزدیک نتیجه دستگاه قند', 'کیت قابل‌حمل پایش قند'],
+    },
+    faq: [
+      {
+        question: l('Are meters supplied with compatible strips?', 'آیا نوار سازگار همراه دستگاه تأمین می‌شود؟'),
+        answer: l('Meter selection and strip supply are planned together so the recommended consumable matches the selected model.', 'انتخاب دستگاه و تأمین نوار با هم برنامه‌ریزی می‌شود تا قلم مصرفی پیشنهادی با مدل انتخابی سازگار باشد.'),
+      },
+      {
+        question: l('Can you support a clinic education program?', 'آیا از برنامه آموزشی کلینیک پشتیبانی می‌کنید؟'),
+        answer: l('Yes. Product handling guidance and supply planning can be shaped around the program’s audience and volume.', 'بله. راهنمای کاربری و برنامه تأمین بر اساس مخاطب و حجم برنامه قابل تنظیم است.'),
+      },
+    ],
+  }),
+  product({
+    id: 'blood-glucose-test-strips',
+    number: '10',
+    type: 'equipment',
+    icon: 'strips',
+    name: l('Blood Glucose Test Strips', 'نوارهای تست قند خون'),
+    category: l('Glucose monitoring consumables', 'اقلام مصرفی پایش قند'),
+    tagline: l(
+      'Professionally supplied test strips matched to supported meter systems.',
+      'نوارهای تست با تأمین حرفه‌ای و سازگار با سامانه‌های سنجش پشتیبانی‌شده.',
+    ),
+    description: l(
+      'Test strips are supplied as part of a complete monitoring plan, not as an isolated consumable. Compatibility, storage, pack size, expected usage, expiry management, and replenishment are considered with the meter and care program.',
+      'نوار تست به‌عنوان بخشی از برنامه کامل پایش تأمین می‌شود، نه یک قلم مصرفی جدا. سازگاری، نگهداری، تعداد در بسته، مصرف مورد انتظار، مدیریت تاریخ و تأمین مجدد همراه دستگاه و برنامه مراقبت بررسی می‌شوند.',
+    ),
+    features: {
+      en: ['Matched meter compatibility', 'Sealed pack options', 'Storage and handling guidance', 'Planned replenishment'],
+      fa: ['سازگاری با دستگاه متناظر', 'گزینه‌های بسته‌بندی محافظت‌شده', 'راهنمای نگهداری و استفاده', 'تأمین مجدد برنامه‌ریزی‌شده'],
+    },
+    benefits: {
+      en: ['Fewer compatibility errors', 'More predictable stock planning', 'Clear handling guidance for users'],
+      fa: ['خطای کمتر در سازگاری', 'برنامه‌ریزی موجودی قابل پیش‌بینی‌تر', 'راهنمای روشن استفاده برای کاربر'],
+    },
+    applications: {
+      en: ['Home glucose monitoring', 'Clinic screening', 'Diabetes programs', 'Pharmacy supply'],
+      fa: ['پایش خانگی قند', 'غربالگری کلینیکی', 'برنامه‌های دیابت', 'تأمین داروخانه‌ای'],
+    },
+    specs: [
+      { label: l('Compatibility', 'سازگاری'), value: l('Meter-specific', 'وابسته به مدل دستگاه') },
+      { label: l('Pack sizes', 'تعداد بسته'), value: l('Model-dependent options', 'گزینه‌های وابسته به مدل') },
+      { label: l('Storage', 'نگهداری'), value: l('Per manufacturer guidance', 'مطابق راهنمای سازنده') },
+      { label: l('Supply', 'تأمین'), value: l('Planned replenishment', 'تأمین مجدد برنامه‌ریزی‌شده') },
+    ],
+    assurances: {
+      en: ['Compatibility confirmation', 'Batch and expiry awareness', 'Storage guidance at handover'],
+      fa: ['تأیید سازگاری', 'توجه به بچ و تاریخ مصرف', 'راهنمای نگهداری هنگام تحویل'],
+    },
+    gallery: [
+      '/images/equipment/glucose-strips-hero.jpg',
+      '/images/equipment/glucose-strips-pack.jpg',
+      '/images/equipment/glucose-strips-meter.jpg',
+    ],
+    galleryAlt: {
+      en: ['Professional glucose test strip photography', 'Sealed test strip packaging', 'Test strip inserted into a glucose meter'],
+      fa: ['عکاسی حرفه‌ای نوار تست قند', 'بسته‌بندی محافظت‌شده نوار تست', 'نوار تست قرارگرفته در دستگاه قند'],
+    },
+    faq: [
+      {
+        question: l('Are test strips universal?', 'آیا نوارهای تست عمومی و قابل استفاده برای همه دستگاه‌ها هستند؟'),
+        answer: l('No. Test strips are meter-specific. Compatibility is confirmed against the exact supported meter model before supply.', 'خیر. نوار تست وابسته به مدل دستگاه است و سازگاری پیش از تأمین با مدل دقیق دستگاه پشتیبانی‌شده تأیید می‌شود.'),
+      },
+      {
+        question: l('How should strips be stored?', 'نوارها چگونه باید نگهداری شوند؟'),
+        answer: l('Storage follows the manufacturer’s instructions for the selected product, including container closure, temperature, and expiry guidance.', 'نگهداری مطابق دستور سازنده محصول انتخابی، از جمله بسته‌بودن ظرف، دما و راهنمای تاریخ مصرف انجام می‌شود.'),
+      },
+    ],
+  }),
 ]
 
+export const softwareProducts = products.filter((item) => item.type === 'software')
+export const equipmentProducts = products.filter((item) => item.type === 'equipment')
+
 export function getProductById(id) {
-  return products.find((p) => p.id === id) ?? null
+  return products.find((item) => item.id === id) ?? null
 }

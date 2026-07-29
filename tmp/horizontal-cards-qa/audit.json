@@ -1,0 +1,458 @@
+{
+  "assertions": {
+    "desktopSoftwareTwoPerRow": true,
+    "desktopEquipmentTwoPerRow": true,
+    "desktopCardsHorizontal": true,
+    "softwareImagesUnique": true,
+    "softwareImagesLocal": true,
+    "equipmentImagesContained": true,
+    "whatWeMakeGap": true,
+    "mobileSingleColumn": true,
+    "noBrokenImages": true,
+    "noRemoteImages": true,
+    "noOverflow": true,
+    "noRuntimeErrors": true
+  },
+  "desktop": {
+    "software": {
+      "cards": [
+        {
+          "id": "todays-mom",
+          "src": "/images/software/todays-mom-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 194,
+            "ratio": 2.88,
+            "top": 3935,
+            "left": 144
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "skinapp",
+          "src": "/images/software/skinapp-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 194,
+            "ratio": 2.88,
+            "top": 3935,
+            "left": 736
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "ibd-care",
+          "src": "/images/software/ibd-care-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 194,
+            "ratio": 2.88,
+            "top": 4161,
+            "left": 144
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "agingdrug",
+          "src": "/images/software/agingdrug-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 194,
+            "ratio": 2.88,
+            "top": 4161,
+            "left": 736
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "chemotherapy-care",
+          "src": "/images/software/chemotherapy-care-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 194,
+            "ratio": 2.88,
+            "top": 4387,
+            "left": 144
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "gib",
+          "src": "/images/software/gib-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 194,
+            "ratio": 2.88,
+            "top": 4387,
+            "left": 736
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        }
+      ],
+      "rows": [
+        [
+          "todays-mom",
+          "skinapp"
+        ],
+        [
+          "ibd-care",
+          "agingdrug"
+        ],
+        [
+          "chemotherapy-care",
+          "gib"
+        ]
+      ],
+      "columnGap": "32px",
+      "rowGap": "32px"
+    },
+    "equipment": {
+      "cards": [
+        {
+          "id": "desktop-autoclaves",
+          "src": "/images/equipment/desktop-autoclave-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 202,
+            "ratio": 2.78,
+            "top": 6999,
+            "left": 144
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "contain"
+          }
+        },
+        {
+          "id": "hospital-autoclaves",
+          "src": "/images/equipment/hospital-autoclave-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 202,
+            "ratio": 2.78,
+            "top": 6999,
+            "left": 736
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "contain"
+          }
+        },
+        {
+          "id": "blood-glucose-meters",
+          "src": "/images/equipment/glucose-meter-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 202,
+            "ratio": 2.78,
+            "top": 7233,
+            "left": 144
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "contain"
+          }
+        },
+        {
+          "id": "blood-glucose-test-strips",
+          "src": "/images/equipment/glucose-strips-hero.jpg",
+          "card": {
+            "width": 560,
+            "height": 202,
+            "ratio": 2.78,
+            "top": 7233,
+            "left": 736
+          },
+          "media": {
+            "width": 224,
+            "height": 168,
+            "ratio": 1.33,
+            "objectFit": "contain"
+          }
+        }
+      ],
+      "rows": [
+        [
+          "desktop-autoclaves",
+          "hospital-autoclaves"
+        ],
+        [
+          "blood-glucose-meters",
+          "blood-glucose-test-strips"
+        ]
+      ],
+      "columnGap": "32px",
+      "rowGap": "32px"
+    },
+    "brokenImages": [],
+    "remoteImages": [],
+    "overflow": 0
+  },
+  "products": {
+    "cardCount": 6,
+    "columnGap": "28px",
+    "rowGap": "32px",
+    "brokenImages": [],
+    "remoteImages": [],
+    "overflow": 0
+  },
+  "mobile": {
+    "software": {
+      "cards": [
+        {
+          "id": "todays-mom",
+          "src": "/images/software/todays-mom-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 153,
+            "ratio": 2.29,
+            "top": 6301,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "skinapp",
+          "src": "/images/software/skinapp-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 153,
+            "ratio": 2.29,
+            "top": 6470,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "ibd-care",
+          "src": "/images/software/ibd-care-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 153,
+            "ratio": 2.29,
+            "top": 6640,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "agingdrug",
+          "src": "/images/software/agingdrug-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 153,
+            "ratio": 2.29,
+            "top": 6809,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "chemotherapy-care",
+          "src": "/images/software/chemotherapy-care-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 153,
+            "ratio": 2.29,
+            "top": 6978,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        },
+        {
+          "id": "gib",
+          "src": "/images/software/gib-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 170,
+            "ratio": 2.06,
+            "top": 7147,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "cover"
+          }
+        }
+      ],
+      "rows": [
+        [
+          "todays-mom"
+        ],
+        [
+          "skinapp"
+        ],
+        [
+          "ibd-care"
+        ],
+        [
+          "agingdrug"
+        ],
+        [
+          "chemotherapy-care"
+        ],
+        [
+          "gib"
+        ]
+      ],
+      "columnGap": "16px",
+      "rowGap": "16px"
+    },
+    "equipment": {
+      "cards": [
+        {
+          "id": "desktop-autoclaves",
+          "src": "/images/equipment/desktop-autoclave-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 170,
+            "ratio": 2.06,
+            "top": 10573,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "contain"
+          }
+        },
+        {
+          "id": "hospital-autoclaves",
+          "src": "/images/equipment/hospital-autoclave-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 191,
+            "ratio": 1.83,
+            "top": 10758,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "contain"
+          }
+        },
+        {
+          "id": "blood-glucose-meters",
+          "src": "/images/equipment/glucose-meter-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 170,
+            "ratio": 2.06,
+            "top": 10966,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "contain"
+          }
+        },
+        {
+          "id": "blood-glucose-test-strips",
+          "src": "/images/equipment/glucose-strips-hero.jpg",
+          "card": {
+            "width": 350,
+            "height": 191,
+            "ratio": 1.83,
+            "top": 11151,
+            "left": 20
+          },
+          "media": {
+            "width": 125,
+            "height": 93,
+            "ratio": 1.33,
+            "objectFit": "contain"
+          }
+        }
+      ],
+      "rows": [
+        [
+          "desktop-autoclaves"
+        ],
+        [
+          "hospital-autoclaves"
+        ],
+        [
+          "blood-glucose-meters"
+        ],
+        [
+          "blood-glucose-test-strips"
+        ]
+      ],
+      "columnGap": "16px",
+      "rowGap": "16px"
+    },
+    "brokenImages": [],
+    "remoteImages": [],
+    "overflow": 0
+  },
+  "runtimeErrors": [],
+  "failedRequests": []
+}

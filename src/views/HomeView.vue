@@ -10,8 +10,17 @@ import { localize } from '../utils/localized.js'
 
 const { t, locale } = useI18n()
 
-const softwarePreview = products.filter((p) => p.type === 'software').slice(0, 3)
+/* Home and portfolio deliberately read from the same product record so a
+   product never changes visual identity between the two surfaces. */
+const softwarePreview = products.filter((p) => p.type === 'software')
 const techPreview = products.filter((p) => p.type === 'equipment')
+const tickerProducts = products.map((product) => ({
+  ...product,
+  tickerName:
+    product.id === 'hospital-autoclaves'
+      ? { en: 'Industrial Autoclaves', fa: 'اتوکلاوهای صنعتی' }
+      : product.name,
+}))
 
 const missionPoints = ['p1', 'p2', 'p3']
 const customSteps = ['analyze', 'design', 'build']
@@ -19,9 +28,17 @@ const customSteps = ['analyze', 'design', 'build']
 /* The voices checkerboard — photos and quote plates alternating
    across a 3-column grid: P Q P / Q P Q / P Q P */
 const voicePhoto = (tm) => tm.photo.replace('w=400', 'w=900')
+const testimonialMobileImages = {
+  '/images/testimonials/mother-baby.jpg': '/images/testimonials/mother-baby-mobile.jpg',
+  '/images/testimonials/family-sunset.jpg': '/images/testimonials/family-sunset-mobile.jpg',
+}
 const voiceCells = [
   ...testimonials.slice(0, 4).flatMap((tm, i) => [
-    { type: 'photo', src: voicePhoto(testimonials[i]) },
+    {
+      type: 'photo',
+      src: voicePhoto(testimonials[i]),
+      mobileSrc: testimonialMobileImages[voicePhoto(testimonials[i])],
+    },
     { type: 'quote', tm },
   ]),
   ...(testimonials[4] ? [{ type: 'photo', src: voicePhoto(testimonials[4]) }] : []),
@@ -36,15 +53,11 @@ const delayA = (i) => `${0.35 + i * 0.09}s`
 const delayB = computed(() => `${0.35 + titleWordsA.value.length * 0.09}s`)
 const delayC = (i) => `${0.44 + (titleWordsA.value.length + i) * 0.09}s`
 
-/* The ticker — an endless strip of everything we make */
-const tickerNames = computed(() => {
-  const names = products.map((p) => localize(p.name, locale.value))
-  return [...names, ...names]
-})
-
 const root = ref(null)
 const heroEl = ref(null)
 const heroVisual = ref(null)
+const tickerTrack = ref(null)
+const tickerGroup = ref(null)
 
 const reducedMotion =
   typeof window !== 'undefined' &&
@@ -81,27 +94,69 @@ const onScroll = () => {
   })
 }
 
+/* The product ribbon moves with one composited transform. Its speed eases
+   down while people explore it, rather than snapping to a pause. */
+let tickerFrame = 0
+let tickerLastTime = 0
+let tickerOffset = 0
+let tickerWidth = 0
+let tickerSpeed = 48
+let tickerTargetSpeed = 48
+let tickerResizeObserver = null
+
+const setTickerExploring = (isExploring) => {
+  tickerTargetSpeed = isExploring ? 13 : 48
+}
+
+const onTickerFocusOut = (event) => {
+  if (!event.currentTarget.contains(event.relatedTarget)) setTickerExploring(false)
+}
+
+const animateTicker = (time) => {
+  if (!tickerLastTime) tickerLastTime = time
+  const elapsed = Math.min(time - tickerLastTime, 64)
+  tickerLastTime = time
+  tickerSpeed += (tickerTargetSpeed - tickerSpeed) * Math.min(1, elapsed / 260)
+
+  if (tickerWidth && tickerTrack.value) {
+    tickerOffset = (tickerOffset + tickerSpeed * elapsed / 1000) % tickerWidth
+    tickerTrack.value.style.transform = `translate3d(${-tickerOffset}px, 0, 0)`
+  }
+
+  tickerFrame = requestAnimationFrame(animateTicker)
+}
+
 /* Scroll reveals */
 let observer = null
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
-  if (reducedMotion) return
-  observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible')
-          observer.unobserve(entry.target)
-        }
-      })
-    },
-    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-  )
-  root.value?.querySelectorAll('.reveal, .reveal-side').forEach((el) => observer.observe(el))
+  if (!reducedMotion) {
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    )
+    root.value?.querySelectorAll('.reveal, .reveal-side').forEach((el) => observer.observe(el))
+
+    tickerWidth = tickerGroup.value?.offsetWidth ?? 0
+    tickerResizeObserver = new ResizeObserver((entries) => {
+      tickerWidth = entries[0]?.contentRect.width ?? tickerWidth
+    })
+    if (tickerGroup.value) tickerResizeObserver.observe(tickerGroup.value)
+    tickerFrame = requestAnimationFrame(animateTicker)
+  }
 })
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
   observer?.disconnect()
+  tickerResizeObserver?.disconnect()
+  cancelAnimationFrame(tickerFrame)
 })
 </script>
 
@@ -168,7 +223,7 @@ onBeforeUnmount(() => {
           </div>
 
           <figure class="cine-moment photo-frame cine-focus" style="animation-delay: 0.85s">
-            <img :src="siteImages.life3" alt="" loading="lazy" />
+            <img :src="siteImages.life3" alt="" loading="lazy" decoding="async" />
           </figure>
 
           <div class="float float-chip-a cine-focus" style="animation-delay: 1.05s">
@@ -206,17 +261,46 @@ onBeforeUnmount(() => {
         <span class="cue-label">{{ t('hero.scroll') }}</span>
       </div>
 
-      <!-- The credits roll — cinematic outlined type drifting past,
-           every name set off by a small ember star -->
-      <div class="cine-ticker" aria-hidden="true">
-        <div class="ticker-track">
-          <span v-for="(name, i) in tickerNames" :key="`t-${i}`" class="ticker-item">
-            <span class="ticker-name">{{ name }}</span>
-            <span class="ticker-sep">✦</span>
-          </span>
+    </section>
+
+    <!-- Product ticker — a compact, continuously moving index directly
+         below the opening shot. -->
+    <nav
+      class="product-ticker"
+      :aria-label="t('productTicker.ariaLabel')"
+      @pointerenter="setTickerExploring(true)"
+      @pointerleave="setTickerExploring(false)"
+      @focusin="setTickerExploring(true)"
+      @focusout="onTickerFocusOut"
+    >
+      <div class="ticker-viewport">
+        <div ref="tickerTrack" class="ticker-track">
+          <div ref="tickerGroup" class="ticker-group">
+            <RouterLink
+              v-for="product in tickerProducts"
+              :key="product.id"
+              :to="`/products/${product.id}`"
+              class="ticker-item"
+            >
+              <span class="ticker-name">{{ localize(product.tickerName, locale) }}</span>
+              <span class="ticker-separator" aria-hidden="true"></span>
+            </RouterLink>
+          </div>
+          <div class="ticker-group ticker-clone" aria-hidden="true">
+            <RouterLink
+              v-for="product in tickerProducts"
+              :key="`clone-${product.id}`"
+              :to="`/products/${product.id}`"
+              class="ticker-item"
+              tabindex="-1"
+            >
+              <span class="ticker-name">{{ localize(product.tickerName, locale) }}</span>
+              <span class="ticker-separator" aria-hidden="true"></span>
+            </RouterLink>
+          </div>
         </div>
       </div>
-    </section>
+    </nav>
 
     <!-- 2 · Mission — the day we give back -->
     <section class="mission">
@@ -256,9 +340,9 @@ onBeforeUnmount(() => {
         <!-- Overlapping collage — three frames of life, each carrying the ember -->
         <div class="mission-collage reveal">
           <span class="collage-ring" aria-hidden="true"></span>
-          <figure class="life life-a photo-frame"><img :src="siteImages.life1" alt="" loading="lazy" class="kenburns" /></figure>
-          <figure class="life life-b photo-frame"><img :src="siteImages.life2" alt="" loading="lazy" /></figure>
-          <figure class="life life-c photo-frame"><img :src="siteImages.sunrise" alt="" loading="lazy" /></figure>
+          <figure class="life life-a photo-frame"><img :src="siteImages.life1" alt="" loading="lazy" decoding="async" class="kenburns" /></figure>
+          <figure class="life life-b photo-frame"><img :src="siteImages.life2" alt="" loading="lazy" decoding="async" /></figure>
+          <figure class="life life-c photo-frame"><img :src="siteImages.sunrise" alt="" loading="lazy" decoding="async" /></figure>
         </div>
       </div>
     </section>
@@ -289,7 +373,10 @@ onBeforeUnmount(() => {
             class="voice-shot reveal"
             :style="{ transitionDelay: `${0.06 + (i % 3) * 0.08}s` }"
           >
-            <img :src="cell.src" alt="" loading="lazy" />
+            <picture>
+              <source v-if="cell.mobileSrc" media="(max-width: 720px)" :srcset="cell.mobileSrc" />
+              <img :src="cell.src" alt="" loading="lazy" decoding="async" />
+            </picture>
           </figure>
 
           <figure
@@ -329,7 +416,7 @@ onBeforeUnmount(() => {
           class="cascade-cell reveal"
           :style="{ transitionDelay: `${i * 0.12}s` }"
         >
-          <ProductCard :product="product" :index="i" />
+          <ProductCard :product="product" :index="i" variant="showcase" />
         </div>
       </div>
 
@@ -380,7 +467,7 @@ onBeforeUnmount(() => {
          green. Technology that works around your wards. -->
     <section class="partner">
       <div class="partner-media photo-frame reveal">
-        <img :src="siteImages.partner" alt="" loading="lazy" />
+        <img :src="siteImages.partner" alt="" loading="lazy" decoding="async" />
       </div>
 
       <div class="partner-panel">
@@ -429,7 +516,7 @@ onBeforeUnmount(() => {
           class="tech-cell reveal"
           :style="{ transitionDelay: `${i * 0.12}s` }"
         >
-          <ProductCard :product="product" :index="i" />
+          <ProductCard :product="product" :index="i" variant="showcase" />
         </div>
       </div>
 
@@ -781,63 +868,97 @@ html[dir='rtl'] .chip-card { padding: 0.8125rem 0.8125rem 0.8125rem 1.25rem; }
 
 html[lang='fa'] .cue-label { letter-spacing: 0; }
 
-/* ── The ticker — a thin cinematic credits strip ─────── */
-.cine-ticker {
+/* ── Product ticker ──────────────────────────────────── */
+.product-ticker {
   position: relative;
+  z-index: 2;
+  direction: ltr;
   overflow: hidden;
-  padding: 0.875rem 0 1rem;
-  border-top: 1px solid rgba(245, 245, 229, 0.14);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  color: #F5F5E5;
+  background:
+    linear-gradient(105deg, rgba(0, 31, 0, 0.88), rgba(0, 52, 25, 0.72)),
+    rgba(0, 41, 0, 0.7);
+  border-top: 1px solid rgba(245, 245, 229, 0.16);
+  border-bottom: 1px solid rgba(245, 245, 229, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 42px -34px rgba(0, 41, 0, 0.9);
+  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
 }
 
-.ticker-track {
+.product-ticker::before,
+.product-ticker::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: 0; bottom: 0;
+  width: min(10vw, 7rem);
+  pointer-events: none;
+}
+
+.product-ticker::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(0, 31, 0, 0.96) 8%, rgba(0, 31, 0, 0));
+}
+
+.product-ticker::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(0, 31, 0, 0.96) 8%, rgba(0, 31, 0, 0));
+}
+
+.ticker-viewport {
+  overflow: hidden;
+  padding: 0.55rem 0;
+}
+
+.ticker-track,
+.ticker-group {
   display: flex;
   align-items: center;
   width: max-content;
-  animation: marqueeX 64s linear infinite;
 }
 
-html[dir='rtl'] .ticker-track { animation-direction: reverse; }
+.ticker-track {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.ticker-group { flex: 0 0 auto; }
 
 .ticker-item {
-  display: inline-flex; align-items: center; gap: 2rem;
-  padding-inline-end: 2rem;
-  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 1.4rem;
+  min-height: 2.75rem;
+  padding: 0.25rem 1.55rem;
+  color: rgba(245, 245, 229, 0.68);
+  opacity: 0.76;
+  text-decoration: none;
+  transform: translate3d(0, 0, 0);
+  transition: color 320ms ease, opacity 320ms ease, text-shadow 320ms ease;
 }
 
-/* Elegant credits — hollow stroke letters, every other name softly
-   filled. Hovering a name warms it to the primary orange. */
-.ticker-name {
-  font-family: var(--font-display);
-  font-size: clamp(1.0625rem, 1.6vw, 1.375rem);
-  font-weight: 550;
-  font-style: italic;
-  letter-spacing: 0.02em;
-  line-height: 1.3;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(245, 245, 229, 0.45);
-  transition: color 0.3s ease, -webkit-text-stroke-color 0.3s ease;
-}
-
-.ticker-item:nth-child(even) .ticker-name {
-  -webkit-text-stroke: 0;
-  color: rgba(245, 245, 229, 0.85);
-}
-
-.ticker-name:hover {
-  color: #E67E22;
-  -webkit-text-stroke-color: #E67E22;
-}
-
-html[lang='fa'] .ticker-name { font-style: normal; letter-spacing: 0; font-weight: 700; }
-
-/* The ember star between names */
-.ticker-sep {
-  font-size: 0.6875rem;
+.ticker-item:hover,
+.ticker-item:focus-visible {
   color: var(--orange);
-  text-shadow: 0 0 16px rgba(255, 146, 92, 0.6);
-  flex-shrink: 0;
+  opacity: 1;
+  text-shadow: 0 0 18px rgba(255, 146, 92, 0.42);
+}
+
+.ticker-name {
+  unicode-bidi: plaintext;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 450;
+  letter-spacing: 0.018em;
+}
+
+html[lang='fa'] .ticker-name { letter-spacing: 0; }
+
+.ticker-separator {
+  display: block;
+  width: 1px; height: 1rem;
+  flex: 0 0 auto;
+  background: rgba(245, 245, 229, 0.25);
 }
 
 /* ── 2 · Mission — asymmetric, overlapping ───────────── */
@@ -1025,15 +1146,15 @@ html[lang='fa'] .voices-title { line-height: 1.32; font-weight: 800; }
    replicating the reference layout */
 .voices-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 320px;
   gap: 2.75rem 2rem;
   align-items: stretch;
 }
 
 /* Photo tiles — vibrant moments in warm light */
 .voice-shot {
-  margin: 0; overflow: hidden;
+  margin: 0; overflow: hidden; min-height: 0; height: 100%;
   border-radius: 16px;
-  min-height: 300px;
   box-shadow: var(--shadow-card);
   transition-property: opacity, transform;
 }
@@ -1044,6 +1165,12 @@ html[lang='fa'] .voices-title { line-height: 1.32; font-weight: 800; }
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.voice-shot picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .voice-shot:hover img { transform: scale(1.04); }
 
 /* Quote plates — solid light ground, orange quotemarks up top,
@@ -1052,7 +1179,7 @@ html[lang='fa'] .voices-title { line-height: 1.32; font-weight: 800; }
 .voice {
   position: relative;
   display: flex; flex-direction: column; gap: 1.25rem;
-  margin: 0;
+  height: 100%; min-height: 0; margin: 0; overflow: hidden;
   padding: 1.875rem 1.625rem 1.25rem;
   background: var(--cream);
   border-radius: 16px 16px 3px 3px;
@@ -1136,14 +1263,16 @@ html[lang='fa'] .section-title { line-height: 1.32; font-weight: 800; }
   display: flex; justify-content: center; margin-top: 3.5rem;
 }
 
-/* Stepped cascade — cards descend like film frames */
+/* Two-column showcase — moderate horizontal cards keep the overview
+   generous without making any one product feel oversized. */
 .cascade-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 560px));
+  justify-content: center;
+  gap: 2rem;
 }
 
 .cascade-cell { display: flex; flex-direction: column; }
-.cascade-cell:nth-child(2) { margin-top: 3rem; }
-.cascade-cell:nth-child(3) { margin-top: 6rem; }
 .cascade-cell > :deep(*) { flex: 1; }
 
 /* ── 5 · Custom — the sunlit workshop ────────────────── */
@@ -1362,11 +1491,13 @@ html[lang='fa'] .ppoint-title { font-weight: 700; }
 }
 
 .tech-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 560px));
+  justify-content: center;
+  gap: 2rem;
 }
 
 .tech-cell { display: flex; flex-direction: column; }
-.tech-cell:nth-child(2) { margin-top: 4rem; }
 .tech-cell > :deep(*) { flex: 1; }
 
 /* ── 8 · Why — trio on the sand ──────────────────────── */
@@ -1522,14 +1653,11 @@ html[lang='fa'] .consult-title { line-height: 1.36; font-weight: 800; }
   .point:nth-child(2) { margin-inline-start: 1.25rem; }
   .point:nth-child(3) { margin-inline-start: 2.5rem; }
   .voices { padding: 4.5rem 1.75rem 5rem; }
-  .voices-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
-  .voice-shot { min-height: 260px; }
+  .voices-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 300px; gap: 1.5rem; }
   .block-section { padding: 4rem 1.75rem; }
   .section-head { grid-template-columns: 1fr; gap: 1.5rem; }
   .section-sub { justify-self: start; }
-  .cascade-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
-  .cascade-cell:nth-child(2) { margin-top: 2rem; }
-  .cascade-cell:nth-child(3) { margin-top: 0; }
+  .cascade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
   .custom { padding: 2rem 1.75rem; }
   .custom-panel { padding: 3.5rem 2.25rem 3rem; }
   .craft-steps { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -1538,8 +1666,7 @@ html[lang='fa'] .consult-title { line-height: 1.36; font-weight: 800; }
   .tech-flare { display: none; }
   .partner { grid-template-columns: 1fr; min-height: 0; }
   .partner-panel { padding: 3.5rem 1.75rem; }
-  .tech-grid { grid-template-columns: 1fr; gap: 1.75rem; }
-  .tech-cell:nth-child(2) { margin-top: 0; }
+  .tech-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
   .why { padding: 3rem 1.75rem 4rem; }
   .why-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .why-item { transform: none !important; }
@@ -1553,19 +1680,18 @@ html[lang='fa'] .consult-title { line-height: 1.36; font-weight: 800; }
   .cine-visual { min-height: 430px; }
   .cine-arch { width: min(78%, 300px); margin-left: calc(min(78%, 300px) / -2); }
   .cine-moment { width: 116px; height: 116px; }
-  .ticker-item { gap: 1.25rem; padding-inline-end: 1.25rem; }
-  .ticker-name { font-size: 0.9375rem; }
-  .cine-ticker { padding: 0.625rem 0 0.75rem; }
+  .ticker-item { padding-inline: 0.9rem; }
   .mission { padding: 4rem 1.25rem 2.5rem; }
   .mission-collage { min-height: 400px; }
   .point:nth-child(n) { margin-inline-start: 0; }
   .voices { padding: 3.5rem 1.25rem 4rem; }
-  .voices-grid { grid-template-columns: 1fr; gap: 1.25rem; }
-  .voice-shot { min-height: 220px; }
+  .voices-grid { grid-template-columns: 1fr; grid-auto-rows: auto; gap: 1.25rem; }
+  .voice-shot { aspect-ratio: 3 / 2; }
+  .voice { min-height: 280px; }
   .voices-badge { flex-wrap: wrap; justify-content: center; }
   .block-section { padding: 3.5rem 1.25rem; }
-  .cascade-grid { grid-template-columns: 1fr; }
-  .cascade-cell:nth-child(n) { margin-top: 0; }
+  .cascade-grid,
+  .tech-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .custom { padding: 1.5rem 1.25rem; }
   .custom-panel { padding: 2.75rem 1.5rem; border-radius: var(--radius-card); }
   .partner-panel { padding: 2.75rem 1.25rem; }
@@ -1575,5 +1701,16 @@ html[lang='fa'] .consult-title { line-height: 1.36; font-weight: 800; }
   .chip-card { padding: 0.6875rem 1rem 0.6875rem 0.6875rem; }
   .chip-text strong { font-size: 0.9375rem; }
   .chip-text small { font-size: 0.6875rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-viewport {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 146, 92, 0.55) rgba(245, 245, 229, 0.08);
+  }
+
+  .ticker-track { transform: none !important; }
+  .ticker-clone { display: none; }
 }
 </style>

@@ -68,10 +68,6 @@ onUnmounted(() => {
           <span class="lang-name" :lang="otherLocale">{{ t(`lang.names.${otherLocale}`) }}</span>
         </button>
 
-        <RouterLink to="/contact" class="nav-cta">
-          {{ t('nav.contact') }}
-        </RouterLink>
-
         <button
           class="menu-toggle"
           :aria-expanded="menuOpen"
@@ -166,11 +162,11 @@ onUnmounted(() => {
   text-decoration: none;
   font-size: 0.9375rem; font-weight: 500;
   color: rgba(245, 245, 229, 0.82);
-  transition: color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  transition: color 250ms ease, background 250ms ease, box-shadow 250ms ease;
 }
 
 .nav-link:hover {
-  color: #F5F5E5;
+  color: var(--orange);
   background: rgba(245, 245, 229, 0.14);
   box-shadow: 0 0 20px -6px rgba(245, 245, 229, 0.45);
 }
@@ -214,24 +210,6 @@ onUnmounted(() => {
 .lang-name:lang(en) { font-family: 'Inter', sans-serif; }
 
 /* Flat orange pill — its halo is sand, per the header glow rule */
-.nav-cta {
-  display: inline-flex; align-items: center;
-  padding: 0.6875rem 1.375rem;
-  background: var(--orange);
-  color: #002900;
-  border-radius: var(--radius-btn);
-  text-decoration: none;
-  font-size: 0.875rem; font-weight: 700;
-  box-shadow: 0 10px 26px -12px rgba(245, 245, 229, 0.55);
-  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.nav-cta:hover {
-  background: #FFAC7F;
-  transform: translateY(-1px);
-  box-shadow: 0 14px 30px -12px rgba(245, 245, 229, 0.7);
-}
-
 /* ── Mobile ────────────────────────────────────────────── */
 .menu-toggle {
   display: none;
@@ -272,10 +250,10 @@ onUnmounted(() => {
   text-decoration: none;
   font-size: 1.0625rem; font-weight: 500;
   color: rgba(245, 245, 229, 0.85);
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background 250ms ease, color 250ms ease;
 }
 
-.mobile-link:hover,
+.mobile-link:hover { background: rgba(245, 245, 229, 0.14); color: var(--orange); }
 .mobile-link.is-active { background: rgba(245, 245, 229, 0.14); color: #F5F5E5; }
 
 .mobile-cta { justify-content: center; margin-top: 0.75rem; }
@@ -285,10 +263,6 @@ onUnmounted(() => {
 }
 .menu-drop-enter-from, .menu-drop-leave-to {
   opacity: 0; transform: translateY(-10px);
-}
-
-@media (max-width: 1080px) {
-  .nav-cta { display: none; }
 }
 
 @media (max-width: 880px) {

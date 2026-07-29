@@ -2,22 +2,43 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
+import ProductCard from '../components/ProductCard.vue'
+import ProductIcon from '../components/ProductIcon.vue'
 import { products } from '../data/products.js'
-import { localize } from '../utils/localized.js'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
-// Three primary categories — overlapping cards that spill out of the warm prologue.
+// The portfolio is organized around two clear product families.
 const navCards = [
   { id: 'platforms', href: '#platforms', key: 'platforms' },
   { id: 'innovations', href: '#innovations', key: 'innovations' },
-  { id: 'custom', href: '#custom', key: 'custom' },
 ]
 
 // Product listings (custom development is a service, shown as its own panel).
 const listings = [
   { id: 'platforms', key: 'platforms', items: products.filter((p) => p.type === 'software') },
   { id: 'innovations', key: 'innovations', items: products.filter((p) => p.type === 'equipment') },
+]
+
+const snapshot = [
+  { key: 'total', value: products.length, icon: 'telecare' },
+  { key: 'software', value: listings[0].items.length, icon: 'mother' },
+  { key: 'equipment', value: listings[1].items.length, icon: 'autoclave' },
+  { key: 'families', value: listings.length, icon: 'sterilization' },
+]
+
+const comparisonFamilies = [
+  { key: 'software', icon: 'telecare' },
+  { key: 'equipment', icon: 'autoclave' },
+]
+
+const comparisonRows = ['audience', 'role', 'delivery']
+
+const workflowSteps = [
+  { key: 'context', icon: 'mother' },
+  { key: 'match', icon: 'telecare' },
+  { key: 'validate', icon: 'glucose' },
+  { key: 'support', icon: 'sterilization' },
 ]
 
 /* Scroll reveals */
@@ -72,11 +93,8 @@ onBeforeUnmount(() => observer?.disconnect())
           <svg v-if="c.key === 'platforms'" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
           </svg>
-          <svg v-else-if="c.key === 'innovations'" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 18h6M10 21h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0 0 12 2Z" />
-          </svg>
           <svg v-else width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 6 2 12l6 6" /><path d="M16 6l6 6-6 6" /><path d="M13 4l-2 16" />
+            <path d="M9 18h6M10 21h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0 0 12 2Z" />
           </svg>
         </span>
         <h2 class="nav-card-title">{{ t(`products.categories.${c.key}.title`) }}</h2>
@@ -89,7 +107,27 @@ onBeforeUnmount(() => observer?.disconnect())
     </nav>
 
     <div class="products-inner">
-      <!-- Product listings — alternating frames -->
+      <section class="portfolio-snapshot reveal" aria-labelledby="portfolio-snapshot-title">
+        <div class="support-head snapshot-head">
+          <div>
+            <p class="support-eyebrow">{{ t('products.snapshot.eyebrow') }}</p>
+            <h2 id="portfolio-snapshot-title" class="support-title">{{ t('products.snapshot.title') }}</h2>
+          </div>
+          <p class="support-intro">{{ t('products.snapshot.intro') }}</p>
+        </div>
+
+        <div class="snapshot-grid">
+          <article v-for="item in snapshot" :key="item.key" class="snapshot-cell">
+            <span class="snapshot-icon" aria-hidden="true">
+              <ProductIcon :name="item.icon" :size="22" />
+            </span>
+            <strong>{{ item.value }}</strong>
+            <span>{{ t(`products.snapshot.items.${item.key}`) }}</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- Product listings — compact, information-rich catalogue cards -->
       <section v-for="(cat, ci) in listings" :id="cat.id" :key="cat.id" class="category">
         <header class="cat-head reveal">
           <span class="cat-count" aria-hidden="true">{{ String(ci + 1).padStart(2, '0') }}</span>
@@ -99,50 +137,74 @@ onBeforeUnmount(() => observer?.disconnect())
           </div>
         </header>
 
-        <div class="list">
-          <article v-for="(p, i) in cat.items" :id="p.id" :key="p.id"
-                   class="row reveal" :class="{ 'row-flip': i % 2 === 1 }">
-            <div class="row-media">
-              <img :src="p.image" :alt="localize(p.name, locale)" loading="lazy" />
-              <span class="row-num">{{ t('card.no') }}{{ String(i + 1).padStart(2, '0') }}</span>
-              <span v-if="p.flagship" class="row-flagship">{{ t('card.flagship') }}</span>
-            </div>
+        <div class="product-grid reveal">
+          <ProductCard
+            v-for="(p, i) in cat.items"
+            :id="p.id"
+            :key="p.id"
+            :product="p"
+            :index="i"
+            variant="compact"
+          />
+        </div>
+      </section>
 
-            <div class="row-body">
-              <span class="row-category">{{ localize(p.category, locale) }}<span class="row-type"> · {{ t(`card.type.${p.type}`) }}</span></span>
-              <h2 class="row-title">{{ localize(p.name, locale) }}</h2>
-              <p class="row-tagline">{{ localize(p.tagline, locale) }}</p>
-              <p class="row-desc">{{ localize(p.description, locale) }}</p>
+      <section class="portfolio-compare reveal" aria-labelledby="portfolio-compare-title">
+        <div class="support-head">
+          <div>
+            <p class="support-eyebrow">{{ t('products.compare.eyebrow') }}</p>
+            <h2 id="portfolio-compare-title" class="support-title">{{ t('products.compare.title') }}</h2>
+          </div>
+          <p class="support-intro">{{ t('products.compare.intro') }}</p>
+        </div>
 
-              <div class="row-features">
-                <span class="row-features-label">{{ t('products.featuresLabel') }}</span>
-                <ul>
-                  <li v-for="(f, j) in (p.features[locale] ?? p.features.en ?? [])" :key="j">
-                    <span class="bullet" aria-hidden="true"></span>
-                    <span>{{ f }}</span>
-                  </li>
-                </ul>
+        <div class="comparison-grid">
+          <article
+            v-for="family in comparisonFamilies"
+            :key="family.key"
+            class="comparison-card"
+            :class="`comparison-${family.key}`"
+          >
+            <header class="comparison-card-head">
+              <span class="comparison-icon" aria-hidden="true">
+                <ProductIcon :name="family.icon" :size="25" />
+              </span>
+              <div>
+                <h3>{{ t(`products.compare.${family.key}.title`) }}</h3>
+                <p>{{ t(`products.compare.${family.key}.intro`) }}</p>
               </div>
-
-              <!-- The fine print, set as crafted chips — a taste of the
-                   full spec sheet on the detail page -->
-              <div v-if="p.specs?.length" class="row-specs">
-                <div v-for="(s, j) in p.specs.slice(0, 3)" :key="j" class="spec-chip">
-                  <span class="spec-label">{{ localize(s.label, locale) }}</span>
-                  <span class="spec-value">{{ localize(s.value, locale) }}</span>
-                </div>
+            </header>
+            <dl class="comparison-list">
+              <div v-for="row in comparisonRows" :key="row">
+                <dt>{{ t(`products.compare.rows.${row}`) }}</dt>
+                <dd>{{ t(`products.compare.${family.key}.${row}`) }}</dd>
               </div>
-
-              <div class="row-actions">
-                <RouterLink :to="`/products/${p.id}`" class="btn-ink">
-                  {{ t('products.details') }}
-                  <span class="arrow">→</span>
-                </RouterLink>
-                <RouterLink to="/contact" class="btn-ghost-ink">{{ t('products.demo') }}</RouterLink>
-              </div>
-            </div>
+            </dl>
           </article>
         </div>
+      </section>
+
+      <section class="fit-workflow reveal" aria-labelledby="fit-workflow-title">
+        <div class="support-head workflow-head">
+          <div>
+            <p class="support-eyebrow">{{ t('products.workflow.eyebrow') }}</p>
+            <h2 id="fit-workflow-title" class="support-title">{{ t('products.workflow.title') }}</h2>
+          </div>
+          <p class="support-intro">{{ t('products.workflow.intro') }}</p>
+        </div>
+
+        <ol class="workflow-list">
+          <li v-for="(step, index) in workflowSteps" :key="step.key" class="workflow-step">
+            <span class="workflow-icon" aria-hidden="true">
+              <ProductIcon :name="step.icon" :size="22" />
+            </span>
+            <div class="workflow-copy">
+              <span class="workflow-no">{{ String(index + 1).padStart(2, '0') }}</span>
+              <h3>{{ t(`products.workflow.steps.${step.key}.title`) }}</h3>
+              <p>{{ t(`products.workflow.steps.${step.key}.body`) }}</p>
+            </div>
+          </li>
+        </ol>
       </section>
 
       <!-- Custom development — the deep green workshop -->
@@ -245,7 +307,7 @@ html[lang='fa'] .prologue-title em { font-style: normal; }
   max-width: 1280px;
   margin: -7.5rem auto 0;
   padding: 0 2.5rem;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;
   align-items: start;
 }
 
@@ -268,7 +330,6 @@ html[lang='fa'] .prologue-title em { font-style: normal; }
    like a hand of dealt cards */
 .nav-card-0 { background: var(--cream); }
 .nav-card-1 { background: var(--warm-soft); margin-top: 2.5rem; }
-.nav-card-2 { background: var(--cream); margin-top: 5rem; }
 
 .nav-card:hover {
   transform: translateY(-8px);
@@ -332,15 +393,129 @@ html[dir='rtl'] .nav-card:hover .nav-card-arrow { transform: translateX(-4px) ro
 /* ── Listings ────────────────────────────────────────── */
 .products-inner {
   max-width: 1280px; margin: 0 auto;
-  padding: 7rem 2.5rem 0;
+  padding: 5.5rem 2.5rem 0;
 }
 
-.category { margin-bottom: 9rem; scroll-margin-top: 7rem; }
+.portfolio-snapshot,
+.portfolio-compare,
+.fit-workflow {
+  position: relative;
+  margin-bottom: 7rem;
+}
+
+.portfolio-snapshot {
+  overflow: hidden;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: rgba(250, 250, 240, 0.78);
+  border: 1px solid rgba(0, 41, 0, 0.2);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(18px);
+}
+
+.portfolio-snapshot::after {
+  content: '';
+  position: absolute;
+  width: 18rem; height: 18rem;
+  inset-block-start: -11rem; inset-inline-end: -7rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 146, 92, 0.24), rgba(255, 146, 92, 0) 70%);
+  pointer-events: none;
+}
+
+.support-head {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
+  align-items: end;
+  gap: 2.5rem;
+  margin-bottom: 2.25rem;
+}
+
+.support-eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--coral-deep);
+}
+
+html[lang='fa'] .support-eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.support-title {
+  max-width: 15ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.625rem);
+  line-height: 1.12; font-weight: 550;
+  letter-spacing: var(--track-display);
+  color: var(--ink);
+}
+
+html[lang='fa'] .support-title { font-weight: 800; line-height: 1.35; }
+
+.support-intro {
+  max-width: 48ch;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.snapshot-grid {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid rgba(0, 41, 0, 0.16);
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(245, 245, 229, 0.72);
+}
+
+.snapshot-cell {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 0.875rem;
+  padding: 1.25rem;
+  border-inline-end: 1px solid rgba(0, 41, 0, 0.16);
+}
+
+.snapshot-cell:last-child { border-inline-end: 0; }
+
+.snapshot-icon {
+  grid-row: 1 / 3;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  color: var(--ink);
+  background: var(--accent-soft);
+  border: 1px solid rgba(255, 146, 92, 0.42);
+}
+
+.snapshot-cell strong {
+  font-family: var(--font-display);
+  font-size: 1.75rem; line-height: 1;
+  font-weight: 650; color: var(--ink);
+}
+
+.snapshot-cell > span:last-child {
+  overflow: hidden;
+  font-size: 0.75rem; line-height: 1.35;
+  color: var(--muted);
+}
+
+.category { margin-bottom: 5.5rem; scroll-margin-top: 7rem; }
 .category:last-of-type { margin-bottom: 0; }
 
 .cat-head {
   display: flex; align-items: center; gap: 2rem;
-  margin-bottom: 4.5rem;
+  margin-bottom: 3rem;
 }
 
 /* The chapter number — hollow type filled with warmth on approach */
@@ -371,165 +546,183 @@ html[lang='fa'] .cat-title { font-weight: 800; line-height: 1.3; }
   color: var(--ink-soft); margin: 0; max-width: 60ch;
 }
 
-.list { display: flex; flex-direction: column; gap: 7rem; }
-
-.row {
-  display: grid; grid-template-columns: 5fr 7fr;
-  gap: 4rem; align-items: center;
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 460px));
+  justify-content: center;
+  column-gap: 1.75rem;
+  row-gap: 2rem;
+  align-items: stretch;
 }
 
-.row-flip { grid-template-columns: 7fr 5fr; }
-.row-flip .row-media { order: 2; }
-.row-flip .row-body { order: 1; }
+/* ── Family comparison ───────────────────────────────── */
+.portfolio-compare { padding-top: 1rem; }
 
-.row-media {
-  position: relative; overflow: hidden;
-  aspect-ratio: 4 / 5;
-  background: var(--cream-deep);
-  border-radius: 999px 999px 32px 32px;
-  border: 5px solid rgba(250, 250, 240, 0.9);
-  box-shadow: var(--shadow-lift);
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
 }
 
-.row-flip .row-media {
-  aspect-ratio: 5 / 4;
-  border-radius: 32px 32px 999px 32px;
+.comparison-card {
+  overflow: hidden;
+  border: 1px solid rgba(0, 41, 0, 0.2);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
 }
 
-html[dir='rtl'] .row-flip .row-media { border-radius: 32px 32px 32px 999px; }
+.comparison-software { background: rgba(250, 250, 240, 0.9); }
+.comparison-equipment { background: var(--warm-soft); }
 
-.row-media img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+.comparison-card-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding: 1.75rem;
 }
 
-.row:hover .row-media img { transform: scale(1.05); }
-
-.row-num {
-  position: absolute; top: 1.5rem; inset-inline-start: 1.5rem; z-index: 2;
-  font-size: 0.75rem; font-weight: 700;
-  letter-spacing: 0.14em;
-  color: #F5F5E5;
-  background: rgba(0, 41, 0, 0.62);
-  backdrop-filter: blur(6px);
-  padding: 0.375rem 0.75rem;
-  border-radius: 999px;
+.comparison-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 16px;
+  color: #002900;
+  background: var(--grad-orange);
+  box-shadow: 0 14px 30px -16px rgba(229, 100, 42, 0.7);
 }
 
-html[lang='fa'] .row-num { letter-spacing: 0.03em; }
-
-.row-flagship {
-  position: absolute; top: 1.5rem; inset-inline-end: 1.5rem; z-index: 2;
-  font-size: 0.6875rem; font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #002900; background: var(--grad-orange);
-  padding: 0.4375rem 0.875rem; border-radius: 999px;
-  box-shadow: 0 8px 20px -8px rgba(229, 100, 42, 0.55);
-}
-
-html[lang='fa'] .row-flagship { letter-spacing: 0; }
-
-.row-body { display: flex; flex-direction: column; gap: 0.875rem; }
-
-.row-category {
-  font-size: 0.8125rem; font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--coral-deep);
-}
-
-html[lang='fa'] .row-category { letter-spacing: 0; }
-
-.row-type { color: var(--muted); font-weight: 500; }
-
-.row-title {
+.comparison-card h3 {
+  margin: 0 0 0.5rem;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
-  line-height: 1.06; font-weight: 550;
-  letter-spacing: var(--track-display);
-  margin: 0.25rem 0 0; color: var(--ink);
+  font-size: 1.5rem; line-height: 1.2;
+  font-weight: 600; color: var(--ink);
 }
 
-html[lang='fa'] .row-title { font-weight: 800; line-height: 1.3; }
+html[lang='fa'] .comparison-card h3 { font-weight: 800; }
 
-.row-tagline {
-  font-size: 1.0625rem; line-height: 1.4;
-  color: var(--ink); font-weight: 600; margin: 0.25rem 0 0;
-}
-
-.row-desc {
-  font-size: 0.9375rem; line-height: 1.75;
-  color: var(--ink-soft); margin: 0.5rem 0 0; max-width: 56ch;
-}
-
-.row-features {
-  margin-top: 1rem; padding-top: 1.5rem;
-  border-top: 2px solid rgba(255, 146, 92, 0.35);
-  display: flex; flex-direction: column; gap: 0.875rem;
-}
-
-.row-features-label {
-  font-size: 0.8125rem; font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-}
-
-html[lang='fa'] .row-features-label { letter-spacing: 0; }
-
-.row-features ul {
-  list-style: none; padding: 0; margin: 0;
-  display: flex; flex-direction: column; gap: 0.625rem;
-}
-
-.row-features li {
-  display: flex; align-items: baseline; gap: 0.875rem;
-  font-size: 0.9375rem; line-height: 1.5;
+.comparison-card-head p {
+  max-width: 38ch;
+  margin: 0;
+  font-size: 0.875rem; line-height: 1.6;
   color: var(--ink-soft);
 }
 
-.bullet {
-  width: 14px; height: 4px; border-radius: 2px;
+.comparison-list { margin: 0; }
+
+.comparison-list > div {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 0.72fr) 1.5fr;
+  gap: 1.25rem;
+  padding: 1rem 1.75rem;
+  border-top: 1px solid rgba(0, 41, 0, 0.16);
+}
+
+.comparison-list dt {
+  font-size: 0.75rem; line-height: 1.45;
+  font-weight: 700; color: var(--coral-deep);
+}
+
+.comparison-list dd {
+  margin: 0;
+  font-size: 0.875rem; line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* ── Product-fit workflow ────────────────────────────── */
+.fit-workflow {
+  overflow: hidden;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  background: var(--grad-ivory-peach);
+  border: 1px solid rgba(0, 41, 0, 0.18);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-lift);
+}
+
+.fit-workflow::after {
+  content: '';
+  position: absolute;
+  width: 26rem; height: 26rem;
+  inset-block-end: -19rem; inset-inline-start: -10rem;
+  border-radius: 50%;
+  border: 1px solid rgba(46, 91, 46, 0.12);
+  box-shadow:
+    0 0 0 3rem rgba(46, 91, 46, 0.035),
+    0 0 0 6rem rgba(255, 146, 92, 0.035);
+  pointer-events: none;
+}
+
+.workflow-list {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  list-style: none;
+  padding: 0; margin: 0;
+}
+
+.workflow-list::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  height: 2px;
+  inset-block-start: 26px;
+  inset-inline: 6.5%;
   background: var(--grad-orange);
-  flex-shrink: 0;
-  transform: translateY(-3px);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
 }
 
-/* Spec chips — the fine print made tactile */
-.row-specs {
-  display: flex; flex-wrap: wrap; gap: 0.625rem;
-  margin-top: 1.125rem;
+html[dir='rtl'] .workflow-list::before { transform-origin: right; }
+.fit-workflow.is-visible .workflow-list::before { transform: scaleX(1); }
+
+.workflow-step {
+  position: relative; z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.spec-chip {
-  display: flex; flex-direction: column; gap: 0.125rem;
-  padding: 0.625rem 0.9375rem;
-  background: var(--cream);
-  border: 1px solid rgba(0, 41, 0, 0.22);
-  border-radius: 14px;
-  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.spec-chip:hover {
-  border-color: rgba(255, 146, 92, 0.55);
-  box-shadow: 0 10px 24px -14px rgba(255, 146, 92, 0.5);
-  transform: translateY(-2px);
-}
-
-.spec-label {
-  font-size: 0.6875rem; font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-}
-
-html[lang='fa'] .spec-label { letter-spacing: 0; }
-
-.spec-value {
-  font-size: 0.8125rem; font-weight: 700;
+.workflow-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px;
   color: var(--ink);
+  background: var(--cream);
+  border: 2px solid var(--orange);
+  border-radius: 50%;
+  box-shadow: 0 8px 20px -12px rgba(0, 41, 0, 0.5);
 }
 
-.row-actions {
-  margin-top: 2rem;
-  display: flex; flex-wrap: wrap; gap: 0.875rem; align-items: center;
+.workflow-copy {
+  flex: 1;
+  margin-top: 1rem;
+  padding: 1.25rem;
+  background: rgba(250, 250, 240, 0.82);
+  border: 1px solid rgba(0, 41, 0, 0.16);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+}
+
+.workflow-no {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--coral-deep);
+}
+
+html[lang='fa'] .workflow-no { letter-spacing: 0; }
+
+.workflow-copy h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9375rem; line-height: 1.35;
+  font-weight: 700; color: var(--ink);
+}
+
+.workflow-copy p {
+  margin: 0;
+  font-size: 0.8125rem; line-height: 1.6;
+  color: var(--ink-soft);
 }
 
 /* ── Custom development — the deep green workshop ────── */
@@ -588,15 +781,16 @@ html[lang='fa'] .custom-title { font-weight: 800; line-height: 1.3; }
   .prologue { padding: 9rem 1.75rem 10rem; }
   .nav-cards { grid-template-columns: 1fr; gap: 1.5rem; margin-top: -6.5rem; padding: 0 1.75rem; }
   .nav-card { min-height: auto; padding: 2.5rem 2.25rem; }
-  .nav-card-1, .nav-card-2 { margin-top: 0; }
+  .nav-card-1 { margin-top: 0; }
   .products-inner { padding: 5rem 1.75rem 0; }
-  .category { margin-bottom: 6rem; }
+  .portfolio-snapshot, .portfolio-compare, .fit-workflow { margin-bottom: 5.5rem; }
+  .support-head { grid-template-columns: 1fr; align-items: start; gap: 1rem; }
+  .support-title { max-width: 20ch; }
+  .snapshot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .snapshot-cell:nth-child(2) { border-inline-end: 0; }
+  .snapshot-cell:nth-child(-n + 2) { border-bottom: 1px solid rgba(0, 41, 0, 0.16); }
+  .category { margin-bottom: 5.5rem; }
   .cat-head { gap: 1.5rem; margin-bottom: 3rem; }
-  .list { gap: 5rem; }
-  .row, .row-flip { grid-template-columns: 1fr; gap: 2rem; }
-  .row-flip .row-media { order: 0; }
-  .row-flip .row-body { order: 1; }
-  .row-media, .row-flip .row-media { aspect-ratio: 4 / 3; border-radius: 32px; }
   .custom-panel { margin-top: 0; }
 }
 
@@ -604,8 +798,51 @@ html[lang='fa'] .custom-title { font-weight: 800; line-height: 1.3; }
   .prologue { padding: 7.5rem 1.25rem 9rem; }
   .nav-cards { padding: 0 1.25rem; }
   .products-inner { padding: 4rem 1.25rem 0; }
-  .list { gap: 4rem; }
+  .portfolio-snapshot, .portfolio-compare, .fit-workflow { margin-bottom: 4.5rem; }
+  .portfolio-snapshot, .fit-workflow { border-radius: var(--radius-card); }
+  .support-head { margin-bottom: 1.75rem; }
+  .product-grid, .comparison-grid { grid-template-columns: 1fr; }
+  .comparison-list > div { grid-template-columns: minmax(6.5rem, 0.7fr) 1.3fr; }
+  .workflow-list {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .workflow-list::before {
+    width: 2px; height: auto;
+    inset-block: 26px;
+    inset-inline-start: 25px;
+    inset-inline-end: auto;
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  html[dir='rtl'] .workflow-list::before { transform-origin: top; }
+  .fit-workflow.is-visible .workflow-list::before { transform: scaleY(1); }
+  .workflow-step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+  .workflow-copy { margin-top: 0; }
   .custom-panel-inner { flex-direction: column; gap: 1rem; }
   .custom-panel { border-radius: var(--radius-card); }
+}
+
+@media (max-width: 480px) {
+  .snapshot-grid { grid-template-columns: 1fr; }
+  .snapshot-cell,
+  .snapshot-cell:nth-child(2) {
+    border-inline-end: 0;
+    border-bottom: 1px solid rgba(0, 41, 0, 0.16);
+  }
+  .snapshot-cell:last-child { border-bottom: 0; }
+  .comparison-list > div { grid-template-columns: 1fr; gap: 0.375rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workflow-list::before {
+    transition: none;
+    transform: none;
+  }
 }
 </style>

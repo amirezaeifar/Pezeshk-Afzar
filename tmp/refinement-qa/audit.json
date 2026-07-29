@@ -1,0 +1,405 @@
+{
+  "home": {
+    "cards": [
+      {
+        "id": "todays-mom",
+        "src": "/images/software/todays-mom-hero.jpg",
+        "card": [
+          280,
+          442
+        ],
+        "media": [
+          280,
+          224
+        ]
+      },
+      {
+        "id": "skinapp",
+        "src": "/images/software/skinapp-hero.jpg",
+        "card": [
+          280,
+          418
+        ],
+        "media": [
+          280,
+          224
+        ]
+      },
+      {
+        "id": "ibd-care",
+        "src": "/images/software/ibd-care-hero.jpg",
+        "card": [
+          280,
+          394
+        ],
+        "media": [
+          280,
+          224
+        ]
+      },
+      {
+        "id": "agingdrug",
+        "src": "/images/software/agingdrug-hero.jpg",
+        "card": [
+          280,
+          418
+        ],
+        "media": [
+          280,
+          224
+        ]
+      },
+      {
+        "id": "chemotherapy-care",
+        "src": "/images/software/chemotherapy-care-hero.jpg",
+        "card": [
+          280,
+          418
+        ],
+        "media": [
+          280,
+          224
+        ]
+      },
+      {
+        "id": "gib",
+        "src": "/images/software/gib-hero.jpg",
+        "card": [
+          280,
+          418
+        ],
+        "media": [
+          280,
+          224
+        ]
+      },
+      {
+        "id": "desktop-autoclaves",
+        "src": "/images/equipment/desktop-autoclave-hero.jpg",
+        "card": [
+          320,
+          631
+        ],
+        "media": [
+          320,
+          400
+        ]
+      },
+      {
+        "id": "hospital-autoclaves",
+        "src": "/images/equipment/hospital-autoclave-hero.jpg",
+        "card": [
+          320,
+          599
+        ],
+        "media": [
+          320,
+          400
+        ]
+      },
+      {
+        "id": "blood-glucose-meters",
+        "src": "/images/equipment/glucose-meter-hero.jpg",
+        "card": [
+          320,
+          570
+        ],
+        "media": [
+          320,
+          400
+        ]
+      },
+      {
+        "id": "blood-glucose-test-strips",
+        "src": "/images/equipment/glucose-strips-hero.jpg",
+        "card": [
+          320,
+          570
+        ],
+        "media": [
+          320,
+          400
+        ]
+      }
+    ],
+    "testimonialSources": [
+      "/images/testimonials/nurse-patient.jpg",
+      "/images/testimonials/diverse-friends.jpg",
+      "/images/testimonials/mother-baby.jpg",
+      "/images/testimonials/family-sunset.jpg",
+      "/images/testimonials/friends-sunset.jpg"
+    ],
+    "broken": [],
+    "remote": [],
+    "overflow": 0
+  },
+  "products": {
+    "cards": [
+      {
+        "id": "todays-mom",
+        "src": "/images/software/todays-mom-hero.jpg",
+        "card": [
+          460,
+          549
+        ],
+        "media": [
+          430,
+          269
+        ]
+      },
+      {
+        "id": "skinapp",
+        "src": "/images/software/skinapp-hero.jpg",
+        "card": [
+          460,
+          549
+        ],
+        "media": [
+          430,
+          269
+        ]
+      },
+      {
+        "id": "ibd-care",
+        "src": "/images/software/ibd-care-hero.jpg",
+        "card": [
+          460,
+          549
+        ],
+        "media": [
+          430,
+          269
+        ]
+      },
+      {
+        "id": "agingdrug",
+        "src": "/images/software/agingdrug-hero.jpg",
+        "card": [
+          460,
+          549
+        ],
+        "media": [
+          430,
+          269
+        ]
+      },
+      {
+        "id": "chemotherapy-care",
+        "src": "/images/software/chemotherapy-care-hero.jpg",
+        "card": [
+          460,
+          549
+        ],
+        "media": [
+          430,
+          269
+        ]
+      },
+      {
+        "id": "gib",
+        "src": "/images/software/gib-hero.jpg",
+        "card": [
+          460,
+          549
+        ],
+        "media": [
+          430,
+          269
+        ]
+      },
+      {
+        "id": "desktop-autoclaves",
+        "src": "/images/equipment/desktop-autoclave-hero.jpg",
+        "card": [
+          460,
+          710
+        ],
+        "media": [
+          430,
+          430
+        ]
+      },
+      {
+        "id": "hospital-autoclaves",
+        "src": "/images/equipment/hospital-autoclave-hero.jpg",
+        "card": [
+          460,
+          710
+        ],
+        "media": [
+          430,
+          430
+        ]
+      },
+      {
+        "id": "blood-glucose-meters",
+        "src": "/images/equipment/glucose-meter-hero.jpg",
+        "card": [
+          460,
+          710
+        ],
+        "media": [
+          430,
+          430
+        ]
+      },
+      {
+        "id": "blood-glucose-test-strips",
+        "src": "/images/equipment/glucose-strips-hero.jpg",
+        "card": [
+          460,
+          710
+        ],
+        "media": [
+          430,
+          430
+        ]
+      }
+    ],
+    "broken": [],
+    "remote": [],
+    "overflow": 0
+  },
+  "mobile": {
+    "cards": [
+      {
+        "id": "todays-mom",
+        "src": "/images/software/todays-mom-hero.jpg",
+        "card": [
+          300,
+          405
+        ],
+        "media": [
+          300,
+          240
+        ]
+      },
+      {
+        "id": "skinapp",
+        "src": "/images/software/skinapp-hero.jpg",
+        "card": [
+          300,
+          405
+        ],
+        "media": [
+          300,
+          240
+        ]
+      },
+      {
+        "id": "ibd-care",
+        "src": "/images/software/ibd-care-hero.jpg",
+        "card": [
+          300,
+          405
+        ],
+        "media": [
+          300,
+          240
+        ]
+      },
+      {
+        "id": "agingdrug",
+        "src": "/images/software/agingdrug-hero.jpg",
+        "card": [
+          300,
+          405
+        ],
+        "media": [
+          300,
+          240
+        ]
+      },
+      {
+        "id": "chemotherapy-care",
+        "src": "/images/software/chemotherapy-care-hero.jpg",
+        "card": [
+          300,
+          405
+        ],
+        "media": [
+          300,
+          240
+        ]
+      },
+      {
+        "id": "gib",
+        "src": "/images/software/gib-hero.jpg",
+        "card": [
+          300,
+          405
+        ],
+        "media": [
+          300,
+          240
+        ]
+      },
+      {
+        "id": "desktop-autoclaves",
+        "src": "/images/equipment/desktop-autoclave-hero.jpg",
+        "card": [
+          320,
+          565
+        ],
+        "media": [
+          320,
+          400
+        ]
+      },
+      {
+        "id": "hospital-autoclaves",
+        "src": "/images/equipment/hospital-autoclave-hero.jpg",
+        "card": [
+          320,
+          565
+        ],
+        "media": [
+          320,
+          400
+        ]
+      },
+      {
+        "id": "blood-glucose-meters",
+        "src": "/images/equipment/glucose-meter-hero.jpg",
+        "card": [
+          320,
+          565
+        ],
+        "media": [
+          320,
+          400
+        ]
+      },
+      {
+        "id": "blood-glucose-test-strips",
+        "src": "/images/equipment/glucose-strips-hero.jpg",
+        "card": [
+          320,
+          565
+        ],
+        "media": [
+          320,
+          400
+        ]
+      }
+    ],
+    "testimonialSources": [
+      "/images/testimonials/nurse-patient.jpg",
+      "/images/testimonials/diverse-friends.jpg",
+      "/images/testimonials/mother-baby-mobile.jpg",
+      "/images/testimonials/family-sunset-mobile.jpg",
+      "/images/testimonials/friends-sunset.jpg"
+    ],
+    "broken": [],
+    "remote": [],
+    "overflow": 0
+  },
+  "consistency": {
+    "compared": 10,
+    "mismatches": [],
+    "softwarePrimaryCount": 6,
+    "uniqueSoftwarePrimaryCount": 6
+  },
+  "runtimeErrors": [],
+  "failedRequests": []
+}
