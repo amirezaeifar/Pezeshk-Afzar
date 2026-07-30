@@ -4,9 +4,9 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const year = new Date().getFullYear()
 
-const phoneRaw = '+989022802826'
-const phoneDisplay = '+98 902 280 2826'
-const emailAddress = 'soshika1010@gmail.com'
+const phoneRaw = '+989128133731'
+const phoneDisplay = '+98 912 813 3731'
+const emailAddress = 'pezeshk.afzar.sh@gmail.com'
 
 const socials = [
   { key: 'linkedin', url: 'https://linkedin.com/' },

@@ -81,13 +81,13 @@ export const products = [
       fa: ['محتوای بازبینی‌شده توسط درمانگران', 'کنترل دسترسی مبتنی بر نقش', 'مدیریت داده با اولویت حریم خصوصی'],
     },
     gallery: [
-      '/images/software/todays-mom-hero.jpg',
+      '/images/software/todays-mom-card.jpg',
       '/images/software/todays-mom-family.jpg',
       '/images/software/todays-mom-care.jpg',
     ],
     galleryAlt: {
-      en: ['A still lake resting beneath soft morning mist', 'Mount Fuji beneath a soft orange sunset', 'A natural limestone arch above clear blue water'],
-      fa: ['دریاچه‌ای آرام در مه نرم صبحگاهی', 'کوه فوجی زیر غروب نرم و نارنجی', 'طاق طبیعی سنگی بر فراز آب‌های شفاف آبی'],
+      en: ['Golden-hour wildflowers rising through a calm summer meadow', 'Mount Fuji beneath a soft orange sunset', 'A natural limestone arch above clear blue water'],
+      fa: ['گل‌های وحشی در نور طلایی یک چمنزار آرام تابستانی', 'کوه فوجی زیر غروب نرم و نارنجی', 'طاق طبیعی سنگی بر فراز آب‌های شفاف آبی'],
     },
     faq: [
       {
@@ -138,13 +138,13 @@ export const products = [
       fa: ['پشتیبان تصمیم، نه تشخیص خودکار', 'ردپای قابل ممیزی بررسی', 'دسترسی کنترل‌شده درمانی'],
     },
     gallery: [
-      '/images/software/skinapp-hero.jpg',
+      '/images/software/skinapp-card.jpg',
       '/images/software/skinapp-scan.jpg',
       '/images/software/skinapp-review.jpg',
     ],
     galleryAlt: {
-      en: ['Minimal still water beneath soft natural light', 'Still blue water at Lake Tahoe in morning light', 'A sweeping glacier beneath a clean alpine sky'],
-      fa: ['آب آرام و مینیمال زیر نور نرم طبیعی', 'آب آرام و آبی دریاچه تاهو در نور صبح', 'چشم‌انداز گسترده یخچال طبیعی زیر آسمان پاک آلپ'],
+      en: ['Soft morning light tracing minimalist sand dunes', 'Still blue water at Lake Tahoe in morning light', 'A sweeping glacier beneath a clean alpine sky'],
+      fa: ['نور نرم صبحگاهی بر موج‌های مینیمال شن', 'آب آرام و آبی دریاچه تاهو در نور صبح', 'چشم‌انداز گسترده یخچال طبیعی زیر آسمان پاک آلپ'],
     },
     faq: [
       {

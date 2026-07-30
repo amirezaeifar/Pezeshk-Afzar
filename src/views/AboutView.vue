@@ -56,7 +56,6 @@ onBeforeUnmount(() => observer?.disconnect())
 
       <!-- What we believe — one warm sentence, spoken across the table -->
       <section class="belief reveal">
-        <span class="belief-breeze" aria-hidden="true"></span>
         <span class="belief-quote" aria-hidden="true">“</span>
         <div class="belief-inner">
           <span class="eyebrow">{{ t('about.philosophyEyebrow') }}</span>
@@ -133,7 +132,8 @@ onBeforeUnmount(() => observer?.disconnect())
               <article v-for="(m, i) in grp.members" :key="m.id" class="member reveal"
                        :style="{ transitionDelay: `${0.06 + i * 0.05}s` }">
                 <span class="member-avatar" aria-hidden="true">
-                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                  <img v-if="m.image" :src="m.image" alt="" width="72" height="72" loading="lazy" decoding="async" />
+                  <svg v-else width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="8" r="4" />
                     <path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6" />
                   </svg>
@@ -220,16 +220,6 @@ html[lang='fa'] .head-title em { font-style: normal; }
   padding: 4rem 4.5rem;
   margin-bottom: 5.5rem;
   box-shadow: 0 30px 70px -52px rgba(229, 100, 42, 0.4);
-}
-
-/* The breeze pooling softly in the corner — #8FBF8F, quiet */
-.belief-breeze {
-  position: absolute;
-  width: 420px; height: 420px;
-  bottom: -220px; inset-inline-end: -140px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(143, 191, 143, 0.3) 0%, rgba(143, 191, 143, 0) 70%);
-  pointer-events: none;
 }
 
 .belief-quote {
@@ -467,8 +457,15 @@ html[lang='fa'] .team-title { font-weight: 800; line-height: 1.45; }
   background: var(--warm-soft); color: var(--coral-deep);
   border: 3px solid #FCFCF2;
   outline: 2px solid var(--coral-soft);
+  overflow: hidden;
   flex-shrink: 0;
   transition: background 0.5s ease, color 0.5s ease, outline-color 0.5s ease;
+}
+
+.member-avatar img {
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .member:hover .member-avatar {

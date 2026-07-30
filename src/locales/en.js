@@ -140,7 +140,6 @@ export default {
   },
   card: {
     view: 'Take a closer look',
-    no: 'P/',
     flagship: 'Our favourite',
     type: {
       software: 'Medical Software',
@@ -158,17 +157,6 @@ export default {
     featuresLabel: 'What it does for you',
     demo: 'Start the conversation',
     details: 'Take a closer look',
-    snapshot: {
-      eyebrow: 'Portfolio at a glance',
-      title: 'One focused portfolio. Two ways into better care.',
-      intro: 'A concise view of the products available across guided medical software and dependable care equipment.',
-      items: {
-        total: 'products in one portfolio',
-        software: 'medical software solutions',
-        equipment: 'equipment lines',
-        families: 'focused product families',
-      },
-    },
     compare: {
       eyebrow: 'Choose a starting point',
       title: 'Different tools, one standard of care.',
@@ -377,7 +365,7 @@ export default {
       emailLabel: 'Email',
       phoneLabel: 'Phone',
       addressLabel: 'Address',
-      address: 'Mashhad — Ferdowsi University, AI in Medicine Building',
+      address: 'Iran, Mashhad, Chamran Street, Between Chamran 11 and Golestan Street, Shahr Hall Building, 1st Floor, Unit 2',
     },
     social: {
       linkedin: 'LinkedIn',
@@ -400,11 +388,11 @@ export default {
       'A question, a dream, a busy day you’d like lighter — write to us about any of it. We usually reply within two working days.',
     meta: {
       studio: 'Office',
-      studioVal: 'Tehran · Iran',
+      studioVal: 'Iran, Mashhad, Chamran Street, Between Chamran 11 and Golestan Street, Shahr Hall Building, 1st Floor, Unit 2',
       hours: 'Hours',
       hoursVal: 'Sat — Wed, 09:00 — 18:00',
       email: 'Email',
-      emailVal: 'hello@pezeshk-afzar.com',
+      emailVal: 'pezeshk.afzar.sh@gmail.com',
     },
     form: {
       section: 'Write us a note',

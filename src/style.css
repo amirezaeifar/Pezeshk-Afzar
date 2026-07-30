@@ -310,7 +310,12 @@ html {
 
 /* Cinematic reveal helpers.
    .cine-mask clips; the child .cine-lift rises into view. */
-.cine-mask { display: block; overflow: hidden; }
+.cine-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
 .cine-lift {
   display: inline-block;
   animation: cineLift 1.1s cubic-bezier(0.19, 1, 0.22, 1) both;

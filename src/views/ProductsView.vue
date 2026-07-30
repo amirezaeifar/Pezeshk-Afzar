@@ -2,29 +2,23 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
-import ProductCard from '../components/ProductCard.vue'
 import ProductIcon from '../components/ProductIcon.vue'
 import { products } from '../data/products.js'
+import { localize } from '../utils/localized.js'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // The portfolio is organized around two clear product families.
 const navCards = [
   { id: 'platforms', href: '#platforms', key: 'platforms' },
   { id: 'innovations', href: '#innovations', key: 'innovations' },
+  { id: 'custom', href: '#custom', key: 'custom' },
 ]
 
 // Product listings (custom development is a service, shown as its own panel).
 const listings = [
   { id: 'platforms', key: 'platforms', items: products.filter((p) => p.type === 'software') },
   { id: 'innovations', key: 'innovations', items: products.filter((p) => p.type === 'equipment') },
-]
-
-const snapshot = [
-  { key: 'total', value: products.length, icon: 'telecare' },
-  { key: 'software', value: listings[0].items.length, icon: 'mother' },
-  { key: 'equipment', value: listings[1].items.length, icon: 'autoclave' },
-  { key: 'families', value: listings.length, icon: 'sterilization' },
 ]
 
 const comparisonFamilies = [
@@ -93,8 +87,12 @@ onBeforeUnmount(() => observer?.disconnect())
           <svg v-if="c.key === 'platforms'" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
           </svg>
-          <svg v-else width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg v-else-if="c.key === 'innovations'" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 18h6M10 21h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0 0 12 2Z" />
+          </svg>
+          <svg v-else width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="8" />
+            <path d="M12 8v8M8 12h8" />
           </svg>
         </span>
         <h2 class="nav-card-title">{{ t(`products.categories.${c.key}.title`) }}</h2>
@@ -107,26 +105,6 @@ onBeforeUnmount(() => observer?.disconnect())
     </nav>
 
     <div class="products-inner">
-      <section class="portfolio-snapshot reveal" aria-labelledby="portfolio-snapshot-title">
-        <div class="support-head snapshot-head">
-          <div>
-            <p class="support-eyebrow">{{ t('products.snapshot.eyebrow') }}</p>
-            <h2 id="portfolio-snapshot-title" class="support-title">{{ t('products.snapshot.title') }}</h2>
-          </div>
-          <p class="support-intro">{{ t('products.snapshot.intro') }}</p>
-        </div>
-
-        <div class="snapshot-grid">
-          <article v-for="item in snapshot" :key="item.key" class="snapshot-cell">
-            <span class="snapshot-icon" aria-hidden="true">
-              <ProductIcon :name="item.icon" :size="22" />
-            </span>
-            <strong>{{ item.value }}</strong>
-            <span>{{ t(`products.snapshot.items.${item.key}`) }}</span>
-          </article>
-        </div>
-      </section>
-
       <!-- Product listings — compact, information-rich catalogue cards -->
       <section v-for="(cat, ci) in listings" :id="cat.id" :key="cat.id" class="category">
         <header class="cat-head reveal">
@@ -137,15 +115,68 @@ onBeforeUnmount(() => observer?.disconnect())
           </div>
         </header>
 
-        <div class="product-grid reveal">
-          <ProductCard
-            v-for="(p, i) in cat.items"
-            :id="p.id"
-            :key="p.id"
-            :product="p"
-            :index="i"
-            variant="compact"
-          />
+        <div class="list">
+          <article
+            v-for="(product, index) in cat.items"
+            :id="product.id"
+            :key="product.id"
+            class="row reveal"
+            :class="{ 'row-flip': index % 2 === 1 }"
+          >
+            <figure class="row-media">
+              <img
+                :src="product.image"
+                :alt="localize(product.name, locale)"
+                width="720"
+                height="840"
+                loading="lazy"
+                decoding="async"
+              />
+              <span v-if="product.flagship && product.id !== 'todays-mom'" class="row-flagship">{{ t('card.flagship') }}</span>
+            </figure>
+
+            <div class="row-body">
+              <p class="row-category">
+                {{ localize(product.category, locale) }}
+                <span aria-hidden="true"> · </span>
+                <span class="row-type">{{ t(`card.type.${product.type}`) }}</span>
+              </p>
+              <h2 class="row-title">{{ localize(product.name, locale) }}</h2>
+              <p class="row-tagline">{{ localize(product.tagline, locale) }}</p>
+              <p class="row-desc">{{ localize(product.description, locale) }}</p>
+
+              <div class="row-features">
+                <span class="row-features-label">{{ t('products.featuresLabel') }}</span>
+                <ul>
+                  <li v-for="feature in (product.features[locale] ?? product.features.en)" :key="feature">
+                    <span class="bullet" aria-hidden="true"></span>
+                    <span>{{ feature }}</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="row-specs">
+                <span
+                  v-for="spec in product.specs"
+                  :key="localize(spec.label, locale)"
+                  class="spec-chip"
+                >
+                  <span class="spec-label">{{ localize(spec.label, locale) }}</span>
+                  <strong class="spec-value">{{ localize(spec.value, locale) }}</strong>
+                </span>
+              </div>
+
+              <div class="row-actions">
+                <RouterLink :to="`/products/${product.id}`" class="btn-ink">
+                  {{ t('products.details') }}
+                  <span class="arrow" aria-hidden="true">→</span>
+                </RouterLink>
+                <RouterLink to="/contact" class="btn-ghost-ink">
+                  {{ t('products.demo') }}
+                </RouterLink>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -307,7 +338,7 @@ html[lang='fa'] .prologue-title em { font-style: normal; }
   max-width: 1280px;
   margin: -7.5rem auto 0;
   padding: 0 2.5rem;
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
   align-items: start;
 }
 
@@ -330,6 +361,7 @@ html[lang='fa'] .prologue-title em { font-style: normal; }
    like a hand of dealt cards */
 .nav-card-0 { background: var(--cream); }
 .nav-card-1 { background: var(--warm-soft); margin-top: 2.5rem; }
+.nav-card-2 { background: var(--cream); margin-top: 5rem; }
 
 .nav-card:hover {
   transform: translateY(-8px);
@@ -393,35 +425,21 @@ html[dir='rtl'] .nav-card:hover .nav-card-arrow { transform: translateX(-4px) ro
 /* ── Listings ────────────────────────────────────────── */
 .products-inner {
   max-width: 1280px; margin: 0 auto;
-  padding: 5.5rem 2.5rem 0;
+  padding: 7rem 2.5rem 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.portfolio-snapshot,
 .portfolio-compare,
 .fit-workflow {
   position: relative;
   margin-bottom: 7rem;
 }
 
-.portfolio-snapshot {
-  overflow: hidden;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  background: rgba(250, 250, 240, 0.78);
-  border: 1px solid rgba(0, 41, 0, 0.2);
-  border-radius: var(--radius-panel);
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(18px);
-}
-
-.portfolio-snapshot::after {
-  content: '';
-  position: absolute;
-  width: 18rem; height: 18rem;
-  inset-block-start: -11rem; inset-inline-end: -7rem;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 146, 92, 0.24), rgba(255, 146, 92, 0) 70%);
-  pointer-events: none;
-}
+.category { order: 1; }
+.custom-panel { order: 2; }
+.portfolio-compare { order: 4; }
+.fit-workflow { order: 5; }
 
 .support-head {
   position: relative; z-index: 1;
@@ -465,57 +483,12 @@ html[lang='fa'] .support-title { font-weight: 800; line-height: 1.35; }
   color: var(--ink-soft);
 }
 
-.snapshot-grid {
-  position: relative; z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border: 1px solid rgba(0, 41, 0, 0.16);
-  border-radius: 20px;
-  overflow: hidden;
-  background: rgba(245, 245, 229, 0.72);
-}
-
-.snapshot-cell {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  align-items: center;
-  column-gap: 0.875rem;
-  padding: 1.25rem;
-  border-inline-end: 1px solid rgba(0, 41, 0, 0.16);
-}
-
-.snapshot-cell:last-child { border-inline-end: 0; }
-
-.snapshot-icon {
-  grid-row: 1 / 3;
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px;
-  border-radius: 14px;
-  color: var(--ink);
-  background: var(--accent-soft);
-  border: 1px solid rgba(255, 146, 92, 0.42);
-}
-
-.snapshot-cell strong {
-  font-family: var(--font-display);
-  font-size: 1.75rem; line-height: 1;
-  font-weight: 650; color: var(--ink);
-}
-
-.snapshot-cell > span:last-child {
-  overflow: hidden;
-  font-size: 0.75rem; line-height: 1.35;
-  color: var(--muted);
-}
-
-.category { margin-bottom: 5.5rem; scroll-margin-top: 7rem; }
+.category { margin-bottom: 9rem; scroll-margin-top: 7rem; }
 .category:last-of-type { margin-bottom: 0; }
 
 .cat-head {
   display: flex; align-items: center; gap: 2rem;
-  margin-bottom: 3rem;
+  margin-bottom: 4.5rem;
 }
 
 /* The chapter number — hollow type filled with warmth on approach */
@@ -546,14 +519,182 @@ html[lang='fa'] .cat-title { font-weight: 800; line-height: 1.3; }
   color: var(--ink-soft); margin: 0; max-width: 60ch;
 }
 
-.product-grid {
+.list { display: flex; flex-direction: column; gap: 7rem; }
+
+.row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 460px));
-  justify-content: center;
-  column-gap: 1.75rem;
-  row-gap: 2rem;
-  align-items: stretch;
+  grid-template-columns: 5fr 7fr;
+  gap: 4rem;
+  align-items: center;
 }
+
+.row-flip { grid-template-columns: 7fr 5fr; }
+.row-flip .row-media { order: 2; }
+.row-flip .row-body { order: 1; }
+
+.row-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  margin: 0;
+  background: var(--cream-deep);
+  border-radius: 999px 999px 32px 32px;
+  border: 5px solid rgba(250, 250, 240, 0.9);
+  box-shadow: var(--shadow-lift);
+}
+
+.row-flip .row-media {
+  aspect-ratio: 5 / 4;
+  border-radius: 32px 32px 999px 32px;
+}
+
+html[dir='rtl'] .row-flip .row-media { border-radius: 32px 32px 32px 999px; }
+
+.row-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.row:hover .row-media img { transform: scale(1.05); }
+
+.row-flagship {
+  position: absolute;
+  top: 1.5rem;
+  inset-inline-end: 1.5rem;
+  z-index: 2;
+  padding: 0.4375rem 0.875rem;
+  color: #002900;
+  background: var(--grad-orange);
+  border-radius: 999px;
+  box-shadow: 0 8px 20px -8px rgba(229, 100, 42, 0.55);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+html[lang='fa'] .row-flagship { letter-spacing: 0; }
+
+.row-body { display: flex; flex-direction: column; gap: 0.875rem; }
+
+.row-category {
+  margin: 0;
+  color: var(--coral-deep);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+html[lang='fa'] .row-category { letter-spacing: 0; }
+.row-type { color: var(--muted); font-weight: 500; }
+
+.row-title {
+  margin: 0.25rem 0 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 550;
+  line-height: 1.06;
+  letter-spacing: var(--track-display);
+}
+
+html[lang='fa'] .row-title { font-weight: 800; line-height: 1.3; }
+
+.row-tagline {
+  margin: 0.25rem 0 0;
+  color: var(--ink);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.row-desc {
+  max-width: 56ch;
+  margin: 0.5rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.75;
+}
+
+.row-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(255, 146, 92, 0.35);
+}
+
+.row-features-label {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+html[lang='fa'] .row-features-label { letter-spacing: 0; }
+
+.row-features ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row-features li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.875rem;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.bullet {
+  width: 14px;
+  height: 4px;
+  flex-shrink: 0;
+  transform: translateY(-3px);
+  background: var(--grad-orange);
+  border-radius: 2px;
+}
+
+.row-specs { display: flex; flex-wrap: wrap; gap: 0.625rem; margin-top: 1.125rem; }
+
+.spec-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.625rem 0.9375rem;
+  background: var(--cream);
+  border: 1px solid rgba(0, 41, 0, 0.22);
+  border-radius: 14px;
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spec-chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 146, 92, 0.55);
+  box-shadow: 0 10px 24px -14px rgba(255, 146, 92, 0.5);
+}
+
+.spec-label {
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+html[lang='fa'] .spec-label { letter-spacing: 0; }
+.spec-value { color: var(--ink); font-size: 0.8125rem; font-weight: 700; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 0.875rem; align-items: center; margin-top: 2rem; }
 
 /* ── Family comparison ───────────────────────────────── */
 .portfolio-compare { padding-top: 1rem; }
@@ -728,7 +869,9 @@ html[lang='fa'] .workflow-no { letter-spacing: 0; }
 /* ── Custom development — the deep green workshop ────── */
 .custom-panel {
   position: relative; overflow: hidden;
-  margin-top: 0; scroll-margin-top: 7rem;
+  margin-top: 0;
+  margin-bottom: clamp(4.5rem, 7vw, 7rem);
+  scroll-margin-top: 7rem;
   background: var(--grad-green);
   border-radius: var(--radius-panel);
   padding: clamp(3rem, 5vw, 5rem);
@@ -781,16 +924,18 @@ html[lang='fa'] .custom-title { font-weight: 800; line-height: 1.3; }
   .prologue { padding: 9rem 1.75rem 10rem; }
   .nav-cards { grid-template-columns: 1fr; gap: 1.5rem; margin-top: -6.5rem; padding: 0 1.75rem; }
   .nav-card { min-height: auto; padding: 2.5rem 2.25rem; }
-  .nav-card-1 { margin-top: 0; }
+  .nav-card-1, .nav-card-2 { margin-top: 0; }
   .products-inner { padding: 5rem 1.75rem 0; }
-  .portfolio-snapshot, .portfolio-compare, .fit-workflow { margin-bottom: 5.5rem; }
+  .portfolio-compare, .fit-workflow { margin-bottom: 5.5rem; }
   .support-head { grid-template-columns: 1fr; align-items: start; gap: 1rem; }
   .support-title { max-width: 20ch; }
-  .snapshot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .snapshot-cell:nth-child(2) { border-inline-end: 0; }
-  .snapshot-cell:nth-child(-n + 2) { border-bottom: 1px solid rgba(0, 41, 0, 0.16); }
-  .category { margin-bottom: 5.5rem; }
+  .category { margin-bottom: 6rem; }
   .cat-head { gap: 1.5rem; margin-bottom: 3rem; }
+  .list { gap: 5rem; }
+  .row, .row-flip { grid-template-columns: 1fr; gap: 2rem; }
+  .row-flip .row-media { order: 0; }
+  .row-flip .row-body { order: 1; }
+  .row-media, .row-flip .row-media { aspect-ratio: 4 / 3; border-radius: 32px; }
   .custom-panel { margin-top: 0; }
 }
 
@@ -798,10 +943,11 @@ html[lang='fa'] .custom-title { font-weight: 800; line-height: 1.3; }
   .prologue { padding: 7.5rem 1.25rem 9rem; }
   .nav-cards { padding: 0 1.25rem; }
   .products-inner { padding: 4rem 1.25rem 0; }
-  .portfolio-snapshot, .portfolio-compare, .fit-workflow { margin-bottom: 4.5rem; }
-  .portfolio-snapshot, .fit-workflow { border-radius: var(--radius-card); }
+  .portfolio-compare, .fit-workflow { margin-bottom: 4.5rem; }
+  .fit-workflow { border-radius: var(--radius-card); }
   .support-head { margin-bottom: 1.75rem; }
-  .product-grid, .comparison-grid { grid-template-columns: 1fr; }
+  .list { gap: 4rem; }
+  .comparison-grid { grid-template-columns: 1fr; }
   .comparison-list > div { grid-template-columns: minmax(6.5rem, 0.7fr) 1.3fr; }
   .workflow-list {
     grid-template-columns: 1fr;
@@ -829,13 +975,6 @@ html[lang='fa'] .custom-title { font-weight: 800; line-height: 1.3; }
 }
 
 @media (max-width: 480px) {
-  .snapshot-grid { grid-template-columns: 1fr; }
-  .snapshot-cell,
-  .snapshot-cell:nth-child(2) {
-    border-inline-end: 0;
-    border-bottom: 1px solid rgba(0, 41, 0, 0.16);
-  }
-  .snapshot-cell:last-child { border-bottom: 0; }
   .comparison-list > div { grid-template-columns: 1fr; gap: 0.375rem; }
 }
 

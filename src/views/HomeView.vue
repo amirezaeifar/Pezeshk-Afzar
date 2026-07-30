@@ -12,8 +12,15 @@ const { t, locale } = useI18n()
 
 /* Home and portfolio deliberately read from the same product record so a
    product never changes visual identity between the two surfaces. */
-const softwarePreview = products.filter((p) => p.type === 'software')
-const techPreview = products.filter((p) => p.type === 'equipment')
+const softwarePreview = products
+  .filter((p) => p.type === 'software')
+  .slice(0, 3)
+  .map((product) => (
+    product.id === 'todays-mom'
+      ? { ...product, flagship: false }
+      : product
+  ))
+const techPreview = products.filter((p) => p.type === 'equipment').slice(0, 2)
 const tickerProducts = products.map((product) => ({
   ...product,
   tickerName:
@@ -180,7 +187,7 @@ onBeforeUnmount(() => {
               </span>
             </span>
             <span class="cine-line">
-              <span class="cine-mask cine-word">
+              <span class="cine-mask cine-word cine-word-accent">
                 <span class="cine-lift" :style="{ animationDelay: delayB }">
                   <em class="text-fire">{{ t('hero.titleB') }}</em>
                 </span>
@@ -697,11 +704,16 @@ html[lang='fa'] .cine-title { line-height: 1.28; font-weight: 800; }
   display: inline-block;
   overflow: hidden;
   vertical-align: bottom;
-  padding-bottom: 0.08em;
+  padding-bottom: 0.14em;
   margin-inline-end: 0.24em;
 }
 
 .cine-word .cine-lift { padding-bottom: 0.02em; }
+
+html[lang='en'] .cine-word-accent {
+  padding-inline-end: 0.12em;
+  margin-inline-end: 0.12em;
+}
 
 .cine-title em { font-style: italic; }
 html[lang='fa'] .cine-title em { font-style: normal; }
@@ -1263,16 +1275,15 @@ html[lang='fa'] .section-title { line-height: 1.32; font-weight: 800; }
   display: flex; justify-content: center; margin-top: 3.5rem;
 }
 
-/* Two-column showcase — moderate horizontal cards keep the overview
-   generous without making any one product feel oversized. */
 .cascade-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 560px));
-  justify-content: center;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
 .cascade-cell { display: flex; flex-direction: column; }
+.cascade-cell:nth-child(3n + 2) { margin-top: 3rem; }
+.cascade-cell:nth-child(3n + 3) { margin-top: 6rem; }
 .cascade-cell > :deep(*) { flex: 1; }
 
 /* ── 5 · Custom — the sunlit workshop ────────────────── */
@@ -1492,12 +1503,12 @@ html[lang='fa'] .ppoint-title { font-weight: 700; }
 
 .tech-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 560px));
-  justify-content: center;
-  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.5rem;
 }
 
 .tech-cell { display: flex; flex-direction: column; }
+.tech-cell:nth-child(even) { margin-top: 4rem; }
 .tech-cell > :deep(*) { flex: 1; }
 
 /* ── 8 · Why — trio on the sand ──────────────────────── */
@@ -1657,7 +1668,10 @@ html[lang='fa'] .consult-title { line-height: 1.36; font-weight: 800; }
   .block-section { padding: 4rem 1.75rem; }
   .section-head { grid-template-columns: 1fr; gap: 1.5rem; }
   .section-sub { justify-self: start; }
-  .cascade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .cascade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+  .cascade-cell:nth-child(3n + 2),
+  .cascade-cell:nth-child(3n + 3) { margin-top: 0; }
+  .cascade-cell:nth-child(even) { margin-top: 2.5rem; }
   .custom { padding: 2rem 1.75rem; }
   .custom-panel { padding: 3.5rem 2.25rem 3rem; }
   .craft-steps { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -1666,7 +1680,8 @@ html[lang='fa'] .consult-title { line-height: 1.36; font-weight: 800; }
   .tech-flare { display: none; }
   .partner { grid-template-columns: 1fr; min-height: 0; }
   .partner-panel { padding: 3.5rem 1.75rem; }
-  .tech-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .tech-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+  .tech-cell:nth-child(even) { margin-top: 0; }
   .why { padding: 3rem 1.75rem 4rem; }
   .why-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .why-item { transform: none !important; }
@@ -1692,6 +1707,7 @@ html[lang='fa'] .consult-title { line-height: 1.36; font-weight: 800; }
   .block-section { padding: 3.5rem 1.25rem; }
   .cascade-grid,
   .tech-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .cascade-cell:nth-child(even) { margin-top: 0; }
   .custom { padding: 1.5rem 1.25rem; }
   .custom-panel { padding: 2.75rem 1.5rem; border-radius: var(--radius-card); }
   .partner-panel { padding: 2.75rem 1.25rem; }
