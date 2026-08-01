@@ -480,13 +480,13 @@ export const products = [
       fa: ['بررسی گردش‌کار و زیرساخت', 'برنامه راه‌اندازی', 'برنامه‌ریزی سرویس و نگهداری'],
     },
     gallery: [
-      '/images/equipment/hospital-autoclave-hero.jpg',
-      '/images/equipment/hospital-autoclave-room.jpg',
-      '/images/equipment/hospital-autoclave-loading.jpg',
+      '/images/equipment/industrial-hospital-autoclave-hero.jpg',
+      '/images/equipment/industrial-autoclave-room.jpg',
+      '/images/equipment/industrial-autoclave-controls.jpg',
     ],
     galleryAlt: {
-      en: ['Hospital-scale autoclave in a bright clinical environment', 'Central sterile processing room', 'Loading a high-capacity sterilizer'],
-      fa: ['اتوکلاو در مقیاس بیمارستان', 'اتاق پردازش مرکزی استریل', 'بارگذاری استریلایزر پرظرفیت'],
+      en: ['Large stainless-steel steam autoclaves with open chambers and loading carts in a hospital CSSD', 'Installed industrial autoclave and transfer cart in a hospital sterilization room', 'Front view and control panel of a hospital steam autoclave'],
+      fa: ['اتوکلاوهای بخار بزرگ استیل با محفظه‌های باز و ترولی بارگیری در واحد استریل مرکزی بیمارستان', 'اتوکلاو صنعتی نصب‌شده و ترولی انتقال در اتاق استریلیزاسیون بیمارستان', 'نمای روبه‌رو و پنل کنترل اتوکلاو بخار بیمارستانی'],
     },
     faq: [
       {
@@ -539,11 +539,11 @@ export const products = [
     gallery: [
       '/images/equipment/glucose-meter-hero.jpg',
       '/images/equipment/glucose-meter-use.jpg',
-      '/images/equipment/glucose-meter-kit.jpg',
+      '/images/equipment/glucose-meter-display.jpg',
     ],
     galleryAlt: {
-      en: ['Portable blood glucose meter and testing kit', 'Close-up glucose meter reading', 'Portable glucose monitoring kit'],
-      fa: ['فرد در حال اندازه‌گیری قند خون', 'نمای نزدیک نتیجه دستگاه قند', 'کیت قابل‌حمل پایش قند'],
+      en: ['Portable blood glucose meter with a clear result display', 'Blood glucose measurement in everyday use', 'Test strip being inserted into a glucose meter'],
+      fa: ['دستگاه قابل‌حمل سنجش قند با نمایشگر خوانا', 'اندازه‌گیری قند خون در استفاده روزمره', 'قرار دادن نوار تست در دستگاه سنجش قند'],
     },
     faq: [
       {

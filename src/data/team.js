@@ -11,7 +11,7 @@ const teamPhotos = {
   t04: '/images/team/Dr. Meybodi.png',
   t05: '/images/team/Eng. Karbozorg.png',
   t07: '/images/team/Eng. Ghasemi.png',
-  t11: '/images/team/Eng. Mokhtarzadeh.png',
+  t10: '/images/team/Eng. Mokhtarzadeh.png',
 }
 
 export const team = [
@@ -22,7 +22,7 @@ export const team = [
   { id: 't05', group: 'executive', name: { en: 'Eng. Karbozorg', fa: 'مهندس کاربزرگ' }, position: { en: 'Business Director', fa: 'مدیر کسب‌وکار' }, education: { en: 'B.Sc. in Entrepreneurship', fa: 'کارشناسی کارآفرینی' } },
   { id: 't06', group: 'research', name: { en: 'Dr. Mokhtarzadeh', fa: 'دکتر مختارزاده' }, position: { en: 'R&D Director', fa: 'مدیر تحقیق و توسعه' }, education: { en: 'Ph.D. Informatics', fa: 'دکترای انفورماتیک' } },
   { id: 't07', group: 'research', name: { en: 'Eng. Ghasemi', fa: 'مهندس قاسمی' }, position: { en: 'AI Director', fa: 'مدیر هوش مصنوعی' }, education: { en: 'M.Sc. Artificial Intelligence', fa: 'کارشناسی ارشد هوش مصنوعی' } },
-  { id: 't10', group: 'research', name: { en: 'Eng. Kashefpour', fa: 'مهندس کاشف‌پور' }, position: { en: 'Electronics R&D', fa: 'واحد تحقیق و توسعهٔ الکترونیک' }, education: { en: 'B.Sc. Electronics Engineering', fa: 'کارشناسی الکترونیک' } },
+  { id: 't10', group: 'research', name: { en: 'Eng. Kashani', fa: 'مهندس کاشانی' }, position: { en: 'Electronics R&D', fa: 'واحد تحقیق و توسعهٔ الکترونیک' }, education: { en: 'B.Sc. Electronics Engineering', fa: 'کارشناسی الکترونیک' } },
   { id: 't08', group: 'engineering', name: { en: 'Eng. Rezaeifar', fa: 'مهندس رضائی‌فر' }, position: { en: 'Software Developer', fa: 'کارشناس توسعهٔ نرم‌افزار' }, education: { en: 'B.Sc. Software Engineering', fa: 'کارشناسی نرم‌افزار' } },
   { id: 't09', group: 'engineering', name: { en: 'Eng. Gholami', fa: 'مهندس غلامی' }, position: { en: 'Mobile Developer', fa: 'کارشناس توسعهٔ موبایل' }, education: { en: 'B.Sc. Software Engineering', fa: 'کارشناسی نرم‌افزار' } },
   { id: 't11', group: 'engineering', name: { en: 'Eng. Mokhtarzadeh', fa: 'مهندس مختارزاده' }, position: { en: 'Industrial Engineering', fa: 'مهندسی صنایع' }, education: { en: 'B.Sc. Industrial Engineering', fa: 'کارشناسی صنایع' } },

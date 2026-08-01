@@ -95,6 +95,15 @@ const socials = [
               </span>
               <span class="ci-text">{{ t('footer.contact.address') }}</span>
             </li>
+            <li class="contact-item">
+              <span class="ci-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+              </span>
+              <span class="ci-text">{{ t('footer.contact.secondAddress') }}</span>
+            </li>
           </ul>
         </div>
       </div>
@@ -176,7 +185,7 @@ html[lang='fa'] .foot-manifesto { font-weight: 700; line-height: 1.5; }
   display: inline-flex; align-items: center; justify-content: center;
   width: 42px; height: 42px; border-radius: 50%;
   background: rgba(245, 245, 229, 0.14);
-  color: var(--sand);
+  color: var(--orange);
   transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease;
 }
 

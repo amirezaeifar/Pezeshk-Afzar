@@ -21,7 +21,7 @@ MAPPINGS = {
     "family-sunset-candidate.jpg": "public/images/testimonials/family-sunset.jpg",
     "family-laughing-premium.jpg": "public/images/testimonials/friends-sunset.jpg",
     # Curated real medical product photography.
-    "equip-pexels-6627665.jpg": "public/images/equipment/desktop-autoclave-hero.jpg",
+    "equip-pexels-8413159.jpg": "public/images/equipment/desktop-autoclave-hero.jpg",
     "equip-pexels-9951400.jpg": "public/images/equipment/desktop-autoclave-chamber.jpg",
     "equip-pexels-6627664.jpg": "public/images/equipment/desktop-autoclave-clinic.jpg",
     "equip-pexels-8940466.jpg": "public/images/equipment/hospital-autoclave-hero.jpg",

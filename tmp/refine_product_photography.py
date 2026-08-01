@@ -128,7 +128,7 @@ LIFESTYLE_HEROES = [
 
 EQUIPMENT_HEROES = [
     (
-        "tmp/image-recovery/equip-pexels-6627665.jpg",
+        "tmp/image-recovery/equip-pexels-8413159.jpg",
         "public/images/equipment/desktop-autoclave-hero.jpg",
         (0.50, 0.50),
     ),

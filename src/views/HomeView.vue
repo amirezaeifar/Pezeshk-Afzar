@@ -290,7 +290,7 @@ onBeforeUnmount(() => {
               class="ticker-item"
             >
               <span class="ticker-name">{{ localize(product.tickerName, locale) }}</span>
-              <span class="ticker-separator" aria-hidden="true"></span>
+              <span class="ticker-separator" aria-hidden="true">•</span>
             </RouterLink>
           </div>
           <div class="ticker-group ticker-clone" aria-hidden="true">
@@ -302,7 +302,7 @@ onBeforeUnmount(() => {
               tabindex="-1"
             >
               <span class="ticker-name">{{ localize(product.tickerName, locale) }}</span>
-              <span class="ticker-separator" aria-hidden="true"></span>
+              <span class="ticker-separator" aria-hidden="true">•</span>
             </RouterLink>
           </div>
         </div>
@@ -636,10 +636,10 @@ onBeforeUnmount(() => {
   position: absolute; inset: 0;
   border-radius: 50%;
   background: radial-gradient(circle,
-    rgba(255, 146, 92, 0.8) 0%,
-    rgba(255, 146, 92, 0.38) 38%,
-    rgba(255, 146, 92, 0.12) 58%,
-    rgba(255, 146, 92, 0) 72%);
+    rgba(246, 224, 201, 0.8) 0%,
+    rgba(246, 224, 201, 0.38) 38%,
+    rgba(246, 224, 201, 0.12) 58%,
+    rgba(246, 224, 201, 0) 72%);
   animation: sunPulse 9s ease-in-out infinite;
 }
 
@@ -767,7 +767,8 @@ html[lang='fa'] .cine-title em { font-style: normal; }
   aspect-ratio: 1;
   margin-left: calc(min(96%, 470px) / -2);
   border-radius: 50%;
-  border: 2px dashed rgba(255, 146, 92, 0.5);
+  border: 2px dashed rgba(246, 224, 201, 0.5);
+  filter: drop-shadow(0 0 4px rgba(246, 224, 201, 0.24));
   animation: orbit 46s linear infinite;
   transform-origin: center;
 }
@@ -888,15 +889,15 @@ html[lang='fa'] .cue-label { letter-spacing: 0; }
   overflow: hidden;
   color: #F5F5E5;
   background:
-    linear-gradient(105deg, rgba(0, 31, 0, 0.88), rgba(0, 52, 25, 0.72)),
-    rgba(0, 41, 0, 0.7);
+    linear-gradient(105deg, rgba(0, 31, 0, 0.78), rgba(0, 52, 25, 0.62)),
+    rgba(0, 41, 0, 0.58);
   border-top: 1px solid rgba(245, 245, 229, 0.16);
   border-bottom: 1px solid rgba(245, 245, 229, 0.12);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 18px 42px -34px rgba(0, 41, 0, 0.9);
-  backdrop-filter: blur(18px) saturate(1.12);
-  -webkit-backdrop-filter: blur(18px) saturate(1.12);
+    0 16px 36px -32px rgba(0, 41, 0, 0.78);
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
 }
 
 .product-ticker::before,
@@ -939,11 +940,11 @@ html[lang='fa'] .cue-label { letter-spacing: 0; }
 .ticker-group { flex: 0 0 auto; }
 
 .ticker-item {
-  display: inline-flex; align-items: center; gap: 1.4rem;
+  display: inline-flex; align-items: center; gap: 1.6rem;
   min-height: 2.75rem;
-  padding: 0.25rem 1.55rem;
-  color: rgba(245, 245, 229, 0.68);
-  opacity: 0.76;
+  padding: 0.25rem 1.85rem;
+  color: rgba(245, 245, 229, 0.78);
+  opacity: 0.88;
   text-decoration: none;
   transform: translate3d(0, 0, 0);
   transition: color 320ms ease, opacity 320ms ease, text-shadow 320ms ease;
@@ -959,18 +960,24 @@ html[lang='fa'] .cue-label { letter-spacing: 0; }
 .ticker-name {
   unicode-bidi: plaintext;
   white-space: nowrap;
-  font-size: 0.9rem;
-  font-weight: 450;
-  letter-spacing: 0.018em;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.025em;
+  text-shadow: 0 0 14px rgba(245, 245, 229, 0.1);
 }
 
 html[lang='fa'] .ticker-name { letter-spacing: 0; }
 
 .ticker-separator {
-  display: block;
-  width: 1px; height: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
-  background: rgba(245, 245, 229, 0.25);
+  color: rgba(255, 146, 92, 0.72);
+  font-size: 0.78rem;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(255, 146, 92, 0.34);
 }
 
 /* ── 2 · Mission — asymmetric, overlapping ───────────── */

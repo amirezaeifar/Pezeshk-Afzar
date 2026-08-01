@@ -409,7 +409,7 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section id="product-gallery" class="gallery section-rule detail-reveal" :aria-labelledby="`gallery-${product.id}`">
+      <section v-if="product.type === 'equipment'" id="product-gallery" class="gallery section-rule detail-reveal" :aria-labelledby="`gallery-${product.id}`">
         <div class="section-heading">
           <span class="section-no" aria-hidden="true">06</span>
           <div>
@@ -433,7 +433,7 @@ onBeforeUnmount(() => {
 
       <section class="resources section-rule detail-reveal" :aria-labelledby="`resources-${product.id}`">
         <div class="section-heading">
-          <span class="section-no" aria-hidden="true">07</span>
+          <span class="section-no" aria-hidden="true">{{ product.type === 'equipment' ? '07' : '06' }}</span>
           <div>
             <p class="eyebrow">{{ t('detail.resourcesEyebrow') }}</p>
             <h2 :id="`resources-${product.id}`">{{ t('detail.resources') }}</h2>
@@ -498,7 +498,7 @@ onBeforeUnmount(() => {
 
       <section class="faq section-rule detail-reveal" :aria-labelledby="`faq-${product.id}`">
         <div class="section-heading">
-          <span class="section-no" aria-hidden="true">08</span>
+          <span class="section-no" aria-hidden="true">{{ product.type === 'equipment' ? '08' : '07' }}</span>
           <div>
             <p class="eyebrow">{{ t('detail.faqEyebrow') }}</p>
             <h2 :id="`faq-${product.id}`">{{ t('detail.faq') }}</h2>
@@ -864,23 +864,35 @@ html[lang='fa'] .workflow-label { letter-spacing: 0; }
 html[dir='rtl'] .value-applications .list-mark { transform: rotate(180deg); }
 
 .facts-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(290px, 0.6fr); gap: 2rem; }
+.facts-grid > * { min-width: 0; }
 .spec-table {
   overflow: hidden;
+  align-self: start;
+  width: 100%;
   margin: 0;
+  box-sizing: border-box;
   background: #FCFCF2;
   border: 1px solid var(--line);
   border-radius: 16px;
 }
 .spec-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(8.75rem, 0.88fr) minmax(0, 1.12fr);
+  align-items: stretch;
+  width: 100%;
   gap: 0;
   padding: 0;
   border-bottom: 1px solid var(--line);
 }
 .spec-row:last-child { border-bottom: 0; }
 .spec-row dt,
-.spec-row dd { padding: 1rem 1.25rem; }
+.spec-row dd {
+  min-width: 0;
+  padding: 1rem 1.25rem;
+  box-sizing: border-box;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
 .spec-row dt {
   color: var(--ink);
   background: var(--warm-soft);

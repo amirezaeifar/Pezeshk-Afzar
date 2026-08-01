@@ -191,6 +191,52 @@ html {
   border-radius: 4px;
 }
 
+/* Shared form micro-interactions — visual treatment stays component-owned. */
+:where(
+  input:not([type='button']):not([type='submit']):not([type='reset']):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']),
+  textarea,
+  select
+) {
+  transition: border-color 225ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 225ms ease,
+              background-color 225ms ease,
+              color 225ms ease;
+}
+
+:where(
+  input:not([type='button']):not([type='submit']):not([type='reset']):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']),
+  textarea
+) { cursor: text; }
+
+select { cursor: pointer; }
+
+:where(
+  input:not([type='button']):not([type='submit']):not([type='reset']):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']),
+  textarea,
+  select
+):focus {
+  box-shadow: 0 0 0 3px rgba(255, 146, 92, 0.12),
+              0 12px 28px -22px rgba(0, 41, 0, 0.48);
+}
+
+:where(input, textarea)::placeholder {
+  transition: opacity 225ms ease, transform 225ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:where(input, textarea):focus::placeholder {
+  opacity: 0.48;
+  transform: translateY(-1px);
+}
+
+:where(input, textarea, select):disabled { cursor: not-allowed; }
+
+@media (prefers-reduced-motion: reduce) {
+  :where(input, textarea, select),
+  :where(input, textarea)::placeholder {
+    transition: none;
+  }
+}
+
 /* Grain texture overlay — cinema film grain */
 .grain::before {
   content: '';

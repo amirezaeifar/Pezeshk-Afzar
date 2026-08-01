@@ -79,6 +79,10 @@ const reset = () => {
               <dd>{{ t('contact.meta.studioVal') }}</dd>
             </div>
             <div class="meta-item">
+              <dt>{{ t('contact.meta.secondStudio') }}</dt>
+              <dd>{{ t('contact.meta.secondStudioVal') }}</dd>
+            </div>
+            <div class="meta-item">
               <dt>{{ t('contact.meta.hours') }}</dt>
               <dd>{{ t('contact.meta.hoursVal') }}</dd>
             </div>
@@ -352,8 +356,9 @@ html[lang='fa'] .form-section-label { letter-spacing: 0; }
   color: var(--ink); outline: none;
   resize: vertical;
   -webkit-appearance: none; appearance: none;
-  transition: border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.4s ease;
+  transition: border-color 225ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 225ms ease,
+              background-color 225ms ease;
 }
 
 .field textarea { min-height: 130px; }
@@ -362,9 +367,17 @@ html[lang='fa'] .form-section-label { letter-spacing: 0; }
   color: var(--muted); opacity: 0.7;
 }
 
+.field input:focus::placeholder,
+.field textarea:focus::placeholder {
+  opacity: 0.48;
+  transform: translateY(-1px);
+}
+
 .field input:focus, .field textarea:focus {
   border-bottom-color: var(--coral);
   background: rgba(245, 245, 229, 0.95);
+  box-shadow: 0 0 0 3px rgba(255, 146, 92, 0.12),
+              0 12px 28px -22px rgba(0, 41, 0, 0.48);
 }
 
 .field.has-error input, .field.has-error textarea {

@@ -1,6 +1,7 @@
 export default {
   brand: 'Pezeshk Afzar',
   brandFull: 'Pezeshk Afzar Shafa Gostar Shargh',
+  backToTop: 'Back to top',
   meta: {
     productTitle: '{product} — Pezeshk Afzar',
     socialImageAlt: 'Pezeshk Afzar — technology in the service of living.',
@@ -365,7 +366,8 @@ export default {
       emailLabel: 'Email',
       phoneLabel: 'Phone',
       addressLabel: 'Address',
-      address: 'Iran, Mashhad, Chamran Street, Between Chamran 11 and Golestan Street, Shahr Hall Building, 1st Floor, Unit 2',
+      address: 'Unit 2, 1st Floor, Shahr Hall Building, Between Chamran 11 and Golestan Street, Chamran Street, Mashhad, Razavi Khorasan, Iran',
+      secondAddress: 'Faculty of Engineering, Ferdowsi University of Mashhad, Mashhad, Razavi Khorasan, Iran',
     },
     social: {
       linkedin: 'LinkedIn',
@@ -388,7 +390,9 @@ export default {
       'A question, a dream, a busy day you’d like lighter — write to us about any of it. We usually reply within two working days.',
     meta: {
       studio: 'Office',
-      studioVal: 'Iran, Mashhad, Chamran Street, Between Chamran 11 and Golestan Street, Shahr Hall Building, 1st Floor, Unit 2',
+      studioVal: 'Unit 2, 1st Floor, Shahr Hall Building, Between Chamran 11 and Golestan Street, Chamran Street, Mashhad, Razavi Khorasan, Iran',
+      secondStudio: 'Second office',
+      secondStudioVal: 'Faculty of Engineering, Ferdowsi University of Mashhad, Mashhad, Razavi Khorasan, Iran',
       hours: 'Hours',
       hoursVal: 'Sat — Wed, 09:00 — 18:00',
       email: 'Email',

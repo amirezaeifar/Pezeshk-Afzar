@@ -31,10 +31,13 @@ Only the bottom-left responsive pair was changed in the latest refinement. `fami
 
 The active equipment galleries use real Pexels/Unsplash product and care photography. Source downloads are retained locally and the reproducible output mapping is recorded in `tmp/process_selected_images.py`.
 
-- `equipment/desktop-autoclave-hero.jpg` — Pexels photo `6627665`
+- `equipment/desktop-autoclave-hero.jpg` — Pexels photo `8413159`
 - `equipment/desktop-autoclave-chamber.jpg` — Pexels photo `9951400`
 - `equipment/desktop-autoclave-clinic.jpg` — Pexels photo `6627664`
 - `equipment/hospital-autoclave-hero.jpg` — Pexels photo `8940466`
+- `equipment/industrial-hospital-autoclave-hero.jpg` — [Celitron Azteca A large steam sterilizer](https://celitron.com/en/autoclave-machine-steam-sterilizer-hospital), reference photo `148`
+- `equipment/industrial-autoclave-room.jpg` — [Celitron Azteca A large steam sterilizer](https://celitron.com/en/autoclave-machine-steam-sterilizer-hospital), reference photo `142`
+- `equipment/industrial-autoclave-controls.jpg` — [Celitron Azteca A large steam sterilizer](https://celitron.com/en/autoclave-machine-steam-sterilizer-hospital), reference photo `97`
 - `equipment/hospital-autoclave-room.jpg` — Pexels photo `9951393`
 - `equipment/hospital-autoclave-loading.jpg` — Pexels photo `8940466`
 - `equipment/glucose-meter-hero.jpg` — Pexels photo `17043389`
